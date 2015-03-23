@@ -1,6 +1,15 @@
 ################
+#### Linux #####
+################
+Makefile
+GNUmakefile
+makefile
+
+################
 ##### C++ ######
 ################
+
+
 # Compiled Object files
 *.slo
 *.lo
