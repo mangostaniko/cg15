@@ -41,6 +41,7 @@
 *.suo
 *.user
 *.userosscache
+*.sln
 *.sln.docstates
 
 # User-specific files (MonoDevelop/Xamarin Studio)
@@ -78,6 +79,7 @@ dlldata.c
 *_p.c
 *_i.h
 *.ilk
+*.idb
 *.meta
 *.obj
 *.pch
@@ -86,12 +88,16 @@ dlldata.c
 *.pgd
 *.rsp
 *.sbr
+*.suo
 *.tlb
 *.tli
 *.tlh
+*.tlog
 *.tmp
 *.tmp_proj
+*.lastbuildstate
 *.log
+*.vcxproj
 *.vspscc
 *.vssscc
 .builds
@@ -114,6 +120,8 @@ ipch/
 *.psess
 *.vsp
 *.vspx
+*.filters
+*.user
 
 # TFS 2012 Local Workspace
 $tf/
