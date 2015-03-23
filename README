@@ -7,6 +7,6 @@ DESCRIPTION
 Seganku is an animal survival hiding and foraging game inspired by shelter. The player finds himself in the role of a small skunk, foraging for food like berries, roots etc to get ready for hibernation. Life would be fairly easy if those eagles weren't foraging as well — for you. When the skies cry and dark shadows of peril loom over those hills: Don't waste no time, Duck and cover!
 
 DEPENDENCIES
-C++11, SFML 2.1, OpenGL 3.3, GLEW 1.10, GLM 0.9.5, Assimp 3.0, Bullet?
+C++11, GLFW 3.0, OpenGL 3.3 core + GLSL 3.3 core, GLEW 1.10, GLM 0.9.5, Assimp 3.0, Bullet
 
 
