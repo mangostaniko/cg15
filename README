@@ -1,4 +1,4 @@
-COMPUTERGRAPHIK UE 15S
+﻿COMPUTERGRAPHIK UE 15S
 
 OPENGL GAME
 TITLE: SEGANKU
@@ -8,5 +8,7 @@ Seganku is an animal survival hiding and foraging game inspired by shelter. The 
 
 DEPENDENCIES
 C++11, GLFW 3.0, OpenGL 3.3 core + GLSL 3.3 core, GLEW 1.10, GLM 0.9.5, Assimp 3.0, Bullet
+
+Push test
 
 
