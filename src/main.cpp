@@ -47,7 +47,6 @@ void frameBufferResize(GLFWwindow *window, int width, int height);
 
 int main(int argc, char **argv)
 {
-	std::cout << "hello world" << std::endl;
 	/* HANDLE COMMAND LINE PARAMETERS */
 
 	int windowWidth = 800;
@@ -55,7 +54,12 @@ int main(int argc, char **argv)
 	int refresh_rate = 60;
 	bool fullscreen = 0;
 
-	if (argc != 4 || (std::stringstream(argv[1]) >> windowWidth).fail() || (std::stringstream(argv[2]) >> windowHeigth).fail() || (std::stringstream(argv[3]) >> fullscreen).fail()) {
+	if (argc == 1) {
+		// no parameters specified, continue with default values
+		
+	} else if (argc != 4 || (std::stringstream(argv[1]) >> windowWidth).fail() || (std::stringstream(argv[2]) >> windowHeigth).fail() || (std::stringstream(argv[3]) >> fullscreen).fail()) {
+		// if parameters are specified, must conform to given format
+		
 		std::cout << "USAGE: <resolution width> <resolution height> <fullscreen? 0/1>\n";
 		return -1;
 	}
@@ -118,10 +122,10 @@ int main(int argc, char **argv)
 	glBindBuffer(GL_ARRAY_BUFFER, vbo); // bind vbo to the current array buffer context
 
 	static const GLfloat vertices[] = {
-		//  Position             Color
+	//  Position            Color
 		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f
+		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+		 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
 	};
 
 	// create and init buffer from vertex data. the buffer lies on the gpu!
