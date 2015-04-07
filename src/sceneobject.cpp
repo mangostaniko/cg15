@@ -8,4 +8,3 @@ SceneObject::SceneObject(const glm::mat4 &modelMatrix_)
 SceneObject::~SceneObject()
 {
 }
-

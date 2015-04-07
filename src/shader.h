@@ -1,11 +1,13 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <string>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-class Shader {
+#include <string>
+
+class Shader
+{
 
 	GLuint vertexHandle;
 	GLuint fragmentHandle;

@@ -1,40 +1,23 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/constants.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
-#include <string>
 #include <sstream>
+#include <string>
+#include <vector>
+#include <memory>
 
 #include "shader.h"
 #include "sceneobject.h"
 #include "sceneobjects/cube.h"
 
-
-// glsl shader sources
-const GLchar* vertexSource =
-"#version 330 core \n"
-"layout(location=0) in vec3 position;"
-"layout(location=1) in vec3 color;"
-//"in vec2 uv;"
-//"out vec2 texCoord;"
-"out vec3 color_varying;"
-"uniform vec3 uni_delta_pos;"
-"void main() {"
-"   color_varying = color;"
-"   gl_Position = vec4(position + uni_delta_pos, 1.0);"
-"}";
-// out variables are interpolated and passed to fragment shader in variables
-const GLchar* fragmentSource =
-"#version 330 core \n"
-"in vec3 color_varying;"
-//"in vec2 texCoord;"
-"layout(location=0) out vec4 out_color;"
-"void main() {"
-"   out_color = vec4(1 - color_varying, 1.0);"
-//"out_color = vec4(texture(colorTexture, texCoord).rgb) * 0.5"
-"}";
 
 void init(GLFWwindow *window);
 void update(float timeDelta);
@@ -42,10 +25,11 @@ void draw();
 void cleanup();
 
 Shader *shader;
-SceneObject *testObject;
-// Texture *texture;
+Texture *texture;
+std::vector<std::shared_ptr<SceneObject>> cubes;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
+
 
 int main(int argc, char **argv)
 {
@@ -111,78 +95,8 @@ int main(int argc, char **argv)
 
 	glfwSetFramebufferSizeCallback(window, frameBufferResize);
 
-///
+
 	init(window);
-
-
-	// INIT MATRICES
-
-
-/*/
-
-	// INIT VERTEX DATA
-
-	GLuint vao; // stores id by which vertex array object is accessed (defines structure of vertex data).
-	glGenVertexArrays(1, &vao); // generate name (ID) to access vertex array
-	glBindVertexArray(vao); // bind struct to context such that other functions will operate on it
-
-	GLuint vbo; // stores id by which vertex buffer object is accessed (actual vertex data).
-	glGenBuffers(1, &vbo); // generate name
-	glBindBuffer(GL_ARRAY_BUFFER, vbo); // bind vbo to the current array buffer context
-
-	static const GLfloat vertices[] = {
-	//  Position            Color
-		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-		 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-	     0.5f,  0.5f, 0.5f, 0.0f, 1.0f, 1.0f
-	};
-
-	static const GLuint indices[] = {
-		0, 1, 2,
-	    0, 2, 3,
-	};
-
-
-	// create and init buffer from vertex data. the buffer lies on the gpu!
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-
-	// INIT SHADERS
-
-	// compile glsl vertex shader
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER); // generate shader name / handle
-	glShaderSource(vertexShader, 1, &vertexSource, NULL); // load shader from char array
-	glCompileShader(vertexShader);
-
-	char vertex_shader_infolog[512];
-	glGetShaderInfoLog(vertexShader, 512, NULL, vertex_shader_infolog);
-	if (vertex_shader_infolog[0]) std::cout << vertex_shader_infolog << "\n";
-
-	// compile glsl fragment shader
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER); // generate shader name / handle
-	glShaderSource(fragmentShader, 1, &fragmentSource, NULL); // load shader from char array
-	glCompileShader(fragmentShader);
-
-	char fragment_shader_infolog[512];
-	glGetShaderInfoLog(fragmentShader, 512, NULL, fragment_shader_infolog);
-	if (vertex_shader_infolog[0]) std::cout << fragment_shader_infolog << "\n";
-
-	// combine shaders into a program
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram); // out variables from vs bound to in variables in fs
-	glUseProgram(shaderProgram); // only one can be active at a time
-
-	// get references to shader uniforms
-	// note: uniforms are so named because they do not change from one execution
-	// of a shader program to the next within a particular rendering call
-	// i.e. same for all vertices/fragments
-
-	GLint uniDeltaPos = glGetUniformLocation(shaderProgram, "uni_delta_pos");
-
-//*/
 
 
 	//////////////////////////
@@ -213,15 +127,13 @@ int main(int argc, char **argv)
 			std::cout << "fps: " << (int)(1/deltaT) << std::endl;
 		}
 
+
 		//////////////////////////
 		/// UPDATE
 		//////////////////////////
-///
+
 		update(deltaT);
-/*/
-		// rotate triangle using delta pos 
-		glUniform3f(uniDeltaPos, glm::sin(time * 10.0f) / 4.0f, glm::cos(time * 10.0f) / 4.0f, 0.0f);
-//*/
+
 
 		//////////////////////////
 		/// DRAW
@@ -230,28 +142,7 @@ int main(int argc, char **argv)
 		// clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-///
 		draw();
-/*/
-		// specify the format of the attributes used in the shaders
-		GLint posAttrib = 0;
-		glEnableVertexAttribArray(posAttrib); // enable vertex attribute of given index
-		glVertexAttribPointer(
-			posAttrib,          // index of vertex attribute to be modified (depends on shader).
-			3,                  // number of elements of the attrib (three for x, y, z)
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			6 * sizeof(float),  // size of whole vertex attrib array
-			(void*)0            // offset of this vertex attrib within the array
-			);
-
-		GLint colAttrib = 1;
-		glEnableVertexAttribArray(colAttrib);
-		glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-
-		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, indices); // draw vertices (not triangles!) starting from index 0, in GL_TRIANGLES draw mode
-
-//*/
 
 		// end the current frame (swaps the front and back buffers)
 		glfwSwapBuffers(window);
@@ -269,13 +160,7 @@ int main(int argc, char **argv)
 	}
 
 	// release resources
-
 	cleanup();
-
-/*//
-	glDeleteBuffers(1, &vbo);
-	glDeleteVertexArrays(1, &vao);
-//*/
 
 	glfwTerminate();
 	exit(EXIT_SUCCESS); // for system independent success code
@@ -286,27 +171,64 @@ int main(int argc, char **argv)
 
 void init(GLFWwindow *window)
 {
+	// enable z buffer test
+	glEnable(GL_DEPTH_TEST);
+
+
+	// INIT SHADERS
+
 	shader = new Shader("../src/shaders/testshader.vert", "../src/shaders/testshader.frag");
 	shader->useShader();
-	testObject = new Cube(glm::mat4(1.0f), shader);
+
+	// pass view and projection matrices to shader
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+	auto projMat = glm::perspective(glm::pi<float>()/3, width/(float)height, 0.2f, 20.0f); // fov, aspect, znear, zfar
+	auto viewMat = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -6)); // move back a bit to see cube
+	auto viewProjMat = projMat * viewMat;
+	GLint viewProjMatLocation = glGetUniformLocation(shader->programHandle, "viewProjMat"); // get uniform location in shader
+	glUniformMatrix4fv(viewProjMatLocation, 1, GL_FALSE, glm::value_ptr(viewProjMat)); // shader location, count, transpose?, value pointer
+
+
+	// INIT TEXTURES
+
+	texture = new Texture("path");
+
+
+	// INIT OBJECTS
+
+	for (int i = 0; i < 3; ++i) {
+		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, 0, 0)), shader, texture));
+	}
+	for (int i = 0; i < 3; ++i) {
+		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, 2, 0)), shader, texture));
+	}
+	for (int i = 0; i < 3; ++i) {
+		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, -2, 0)), shader, texture));
+	}
 
 }
 
 void update(float timeDelta)
 {
-	testObject->update();
+	for (unsigned i = 0; i < cubes.size(); ++i) {
+		cubes[i]->update(((i%2)-0.5) * (i%cubes.size()/2+1) * timeDelta);
+	}
+
 }
 
 void draw()
 {
-	testObject->draw();
+	for (unsigned i = 0; i < cubes.size(); ++i) {
+		cubes[i]->draw();
+	}
+
 }
 
 void cleanup()
 {
 	delete shader; shader = nullptr;
-	delete testObject; testObject = nullptr;
-	//delete texture; texture = nullptr;
+	delete texture; texture = nullptr;
 }
 
 void frameBufferResize(GLFWwindow *window, int width, int height)

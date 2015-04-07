@@ -1,0 +1,41 @@
+#include "texture.h"
+
+Texture::Texture(const std::string &filePath)
+{
+	glGenTextures(1, &handle);
+	glActiveTexture(GL_TEXTURE0); // select the active texture unit of the context
+	glBindTexture(GL_TEXTURE_2D, handle);
+
+	// load texture from file
+	unsigned int width, height;
+	unsigned char *data = loadTexture(filePath, width, height); // TODO implement using FreeImage 3.15
+
+	// specify a texture of the active texture unit at given target
+	// a unit can contain multiple texture targets, but recommended to use only one per unit
+	// parameters: target, mipmap level, internal format, width, heigth, border width, internal format, data format, image data
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+	// automatically generate mipmaps (mip = multum in parvo, i.e. 'much in little')
+	// mipmaps are filtered and downsampled copies of the texture stored compactly in a single file,
+	// used to avoid aliasing effects when the sampling rate is too low for the texture frequency
+	// e.g. for far away surfaces. by taking a filtered average it doesnt matter where the sample hits.
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// set texture minification and magnification filters
+	// minification:  how to filter downsampled texture when there's not enough space
+	// magnification: how to interpolate texture to fill remaining space
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
+Texture::~Texture()
+{
+	glDeleteTextures(1, &handle);
+}
+
+void Texture::bind(int unit)
+{
+	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(GL_TEXTURE_2D, handle);
+}
+

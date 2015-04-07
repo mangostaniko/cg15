@@ -38,6 +38,8 @@ set(SRC_CLASSES
     src/main.cpp
 	src/shader.h
 	src/shader.cpp
+	src/texture.h
+	src/texture.cpp
 	src/sceneobject.h
 	src/sceneobject.cpp
     

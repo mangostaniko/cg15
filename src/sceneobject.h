@@ -10,7 +10,15 @@ public:
 	SceneObject(const glm::mat4 &modelMatrix_);
 	virtual ~SceneObject();
 
-	virtual void update() = 0;
+	/**
+	 * @brief update the state of the SceneObject
+	 * @param timeDelta the time passed since the last frame in seconds
+	 */
+	virtual void update(float timeDelta) = 0;
+
+	/**
+	 * @brief draw the SceneObject
+	 */
 	virtual void draw() = 0;
 
 	glm::mat4 modelMatrix;
