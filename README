@@ -8,7 +8,14 @@ Seganku is an animal survival hiding and foraging game inspired by shelter. The 
 
 DEPENDENCIES
 C++11, GLFW 3.0, OpenGL 3.3 core + GLSL 3.3 core, GLEW 1.10, GLM 0.9.5, Assimp 3.0, Bullet
+CMake 2.8+ is used for build file generation
 
-Push test
 
+=== BUILD INSTRUCTIONS ===
 
+WINDOWS
+TODO
+
+LINUX
+in the project root directory, run 'cmake CMakeLists.txt' to generate a Makefile, and then 'make' to build the project.
+to rebuild, unless the CMakeLists.txt configuration file changed, just run make.

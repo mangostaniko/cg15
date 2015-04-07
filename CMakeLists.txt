@@ -2,8 +2,12 @@ project(seganku)
 cmake_minimum_required(VERSION 2.8)
 
 # add CMakeLists.txt source dir and cmake module dir to the cmake module path
-# cmake module path is the list of dirs where cmake looks for stuff
+# cmake modules are cmake files used e.g. to find library files
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/CMakeModules") 
+
+# specify build dir for out-of-source build (aka shadow build)
+set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 
 ### COMPILER FLAGS ###
@@ -29,15 +33,22 @@ endif(MSVC)
 
 ### SOURCE FILES ###
 
-# relative path to every single cpp and h file
+# relative path to every single h and cpp file
 set(SRC_CLASSES 
     src/main.cpp
+	src/shader.h
+	src/shader.cpp
+	src/sceneobject.h
+	src/sceneobject.cpp
     
+	src/sceneobjects/cube.h
+	src/sceneobjects/cube.cpp
 )
 
 # relative path to shader files
 set(SRC_SHADERS
-
+	src/shaders/testshader.vert
+	src/shaders/testshader.frag
 )
 
 # adds an executable target with given name to be built from the source files listed afterwards
