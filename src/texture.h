@@ -3,7 +3,9 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <FreeImagePlus.h>
 
+#include <iostream>
 #include <string>
 
 class Texture

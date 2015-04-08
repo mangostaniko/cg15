@@ -10,7 +10,6 @@ uniform sampler2D colorTexture;
 
 void main()
 {
-	outColor = vec4(0.5 + worldNormal/2, 1);
-	//outColor = vec4(texture(colorTexture, texCoord).rgb, 1);
+	outColor = vec4(1.2 - texture(colorTexture, texCoord).rgb, 1) * vec4(0.5 + worldNormal/2, 1);
 }
 

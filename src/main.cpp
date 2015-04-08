@@ -80,7 +80,9 @@ int main(int argc, char **argv)
 
 	glfwMakeContextCurrent(window);
 
-	glClearColor(0.11f, 0.1f, 0.14f, 1.0f);
+	//glClearColor(1, 1, 1, 1); // white
+	glClearColor(0.68f, 0.78f, 1.0f, 1.0f); // warm sky blue
+	//glClearColor(0.11f, 0.1f, 0.14f, 1.0f); // dark grey
 	glViewport(0, 0, windowWidth, windowHeigth);
 
 	// print OpenGL version
@@ -191,8 +193,10 @@ void init(GLFWwindow *window)
 
 
 	// INIT TEXTURES
+	// note: use 8 bit RGB, no alpha channel
 
-	texture = new Texture("path");
+	//texture = new Texture("../data/textures/uv_debug_tex.png");
+	texture = new Texture("../data/textures/skunk_drawing.jpg");
 
 
 	// INIT OBJECTS

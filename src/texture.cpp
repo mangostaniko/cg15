@@ -6,14 +6,17 @@ Texture::Texture(const std::string &filePath)
 	glActiveTexture(GL_TEXTURE0); // select the active texture unit of the context
 	glBindTexture(GL_TEXTURE_2D, handle);
 
-	// load texture from file
-	unsigned int width, height;
-	unsigned char *data = loadTexture(filePath, width, height); // TODO implement using FreeImage 3.15
+	// load image from file using FreeImagePlus (the FreeImage C++ wrapper)
+	fipImage img;
+	if (!img.load(filePath.c_str(), 0)) {
+		std::cerr << "ERROR: FreeImage could not load image file '" << filePath << "'." << std::endl;
+	}
 
 	// specify a texture of the active texture unit at given target
 	// a unit can contain multiple texture targets, but recommended to use only one per unit
 	// parameters: target, mipmap level, internal format, width, heigth, border width, internal format, data format, image data
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	// note: for some reason it seems that 8 bit RGB images are really stored in BGR format.
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.getWidth(), img.getHeight(), 0, GL_BGR, GL_UNSIGNED_BYTE, img.accessPixels());
 
 	// automatically generate mipmaps (mip = multum in parvo, i.e. 'much in little')
 	// mipmaps are filtered and downsampled copies of the texture stored compactly in a single file,
