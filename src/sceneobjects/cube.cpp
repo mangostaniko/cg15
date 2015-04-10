@@ -87,7 +87,8 @@ Cube::~Cube()
 void Cube::update(float timeDelta)
 {
 	// rotate cube a given angle per second around given axis
-	modelMatrix = glm::rotate(modelMatrix, timeDelta, glm::vec3(0, 1, 0));
+	rotate( timeDelta, LEFT, glm::vec3(0, 1, 0));
+	translate(glm::vec3(0.0001f, 0, 0), RIGHT);
 }
 
 void Cube::draw()
@@ -99,7 +100,7 @@ void Cube::draw()
 
 	// pass model matrix to shader
 	GLint modelMatLocation = glGetUniformLocation(shader->programHandle, "modelMat"); // get uniform location in shader
-	glUniformMatrix4fv(modelMatLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix)); // shader location, count, transpose?, value pointer
+	glUniformMatrix4fv(modelMatLocation, 1, GL_FALSE, glm::value_ptr(getMatrix())); // shader location, count, transpose?, value pointer
 
 	// draw triangles from given indices
 	glBindVertexArray(vao); // bind the vertex array used to supply vertices

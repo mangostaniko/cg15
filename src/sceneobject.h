@@ -18,8 +18,22 @@ public:
 	
 	/**
 	 * @brief enum that specifies the order of matrix multiplication
+	 * LEFT : 
 	 */
-	enum Order {LEFT, RIGHT};
+	enum Order 
+	{
+		/**
+		* current matrix is to be multiplied with incoming matrix from left side:
+		* M_result = M_inc * M.
+		*/
+		LEFT, 
+		
+		/**
+		* current matrix is to be multiplied with incoming matrix from right side:
+		* M_result = M * M_inc.
+		*/
+		RIGHT
+	};
 
 	/**
 	 * @brief update the state of the SceneObject
