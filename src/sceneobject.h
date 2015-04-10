@@ -78,6 +78,14 @@ public:
 	void rotateZ(float radians, Order multOrder);
 
 	/**
+	* @brief applies a rotation around a given vector (= axis)
+	* @param radians rotation angle
+	* @param multOrder order of multiplication
+	* @param axis_ the axis around which to rotate
+	*/
+	void rotate(float radians, Order multOrder, const glm::vec3 &axis_);
+
+	/**
 	* @brief applies a translation operation to the current transformation
 	* @param t translation vector
 	* @param multOrder order of multiplication
