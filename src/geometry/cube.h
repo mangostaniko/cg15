@@ -3,7 +3,6 @@
 
 #define GLM_FORCE_RADIANS
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 #include "../sceneobject.h"
 #include "../shader.h"
@@ -26,7 +25,7 @@ class Cube : public SceneObject
 
 
 public:
-	Cube(const glm::mat4 &modelMatrix_, Shader *shader_, Texture *texture_);
+	Cube(const glm::mat4 &matrix_, Shader *shader_, Texture *texture_);
 	virtual ~Cube();
 
 	virtual void update(float timeDelta);

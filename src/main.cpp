@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #define GLM_FORCE_RADIANS
+#define GLM_SWIZZLE
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
@@ -16,7 +17,8 @@
 
 #include "shader.h"
 #include "sceneobject.h"
-#include "sceneobjects/cube.h"
+#include "camera.h"
+#include "geometry/cube.h"
 
 
 void init(GLFWwindow *window);
@@ -24,6 +26,7 @@ void update(float timeDelta);
 void draw();
 void cleanup();
 
+Camera *camera;
 Shader *shader;
 Texture *texture;
 std::vector<std::shared_ptr<SceneObject>> cubes;
@@ -124,7 +127,7 @@ int main(int argc, char **argv)
 
 		// print framerate around every second (console output is costly)
 		deltaShowFpsTime += deltaT;
-		if (deltaShowFpsTime > 1.0) {
+		if (deltaShowFpsTime > 0.1) {
 			deltaShowFpsTime = 0;
 			std::cout << "fps: " << (int)(1/deltaT) << std::endl;
 		}
@@ -177,17 +180,22 @@ void init(GLFWwindow *window)
 	glEnable(GL_DEPTH_TEST);
 
 
+	// INIT CAMERA
+
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+
+	camera = new Camera(glm::mat4(1.0f), glm::pi<float>()/3, width/(float)height, 0.2f, 20.0f); // mat, fov, aspect, znear, zfar
+	camera->translate(glm::vec3(0, 0, 6), SceneObject::RIGHT); // move back a bit to see something
+
+
 	// INIT SHADERS
 
 	shader = new Shader("../src/shaders/testshader.vert", "../src/shaders/testshader.frag");
 	shader->useShader();
 
-	// pass view and projection matrices to shader
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
-	auto projMat = glm::perspective(glm::pi<float>()/3, width/(float)height, 0.2f, 20.0f); // fov, aspect, znear, zfar
-	auto viewMat = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -6)); // move back a bit to see cube
-	auto viewProjMat = projMat * viewMat;
+	// pass camera view and projection matrices to shader
+	glm::mat4 viewProjMat = camera->getProjectionMatrix() * camera->getViewMatrix();
 	GLint viewProjMatLocation = glGetUniformLocation(shader->programHandle, "viewProjMat"); // get uniform location in shader
 	glUniformMatrix4fv(viewProjMatLocation, 1, GL_FALSE, glm::value_ptr(viewProjMat)); // shader location, count, transpose?, value pointer
 
@@ -215,6 +223,15 @@ void init(GLFWwindow *window)
 
 void update(float timeDelta)
 {
+	camera->update(timeDelta);
+	//camera->lookAt(glm::vec3(cubes.at(6)->getLocation()));
+
+	// pass camera view and projection matrices to shader
+	glm::mat4 viewProjMat = camera->getProjectionMatrix() * camera->getViewMatrix();
+	GLint viewProjMatLocation = glGetUniformLocation(shader->programHandle, "viewProjMat"); // get uniform location in shader
+	glUniformMatrix4fv(viewProjMatLocation, 1, GL_FALSE, glm::value_ptr(viewProjMat)); // shader location, count, transpose?, value pointer
+
+	// update cubes
 	for (unsigned i = 0; i < cubes.size(); ++i) {
 		cubes[i]->update(((i%2)-0.5) * (i%cubes.size()/2+1) * timeDelta);
 	}
@@ -233,6 +250,7 @@ void cleanup()
 {
 	delete shader; shader = nullptr;
 	delete texture; texture = nullptr;
+	delete camera; camera = nullptr;
 }
 
 void frameBufferResize(GLFWwindow *window, int width, int height)

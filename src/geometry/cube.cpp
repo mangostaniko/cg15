@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-Cube::Cube(const glm::mat4 &modelMatrix_, Shader *shader_, Texture *texture_)
-	: SceneObject(modelMatrix_)
+Cube::Cube(const glm::mat4 &matrix_, Shader *shader_, Texture *texture_)
+	: SceneObject(matrix_)
     , shader(shader_)
     , texture(texture_)
 {
@@ -87,8 +87,7 @@ Cube::~Cube()
 void Cube::update(float timeDelta)
 {
 	// rotate cube a given angle per second around given axis
-	rotate( timeDelta, LEFT, glm::vec3(0, 1, 0));
-	translate(glm::vec3(0.0001f, 0, 0), RIGHT);
+	rotate(timeDelta, LEFT, glm::vec3(1, 1, 2));
 }
 
 void Cube::draw()

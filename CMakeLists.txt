@@ -48,9 +48,11 @@ set(SRC_CLASSES
 	src/texture.cpp
 	src/sceneobject.h
 	src/sceneobject.cpp
+	src/camera.h
+	src/camera.cpp
     
-	src/sceneobjects/cube.h
-	src/sceneobjects/cube.cpp
+	src/geometry/cube.h
+	src/geometry/cube.cpp
     )
 
 # relative path to shader files

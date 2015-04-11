@@ -1,14 +1,21 @@
 #ifndef SCENEOBJECT_H
 #define SCENEOBJECT_H
 
+#define GLM_FORCE_RADIANS
+#define GLM_SWIZZLE
+
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_access.hpp>
+#include <glm/gtc/constants.hpp>
+
+#include <sstream>
 
 class SceneObject
 {
 private:
 
 	glm::mat4 modelMatrix;
-
 	glm::mat4 inverseMatrix;
 
 public:
@@ -17,19 +24,18 @@ public:
 
 	
 	/**
-	 * @brief enum that specifies the order of matrix multiplication
-	 * LEFT : 
+	 * @brief enum specifying matrix multiplication order
 	 */
 	enum Order 
 	{
 		/**
-		* current matrix is to be multiplied with incoming matrix from left side:
+		* incoming matrix is positioned left of current matrix in multiplication:
 		* M_result = M_inc * M.
 		*/
 		LEFT, 
 		
 		/**
-		* current matrix is to be multiplied with incoming matrix from right side:
+		* incoming matrix is positioned right of current matrix in multiplication:
 		* M_result = M * M_inc.
 		*/
 		RIGHT
@@ -69,6 +75,17 @@ public:
 	* @return the constant reference to the inverse matrix of the current model matrix
 	*/
 	const glm::mat4& getInverseMatrix() const;
+
+	/**
+	 * @brief return the location of the SceneObject
+	 * by convention, that is the rightmost column of the model matrix,
+	 * defined to always be multiplied with a factor of 1, such that in the
+	 * linear combination of the matrix multiplication it acts like a translation
+	 * independent of the xyz values of the given point, thus specifying the origin
+	 * of the model matrix.
+	 * @return the location of the SceneObject
+	 */
+	glm::vec3 getLocation() const;
 
 	/**
 	* @brief applies an X axis rotation operation to the current transformation
@@ -112,6 +129,13 @@ public:
 	 * @param multOrder order of multiplication
 	 */
 	void scale(const glm::vec3 &s_, Order multOrder);
+
+	/**
+	 * @brief get a string to visualize the given matrix
+	 * @param matrix the matrix to get a string representation of
+	 * @return a string representing the given mastrix
+	 */
+	std::string matrixToString(const glm::mat4 &matrix);
 };
 
 #endif // SCENEOBJECT_H
