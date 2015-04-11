@@ -87,3 +87,4 @@ std::string SceneObject::matrixToString(const glm::mat4 &matrix)
 
 	return matStr.str();
 }
+

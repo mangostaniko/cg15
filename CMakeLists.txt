@@ -27,8 +27,8 @@ find_package(OpenGL REQUIRED)
 if(MSVC)
     set(GLEW_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/glew-1.1.0)
     set(GLFW_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw-3.1.1.bin.WIN32)
-	set(GLM_PACKAGE_DIR ${CMAKE_SOURCE_DIR}/external/glm)
-	set(FreeImage_ROOT_DIR ${CMAKE_SOURCE_DIR}/external/FreeImage)
+	set(GLM_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/glm)
+	set(FreeImage_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/FreeImage)
 else(MSVC)
 	find_package(GLEW REQUIRED)
 	find_package(GLFW REQUIRED)
@@ -70,20 +70,20 @@ add_executable(${PROJECT_NAME} ${SRC_CLASSES} ${SRC_SHADERS})
 if(MSVC)
 	### INCLUDE HEADER FILES ###
 	include_directories(${OPENGL_INCLUDE_DIRS} 
-						${GLEW_INCLUDE_DIRS}/include
-						${GLFW_INCLUDE_DIRS}/include
+						${GLEW_ROOT_DIR}/include
+						${GLFW_ROOT_DIR}/include
 						${GLM_PACKAGE_DIR}
-						${FreeImage_INCLUDE_DIR}/Dist/x32
-						${FreeImage_INCLUDE_DIR}/Wrapper/FreeImagePlus/dist/x32
+						${FreeImage_ROOT_DIR}/Dist/x32
+						${FreeImage_ROOT_DIR}/Wrapper/FreeImagePlus/dist/x32
 						)
 
 	### LINK LIBRARIES ###
 	target_link_libraries(${PROJECT_NAME}
 						${OPENGL_LIBRARIES}
-						${GLEW_LIBRARY}/lib/Release/Win32
-						${GLFW_LIBRARY}/lib-vc2013
-						${FreeImage_LIBRARY}/Dist/x32
-						${FreeImage_INCLUDE_DIR}/Wrapper/FreeImagePlus/dist/x32
+						${GLEW_ROOT_DIR}/lib/Release/Win32
+						${GLFW_ROOT_DIR}/lib-vc2013
+						${FreeImage_ROOT_DIR}/Dist/x32
+						${FreeImage_ROOT_DIR}/Wrapper/FreeImagePlus/dist/x32
                       )
 else(MSVC)
 	### INCLUDE HEADER FILES ###
