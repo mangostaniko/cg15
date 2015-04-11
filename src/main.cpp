@@ -26,6 +26,8 @@ void update(float timeDelta);
 void draw();
 void cleanup();
 
+GLFWwindow *window;
+
 Camera *camera;
 Shader *shader;
 Texture *texture;
@@ -69,7 +71,7 @@ int main(int argc, char **argv)
 	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode *videoMode = glfwGetVideoMode(monitor);
 
-	GLFWwindow *window = nullptr;
+	window = nullptr;
 	window = glfwCreateWindow(windowWidth, windowHeigth, "SEGANKU", (fullscreen ? monitor : NULL), NULL);
 	if (!window)
 	{
@@ -82,6 +84,10 @@ int main(int argc, char **argv)
 	glfwSetWindowPos(window, videoMode->width/2 - windowWidth/2, videoMode->height/2 - windowHeigth/2);
 
 	glfwMakeContextCurrent(window);
+
+	// capture mouse pointer and hide it
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPos(window, 0, 0);
 
 	//glClearColor(1, 1, 1, 1); // white
 	glClearColor(0.68f, 0.78f, 1.0f, 1.0f); // warm sky blue
@@ -225,6 +231,36 @@ void update(float timeDelta)
 {
 	camera->update(timeDelta);
 	//camera->lookAt(glm::vec3(cubes.at(6)->getLocation())); // broken
+
+	// camera movement
+	float moveSpeed = 5.0f;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
+		moveSpeed = 20.0f;
+	}
+
+    if (glfwGetKey(window, 'W')) {
+		camera->translate(camera->getMatrix()[2].xyz() * -timeDelta * moveSpeed, SceneObject::LEFT);
+    } else if (glfwGetKey(window, 'S')) {
+		camera->translate(camera->getMatrix()[2].xyz() * timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+    if (glfwGetKey(window, 'A')) {
+		camera->translate(camera->getMatrix()[0].xyz() * -timeDelta * moveSpeed, SceneObject::LEFT);
+    } else if (glfwGetKey(window, 'D')) {
+		camera->translate(camera->getMatrix()[0].xyz() * timeDelta * moveSpeed, SceneObject::LEFT);
+    }
+	if (glfwGetKey(window, 'Q')) {
+	    camera->translate(glm::vec3(0,1,0) * timeDelta * moveSpeed, SceneObject::LEFT);
+	} else if (glfwGetKey(window, 'E')) {
+	    camera->translate(glm::vec3(0,1,0) * -timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+
+	// rotate camera based on mouse movement
+	const float mouseSensitivity = 0.01f;
+	double mouseX, mouseY;
+	glfwGetCursorPos(window, &mouseX, &mouseY);
+	camera->rotateY(-mouseSensitivity * (float)mouseX, SceneObject::RIGHT);
+	camera->rotateX(-mouseSensitivity * (float)mouseY, SceneObject::RIGHT);
+	glfwSetCursorPos(window, 0, 0); // reset the mouse, so it doesn't leave the window
 
 	// pass camera view and projection matrices to shader
 	glm::mat4 viewProjMat = camera->getProjectionMatrix() * camera->getViewMatrix();
