@@ -10,6 +10,12 @@
 #include "shader.h"
 #include "texture.h"
 
+/**
+ * @brief Geometry defines all SceneObjects that use vertex data.
+ * This communicates with Vertex Buffer Objects to store vertex data directly on GPU memory.
+ * This also points to shaders, textures and other things associated with vertex data
+ * and communicates with compiler shader programs for drawing.
+ */
 class Geometry : public SceneObject
 {
 	GLuint vao;

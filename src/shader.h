@@ -6,6 +6,11 @@
 
 #include <string>
 
+/**
+ * @brief Shader class.
+ * This loads and compiles glsl shader files and creates a linked shader program.
+ * The program can later be activated when needed.
+ */
 class Shader
 {
 

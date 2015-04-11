@@ -5,6 +5,10 @@
 
 #include "sceneobject.h"
 
+/**
+ * @brief A Camera is a SceneObject that maintains a view matrix, as well as
+ * parameters defining the projection matrix, i.e. the viewing frustum.
+ */
 class Camera : public SceneObject
 {
 	float fieldOfView;

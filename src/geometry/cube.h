@@ -8,6 +8,10 @@
 #define CUBE_VERTEX_COUNT 24
 #define CUBE_INDEX_COUNT 36
 
+/**
+ * @brief This really just a container providing data for the Geometry base class.
+ * This will be replace with loading from COLLADA files later.
+ */
 class Cube : public Geometry
 {
 

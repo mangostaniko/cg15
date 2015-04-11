@@ -11,6 +11,11 @@
 
 #include <sstream>
 
+/**
+ * @brief A SceneObject holds a transformation matrix and its inverse
+ * and provides functions to manipulate them.
+ * This is intended as a base class for all objects that appear in the scene.
+ */
 class SceneObject
 {
 private:

@@ -20,6 +20,10 @@ public:
 	Texture(const std::string &filePath);
 	~Texture();
 
+	/**
+	 * @brief binds this texture to the given opengl texture unit
+	 * @param unit the opengl texture unit to bind to
+	 */
 	void bind(int unit);
 };
 
