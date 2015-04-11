@@ -18,6 +18,7 @@ void Cube::update(float timeDelta)
 {
 	// rotate cube a given angle per second around given axis
 	//rotate(timeDelta, LEFT, glm::vec3(1, 1, 2));
+
 }
 
 

@@ -25,6 +25,7 @@ void init(GLFWwindow *window);
 void update(float timeDelta);
 void draw();
 void cleanup();
+void handleInput(GLFWwindow *window, float timeDelta);
 
 GLFWwindow *window;
 
@@ -137,7 +138,8 @@ int main(int argc, char **argv)
 			deltaShowFpsTime = 0;
 			std::cout << "fps: " << (int)(1/deltaT) << std::endl;
 		}
-
+		
+		handleInput(window, deltaT);
 
 		//////////////////////////
 		/// UPDATE
@@ -231,7 +233,7 @@ void update(float timeDelta)
 {
 	camera->update(timeDelta);
 	//camera->lookAt(glm::vec3(cubes.at(6)->getLocation())); // broken
-
+	/*
 	// camera movement
 	float moveSpeed = 5.0f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
@@ -253,6 +255,7 @@ void update(float timeDelta)
 	} else if (glfwGetKey(window, 'E')) {
 	    camera->translate(glm::vec3(0,1,0) * -timeDelta * moveSpeed, SceneObject::LEFT);
 	}
+	*/
 
 	// rotate camera based on mouse movement
 	const float mouseSensitivity = 0.01f;
@@ -292,5 +295,56 @@ void cleanup()
 void frameBufferResize(GLFWwindow *window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+}
+
+void handleInput(GLFWwindow *window, float timeDelta)
+{
+
+	float moveSpeed = 5.0f;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
+		moveSpeed = 20.0f;
+	}
+	
+	//////////////////////////
+	/// CAMERA MOVEMENT
+	//////////////////////////
+
+	if (glfwGetKey(window, 'W') && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+		camera->translate(camera->getMatrix()[2].xyz() * -timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+	else if (glfwGetKey(window, 'S') && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+		camera->translate(camera->getMatrix()[2].xyz() * timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+	if (glfwGetKey(window, 'A') && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+		camera->translate(camera->getMatrix()[0].xyz() * -timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+	else if (glfwGetKey(window, 'D') && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+		camera->translate(camera->getMatrix()[0].xyz() * timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+	if (glfwGetKey(window, 'Q')) {
+		camera->translate(glm::vec3(0, 1, 0) * timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+	else if (glfwGetKey(window, 'E')) {
+		camera->translate(glm::vec3(0, 1, 0) * -timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+
+
+	//////////////////////////
+	/// OBJECT MOVEMENT
+	//////////////////////////
+
+	if (glfwGetKey(window, GLFW_KEY_W) && !glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+		cubes[4]->translate(glm::vec3(0, 0, -1) * timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_S) && !glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+		cubes[4]->translate(glm::vec3(0, 0, 1) * timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_A) && !glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+		cubes[4]->translate(glm::vec3(-1, 0, 0) * timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_D) && !glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+		cubes[4]->translate(glm::vec3(1, 0, 0) * timeDelta * moveSpeed, SceneObject::LEFT);
+	}
 }
 
