@@ -27,6 +27,11 @@ glm::vec3 SceneObject::getLocation() const
 	return modelMatrix[3].xyz();
 }
 
+void SceneObject::setLocation(const glm::vec3 &location)
+{
+	modelMatrix[3] = glm::vec4(location, 1.0f);
+}
+
 void SceneObject::setTransform(const glm::mat4 &matrix_) {
 	modelMatrix = matrix_;
 	inverseMatrix = glm::inverse(modelMatrix);

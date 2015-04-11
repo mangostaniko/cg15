@@ -30,15 +30,12 @@ Camera::~Camera()
 
 void Camera::update(float timeDelta)
 {
-	/* TODO: try input handling here */
-
-	//rotateY(timeDelta, LEFT);
-
+	/* left empty */
 }
 
 void Camera::draw()
 {
-	/* left empty for now */
+	/* left empty */
 }
 
 

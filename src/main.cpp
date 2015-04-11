@@ -26,16 +26,28 @@ void update(float timeDelta);
 void draw();
 void cleanup();
 void handleInput(GLFWwindow *window, float timeDelta);
+void handleInputFreeCamera(GLFWwindow *window, float timeDelta);
 
 GLFWwindow *window;
 
 Camera *camera;
 Shader *shader;
 Texture *texture;
+SceneObject *player;
 std::vector<std::shared_ptr<SceneObject>> cubes;
 
+float degToRad(float deg);
 void frameBufferResize(GLFWwindow *window, int width, int height);
+void onScroll(GLFWwindow *window, double deltaX, double deltaY);
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
+double scrollY = 0.0;
+
+enum CameraNavigationMode
+{
+	FOLLOW_PLAYER,
+	FREE_FLY
+} cameraNavMode(FOLLOW_PLAYER);
 
 int main(int argc, char **argv)
 {
@@ -48,10 +60,10 @@ int main(int argc, char **argv)
 
 	if (argc == 1) {
 		// no parameters specified, continue with default values
-		
+
 	} else if (argc != 4 || (std::stringstream(argv[1]) >> windowWidth).fail() || (std::stringstream(argv[2]) >> windowHeigth).fail() || (std::stringstream(argv[3]) >> fullscreen).fail()) {
 		// if parameters are specified, must conform to given format
-		
+
 		std::cout << "USAGE: <resolution width> <resolution height> <fullscreen? 0/1>\n";
 		exit(EXIT_FAILURE);
 	}
@@ -105,8 +117,10 @@ int main(int argc, char **argv)
 		std::cerr << glewGetErrorString(err);
 	}
 
+	// set callbacks
 	glfwSetFramebufferSizeCallback(window, frameBufferResize);
-
+	glfwSetScrollCallback(window, onScroll);
+	glfwSetKeyCallback(window, keyCallback);
 
 	init(window);
 
@@ -134,12 +148,19 @@ int main(int argc, char **argv)
 
 		// print framerate around every second (console output is costly)
 		deltaShowFpsTime += deltaT;
-		if (deltaShowFpsTime > 0.1) {
+		if (deltaShowFpsTime > 1.0) {
 			deltaShowFpsTime = 0;
 			std::cout << "fps: " << (int)(1/deltaT) << std::endl;
 		}
-		
-		handleInput(window, deltaT);
+
+		// note: camera navigation mode is toggled on tab key press, look for keyCallback
+		if (cameraNavMode == FOLLOW_PLAYER) {
+			handleInput(window, deltaT);
+		}
+		else if (cameraNavMode == FREE_FLY) {
+			handleInputFreeCamera(window, deltaT);
+		}
+
 
 		//////////////////////////
 		/// UPDATE
@@ -193,8 +214,8 @@ void init(GLFWwindow *window)
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
 
-	camera = new Camera(glm::mat4(1.0f), glm::pi<float>()/3, width/(float)height, 0.2f, 20.0f); // mat, fov, aspect, znear, zfar
-	camera->translate(glm::vec3(0, 0, 6), SceneObject::RIGHT); // move back a bit to see something
+	camera = new Camera(glm::mat4(1.0f), degToRad(60.0f), width/(float)height, 0.2f, 60.0f); // mat, fov, aspect, znear, zfar
+	camera->translate(glm::vec3(0, 0, 10), SceneObject::LEFT);
 
 
 	// INIT SHADERS
@@ -227,43 +248,14 @@ void init(GLFWwindow *window)
 		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, -2, 0)), shader, texture));
 	}
 
+	player = new Cube(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 6)), shader, texture);
+
 }
 
 void update(float timeDelta)
 {
 	camera->update(timeDelta);
 	//camera->lookAt(glm::vec3(cubes.at(6)->getLocation())); // broken
-	/*
-	// camera movement
-	float moveSpeed = 5.0f;
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
-		moveSpeed = 20.0f;
-	}
-
-    if (glfwGetKey(window, 'W')) {
-		camera->translate(camera->getMatrix()[2].xyz() * -timeDelta * moveSpeed, SceneObject::LEFT);
-    } else if (glfwGetKey(window, 'S')) {
-		camera->translate(camera->getMatrix()[2].xyz() * timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-    if (glfwGetKey(window, 'A')) {
-		camera->translate(camera->getMatrix()[0].xyz() * -timeDelta * moveSpeed, SceneObject::LEFT);
-    } else if (glfwGetKey(window, 'D')) {
-		camera->translate(camera->getMatrix()[0].xyz() * timeDelta * moveSpeed, SceneObject::LEFT);
-    }
-	if (glfwGetKey(window, 'Q')) {
-	    camera->translate(glm::vec3(0,1,0) * timeDelta * moveSpeed, SceneObject::LEFT);
-	} else if (glfwGetKey(window, 'E')) {
-	    camera->translate(glm::vec3(0,1,0) * -timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-	*/
-
-	// rotate camera based on mouse movement
-	const float mouseSensitivity = 0.01f;
-	double mouseX, mouseY;
-	glfwGetCursorPos(window, &mouseX, &mouseY);
-	camera->rotateY(-mouseSensitivity * (float)mouseX, SceneObject::RIGHT);
-	camera->rotateX(-mouseSensitivity * (float)mouseY, SceneObject::RIGHT);
-	glfwSetCursorPos(window, 0, 0); // reset the mouse, so it doesn't leave the window
 
 	// pass camera view and projection matrices to shader
 	glm::mat4 viewProjMat = camera->getProjectionMatrix() * camera->getViewMatrix();
@@ -279,6 +271,8 @@ void update(float timeDelta)
 
 void draw()
 {
+	player->draw();
+
 	for (unsigned i = 0; i < cubes.size(); ++i) {
 		cubes[i]->draw();
 	}
@@ -290,11 +284,7 @@ void cleanup()
 	delete shader; shader = nullptr;
 	delete texture; texture = nullptr;
 	delete camera; camera = nullptr;
-}
-
-void frameBufferResize(GLFWwindow *window, int width, int height)
-{
-	glViewport(0, 0, width, height);
+	delete player; player = nullptr;
 }
 
 void handleInput(GLFWwindow *window, float timeDelta)
@@ -304,47 +294,164 @@ void handleInput(GLFWwindow *window, float timeDelta)
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
 		moveSpeed = 20.0f;
 	}
-	
+
+	// lock camera to player
+	// for some reason it only works of we modify the player location, not the camera location
+	player->setLocation(camera->getLocation());
+	player->translate(-5.0f * glm::vec3(camera->getMatrix()[2][0], 0, camera->getMatrix()[2][2]), SceneObject::RIGHT);
+
+	// camera movement
+	// note: we apply rotation before translation since we dont want the distance from the origin
+	// to affect how we rotate
+    if (glfwGetKey(window, 'W')) {
+		camera->translate(glm::vec3(camera->getMatrix()[2][0], 0, camera->getMatrix()[2][2]) * -timeDelta * moveSpeed, SceneObject::LEFT);
+    }
+	else if (glfwGetKey(window, 'S')) {
+		camera->translate(glm::vec3(camera->getMatrix()[2][0], 0, camera->getMatrix()[2][2]) * timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+
+	if (glfwGetKey(window, 'A')) {
+		camera->translate(glm::vec3(camera->getMatrix()[0][0], 0, camera->getMatrix()[0][2]) * -timeDelta * moveSpeed, SceneObject::LEFT);
+    }
+	else if (glfwGetKey(window, 'D')) {
+		camera->translate(glm::vec3(camera->getMatrix()[0][0], 0, camera->getMatrix()[0][2]) * timeDelta * moveSpeed, SceneObject::LEFT);
+    }
+
+	if (glfwGetKey(window, 'Q')) {
+	    camera->translate(glm::vec3(0,1,0) * timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+	else if (glfwGetKey(window, 'E')) {
+	    camera->translate(glm::vec3(0,1,0) * -timeDelta * moveSpeed, SceneObject::LEFT);
+	}
+
+	// lock camera to player
+	// for some reason it only works of we modify the player location, not the camera location
+	player->setLocation(camera->getLocation());
+	player->translate(-5.0f * glm::vec3(camera->getMatrix()[2][0], 0, camera->getMatrix()[2][2]), SceneObject::LEFT);
+
+	// rotate camera based on mouse movement
+	// the mouse pointer is reset to (0, 0) every frame, and we just take the displacement of that frame
+	const float mouseSensitivity = 0.01f;
+	double mouseX, mouseY;
+	glfwGetCursorPos(window, &mouseX, &mouseY);
+	camera->rotateY(-mouseSensitivity * (float)mouseX, SceneObject::LEFT);
+	camera->rotateX(mouseSensitivity * (float)mouseY, SceneObject::LEFT);
+	glfwSetCursorPos(window, 0, 0); // reset the mouse, so it doesn't leave the window
+
+	// handle camera zoom by changing the field of view depending on mouse scroll since last frame
+	float zoomSensitivity = -0.1f;
+	float fieldOfView = camera->getFieldOfView() + zoomSensitivity * (float)scrollY;
+	if (fieldOfView < degToRad(20.0f)) fieldOfView = degToRad(20.0f);
+	if (fieldOfView > degToRad(60.0f)) fieldOfView = degToRad(60.0f);
+	camera->setFieldOfView(fieldOfView);
+	scrollY = 0.0;
+
+}
+
+void handleInputFreeCamera(GLFWwindow *window, float timeDelta)
+{
+
+	float moveSpeed = 5.0f;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
+		moveSpeed = 20.0f;
+	}
+
 	//////////////////////////
 	/// CAMERA MOVEMENT
 	//////////////////////////
 
-	if (glfwGetKey(window, 'W') && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+	// rotate camera based on mouse movement
+	// the mouse pointer is reset to (0, 0) every frame, and we just take the displacement of that frame
+	const float mouseSensitivity = 0.01f;
+	double mouseX, mouseY;
+	glfwGetCursorPos(window, &mouseX, &mouseY);
+	camera->rotateY(-mouseSensitivity * (float)mouseX, SceneObject::RIGHT);
+	camera->rotateX(-mouseSensitivity * (float)mouseY, SceneObject::RIGHT);
+	glfwSetCursorPos(window, 0, 0); // reset the mouse, so it doesn't leave the window
+
+	// camera movement
+	// note: we apply rotation before translation since we dont want the distance from the origin
+	// to affect how we rotate
+    if (glfwGetKey(window, 'W')) {
 		camera->translate(camera->getMatrix()[2].xyz() * -timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-	else if (glfwGetKey(window, 'S') && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+    }
+	else if (glfwGetKey(window, 'S')) {
 		camera->translate(camera->getMatrix()[2].xyz() * timeDelta * moveSpeed, SceneObject::LEFT);
 	}
-	if (glfwGetKey(window, 'A') && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+
+	if (glfwGetKey(window, 'A')) {
 		camera->translate(camera->getMatrix()[0].xyz() * -timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-	else if (glfwGetKey(window, 'D') && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+    }
+	else if (glfwGetKey(window, 'D')) {
 		camera->translate(camera->getMatrix()[0].xyz() * timeDelta * moveSpeed, SceneObject::LEFT);
-	}
+    }
+
 	if (glfwGetKey(window, 'Q')) {
-		camera->translate(glm::vec3(0, 1, 0) * timeDelta * moveSpeed, SceneObject::LEFT);
+	    camera->translate(glm::vec3(0,1,0) * timeDelta * moveSpeed, SceneObject::LEFT);
 	}
 	else if (glfwGetKey(window, 'E')) {
-		camera->translate(glm::vec3(0, 1, 0) * -timeDelta * moveSpeed, SceneObject::LEFT);
+	    camera->translate(glm::vec3(0,1,0) * -timeDelta * moveSpeed, SceneObject::LEFT);
 	}
 
+	// handle camera zoom by changing the field of view depending on mouse scroll since last frame
+	float zoomSensitivity = -0.1f;
+	float fieldOfView = camera->getFieldOfView() + zoomSensitivity * (float)scrollY;
+	if (fieldOfView < degToRad(20.0f)) fieldOfView = degToRad(20.0f);
+	if (fieldOfView > degToRad(60.0f)) fieldOfView = degToRad(60.0f);
+	camera->setFieldOfView(fieldOfView);
+	scrollY = 0.0;
 
-	//////////////////////////
-	/// OBJECT MOVEMENT
-	//////////////////////////
+}
 
-	if (glfwGetKey(window, GLFW_KEY_W) && !glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
-		cubes[4]->translate(glm::vec3(0, 0, -1) * timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-	else if (glfwGetKey(window, GLFW_KEY_S) && !glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
-		cubes[4]->translate(glm::vec3(0, 0, 1) * timeDelta * moveSpeed, SceneObject::LEFT);
-	}
+/**
+ * @brief glfw callback function for when the frame buffer (or window) gets resized
+ * @param window pointer to active window
+ * @param width new framebuffer width
+ * @param height new framebuffer height
+ */
+void frameBufferResize(GLFWwindow *window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
 
-	if (glfwGetKey(window, GLFW_KEY_A) && !glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
-		cubes[4]->translate(glm::vec3(-1, 0, 0) * timeDelta * moveSpeed, SceneObject::LEFT);
+/**
+ * @brief glfw callback on mouse scroll
+ * @param window pointer to active window
+ * @param deltaX the scroll delta on scroll axis X
+ * @param deltaY the scroll delta on scroll axis Y
+ */
+void onScroll(GLFWwindow *window, double deltaX, double deltaY)
+{
+	scrollY += deltaY;
+}
+
+/**
+ * @brief glfw keyCallback on key events
+ * @param window pointer to active window
+ * @param key the key code of the key that caused the event
+ * @param scancode a system and platform specific constant
+ * @param action type of key event: GLFW_PRESS, GLFW_RELEASE, GLFW_REPEAT
+ * @param mods modifier keys held down on event
+ */
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+	    if (cameraNavMode == FOLLOW_PLAYER) {
+			cameraNavMode = FREE_FLY;
+		}
+		else if (cameraNavMode == FREE_FLY) {
+			cameraNavMode = FOLLOW_PLAYER;
+		}
 	}
-	else if (glfwGetKey(window, GLFW_KEY_D) && !glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
-		cubes[4]->translate(glm::vec3(1, 0, 0) * timeDelta * moveSpeed, SceneObject::LEFT);
-	}
+}
+
+/**
+* @brief convert angle from degree to radian convention
+* @param degree the angle in degree to convert
+* @return the angle in radians
+*/
+float degToRad(float deg)
+{
+	return deg * glm::pi<float>()/180.0f;
 }
 

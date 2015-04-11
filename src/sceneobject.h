@@ -93,6 +93,13 @@ public:
 	glm::vec3 getLocation() const;
 
 	/**
+	 * @brief set the location of the SceneObject
+	 * i.e. rightmost column of the model matrix
+	 * @return the location of the SceneObject
+	 */
+	void setLocation(const glm::vec3 &location);
+
+	/**
 	* @brief applies an X axis rotation operation to the current transformation
 	* @param radians rotation angle
 	* @param multOrder order of multiplication
