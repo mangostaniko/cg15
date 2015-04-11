@@ -1,27 +1,20 @@
 #ifndef CUBE_H
 #define CUBE_H
 
-#define GLM_FORCE_RADIANS
-#include <glm/gtc/type_ptr.hpp>
+#include "iterator"
 
-#include "../sceneobject.h"
-#include "../shader.h"
-#include "../texture.h"
+#include "../geometry.h"
 
 #define CUBE_VERTEX_COUNT 24
 #define CUBE_INDEX_COUNT 36
 
-class Cube : public SceneObject
+class Cube : public Geometry
 {
-	GLuint vao;
-	GLuint positionBuffer, normalBuffer, uvBuffer, indexBuffer;
-	Shader *shader;
-	Texture *texture;
 
-	static const GLfloat positions[CUBE_VERTEX_COUNT * 3]; // raw vertex data
-	static const GLfloat normals[CUBE_VERTEX_COUNT * 3];
-	static const GLfloat uvs[CUBE_VERTEX_COUNT * 2];
-	static const GLuint indices[CUBE_INDEX_COUNT]; // indices define mesh topology
+	static const GLfloat positionsData[CUBE_VERTEX_COUNT * 3];
+	static const GLfloat normalsData[CUBE_VERTEX_COUNT * 3];
+	static const GLfloat uvsData[CUBE_VERTEX_COUNT * 2];
+	static const GLuint indicesData[CUBE_INDEX_COUNT];
 
 
 public:
@@ -29,7 +22,6 @@ public:
 	virtual ~Cube();
 
 	virtual void update(float timeDelta);
-	virtual void draw();
 };
 
 #endif // CUBE_H

@@ -8,6 +8,10 @@
 #include <iostream>
 #include <string>
 
+/**
+ * @brief Texture class.
+ * This loads an opengl texture from an image file and stores a handle to it.
+ */
 class Texture
 {
 	GLuint handle;

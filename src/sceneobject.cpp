@@ -80,7 +80,7 @@ std::string SceneObject::matrixToString(const glm::mat4 &matrix)
 
 	for (int row = 0; row < 4; ++row) {
 		for (int col = 0; col < 4; ++col) {
-			matStr << modelMatrix[col][row] << " ";
+			matStr << matrix[col][row] << " ";
 		}
 		matStr << std::endl;
 	}

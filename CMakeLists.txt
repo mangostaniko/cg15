@@ -50,6 +50,8 @@ set(SRC_CLASSES
 	src/sceneobject.cpp
 	src/camera.h
 	src/camera.cpp
+	src/geometry.h
+	src/geometry.cpp
     
 	src/geometry/cube.h
 	src/geometry/cube.cpp

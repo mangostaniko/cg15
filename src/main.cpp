@@ -224,8 +224,7 @@ void init(GLFWwindow *window)
 void update(float timeDelta)
 {
 	camera->update(timeDelta);
-	//camera->lookAt(glm::vec3(cubes.at(6)->getLocation()));
-
+	//camera->lookAt(glm::vec3(cubes.at(6)->getLocation())); // broken
 
 	// pass camera view and projection matrices to shader
 	glm::mat4 viewProjMat = camera->getProjectionMatrix() * camera->getViewMatrix();
