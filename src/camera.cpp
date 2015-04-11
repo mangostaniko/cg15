@@ -33,6 +33,7 @@ void Camera::update(float timeDelta)
 	/* TODO: try input handling here */
 
 	//rotateY(timeDelta, LEFT);
+
 }
 
 void Camera::draw()
