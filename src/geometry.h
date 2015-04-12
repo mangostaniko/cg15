@@ -18,9 +18,20 @@
  */
 class Geometry : public SceneObject
 {
+protected:
+	// TODO TEMPORARY used to create subclasses that contain the data.
+	// this is just a temporary solution!!
+	Geometry(const glm::mat4 &matrix_, Shader *shader_, Texture *texture_,
+	         const std::vector<GLfloat> &positions_,
+	         const std::vector<GLfloat> &normals_,
+	         const std::vector<GLfloat> &uvs_,
+	         const std::vector<GLuint> &indices_);
+
+	Shader *shader; // TODO for player only! make private when object loading works and player is a geometry
+
+private:
 	GLuint vao;
 	GLuint positionBuffer, normalBuffer, uvBuffer, indexBuffer;
-	Shader *shader;
 	Texture *texture;
 
 	std::vector<GLfloat> positions; // vertex positions
@@ -30,15 +41,6 @@ class Geometry : public SceneObject
 
 	// TEMPORARY solution
 	void init();
-
-protected:
-	// TEMPORARY used to create subclasses that contain the data.
-	// this is just a temporary solution!!
-	Geometry(const glm::mat4 &matrix_, Shader *shader_, Texture *texture_,
-	         const std::vector<GLfloat> &positions_,
-	         const std::vector<GLfloat> &normals_,
-	         const std::vector<GLfloat> &uvs_,
-	         const std::vector<GLuint> &indices_);
 
 public:
 	Geometry(const glm::mat4 &matrix_, Shader *shader_, Texture *texture_);

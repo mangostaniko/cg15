@@ -53,6 +53,8 @@ set(SRC_CLASSES
 	src/geometry.h
 	src/geometry.cpp
     
+	src/geometry/player.h
+	src/geometry/player.cpp
 	src/geometry/cube.h
 	src/geometry/cube.cpp
     )

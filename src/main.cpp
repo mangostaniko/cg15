@@ -18,6 +18,7 @@
 #include "shader.h"
 #include "sceneobject.h"
 #include "camera.h"
+#include "geometry/player.h"
 #include "geometry/cube.h"
 
 
@@ -25,29 +26,16 @@ void init(GLFWwindow *window);
 void update(float timeDelta);
 void draw();
 void cleanup();
-void handleInput(GLFWwindow *window, float timeDelta);
-void handleInputFreeCamera(GLFWwindow *window, float timeDelta);
 
 GLFWwindow *window;
 
-Camera *camera;
 Shader *shader;
 Texture *texture;
-SceneObject *player;
+Player *player;
 std::vector<std::shared_ptr<SceneObject>> cubes;
 
-float degToRad(float deg);
 void frameBufferResize(GLFWwindow *window, int width, int height);
-void onScroll(GLFWwindow *window, double deltaX, double deltaY);
-void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
-double scrollY = 0.0;
-
-enum CameraNavigationMode
-{
-	FOLLOW_PLAYER,
-	FREE_FLY
-} cameraNavMode(FOLLOW_PLAYER);
 
 int main(int argc, char **argv)
 {
@@ -119,8 +107,6 @@ int main(int argc, char **argv)
 
 	// set callbacks
 	glfwSetFramebufferSizeCallback(window, frameBufferResize);
-	glfwSetScrollCallback(window, onScroll);
-	glfwSetKeyCallback(window, keyCallback);
 
 	init(window);
 
@@ -139,7 +125,7 @@ int main(int argc, char **argv)
 	while (running && !glfwWindowShouldClose(window)) {
 
 		//////////////////////////
-		/// HANDLE EVENTS
+		/// UPDATE
 		//////////////////////////
 
 		time = glfwGetTime(); // seconds
@@ -152,19 +138,6 @@ int main(int argc, char **argv)
 			deltaShowFpsTime = 0;
 			std::cout << "fps: " << (int)(1/deltaT) << std::endl;
 		}
-
-		// note: camera navigation mode is toggled on tab key press, look for keyCallback
-		if (cameraNavMode == FOLLOW_PLAYER) {
-			handleInput(window, deltaT);
-		}
-		else if (cameraNavMode == FREE_FLY) {
-			handleInputFreeCamera(window, deltaT);
-		}
-
-
-		//////////////////////////
-		/// UPDATE
-		//////////////////////////
 
 		update(deltaT);
 
@@ -209,24 +182,10 @@ void init(GLFWwindow *window)
 	glEnable(GL_DEPTH_TEST);
 
 
-	// INIT CAMERA
-
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
-
-	camera = new Camera(glm::mat4(1.0f), degToRad(60.0f), width/(float)height, 0.2f, 60.0f); // mat, fov, aspect, znear, zfar
-	camera->translate(glm::vec3(0, 0, 10), SceneObject::LEFT);
-
-
 	// INIT SHADERS
 
 	shader = new Shader("../src/shaders/testshader.vert", "../src/shaders/testshader.frag");
 	shader->useShader();
-
-	// pass camera view and projection matrices to shader
-	glm::mat4 viewProjMat = camera->getProjectionMatrix() * camera->getViewMatrix();
-	GLint viewProjMatLocation = glGetUniformLocation(shader->programHandle, "viewProjMat"); // get uniform location in shader
-	glUniformMatrix4fv(viewProjMatLocation, 1, GL_FALSE, glm::value_ptr(viewProjMat)); // shader location, count, transpose?, value pointer
 
 
 	// INIT TEXTURES
@@ -248,19 +207,21 @@ void init(GLFWwindow *window)
 		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, -2, 0)), shader, texture));
 	}
 
-	player = new Cube(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 6)), shader, texture);
+
+	// INIT PLAYER + CAMERA
+
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+	Camera *camera = new Camera(glm::mat4(1.0f), glm::radians(60.0f), width/(float)height, 0.2f, 60.0f); // mat, fov, aspect, znear, zfar
+
+	player = new Player(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 6)), shader, texture, camera, window);
+	camera = nullptr;
 
 }
 
 void update(float timeDelta)
 {
-	camera->update(timeDelta);
-	//camera->lookAt(glm::vec3(cubes.at(6)->getLocation())); // broken
-
-	// pass camera view and projection matrices to shader
-	glm::mat4 viewProjMat = camera->getProjectionMatrix() * camera->getViewMatrix();
-	GLint viewProjMatLocation = glGetUniformLocation(shader->programHandle, "viewProjMat"); // get uniform location in shader
-	glUniformMatrix4fv(viewProjMatLocation, 1, GL_FALSE, glm::value_ptr(viewProjMat)); // shader location, count, transpose?, value pointer
+	player->update(timeDelta);
 
 	// update cubes
 	for (unsigned i = 0; i < cubes.size(); ++i) {
@@ -283,124 +244,7 @@ void cleanup()
 {
 	delete shader; shader = nullptr;
 	delete texture; texture = nullptr;
-	delete camera; camera = nullptr;
 	delete player; player = nullptr;
-}
-
-void handleInput(GLFWwindow *window, float timeDelta)
-{
-
-	float moveSpeed = 5.0f;
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
-		moveSpeed = 20.0f;
-	}
-
-	// lock camera to player
-	// for some reason it only works of we modify the player location, not the camera location
-	player->setLocation(camera->getLocation());
-	player->translate(-5.0f * glm::vec3(camera->getMatrix()[2][0], 0, camera->getMatrix()[2][2]), SceneObject::RIGHT);
-
-	// camera movement
-	// note: we apply rotation before translation since we dont want the distance from the origin
-	// to affect how we rotate
-    if (glfwGetKey(window, 'W')) {
-		camera->translate(glm::vec3(camera->getMatrix()[2][0], 0, camera->getMatrix()[2][2]) * -timeDelta * moveSpeed, SceneObject::LEFT);
-    }
-	else if (glfwGetKey(window, 'S')) {
-		camera->translate(glm::vec3(camera->getMatrix()[2][0], 0, camera->getMatrix()[2][2]) * timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-
-	if (glfwGetKey(window, 'A')) {
-		camera->translate(glm::vec3(camera->getMatrix()[0][0], 0, camera->getMatrix()[0][2]) * -timeDelta * moveSpeed, SceneObject::LEFT);
-    }
-	else if (glfwGetKey(window, 'D')) {
-		camera->translate(glm::vec3(camera->getMatrix()[0][0], 0, camera->getMatrix()[0][2]) * timeDelta * moveSpeed, SceneObject::LEFT);
-    }
-
-	if (glfwGetKey(window, 'Q')) {
-	    camera->translate(glm::vec3(0,1,0) * timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-	else if (glfwGetKey(window, 'E')) {
-	    camera->translate(glm::vec3(0,1,0) * -timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-
-	// lock camera to player
-	// for some reason it only works of we modify the player location, not the camera location
-	player->setLocation(camera->getLocation());
-	player->translate(-5.0f * glm::vec3(camera->getMatrix()[2][0], 0, camera->getMatrix()[2][2]), SceneObject::LEFT);
-
-	// rotate camera based on mouse movement
-	// the mouse pointer is reset to (0, 0) every frame, and we just take the displacement of that frame
-	const float mouseSensitivity = 0.01f;
-	double mouseX, mouseY;
-	glfwGetCursorPos(window, &mouseX, &mouseY);
-	camera->rotateY(-mouseSensitivity * (float)mouseX, SceneObject::LEFT);
-	camera->rotateX(mouseSensitivity * (float)mouseY, SceneObject::LEFT);
-	glfwSetCursorPos(window, 0, 0); // reset the mouse, so it doesn't leave the window
-
-	// handle camera zoom by changing the field of view depending on mouse scroll since last frame
-	float zoomSensitivity = -0.1f;
-	float fieldOfView = camera->getFieldOfView() + zoomSensitivity * (float)scrollY;
-	if (fieldOfView < degToRad(20.0f)) fieldOfView = degToRad(20.0f);
-	if (fieldOfView > degToRad(60.0f)) fieldOfView = degToRad(60.0f);
-	camera->setFieldOfView(fieldOfView);
-	scrollY = 0.0;
-
-}
-
-void handleInputFreeCamera(GLFWwindow *window, float timeDelta)
-{
-
-	float moveSpeed = 5.0f;
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
-		moveSpeed = 20.0f;
-	}
-
-	//////////////////////////
-	/// CAMERA MOVEMENT
-	//////////////////////////
-
-	// rotate camera based on mouse movement
-	// the mouse pointer is reset to (0, 0) every frame, and we just take the displacement of that frame
-	const float mouseSensitivity = 0.01f;
-	double mouseX, mouseY;
-	glfwGetCursorPos(window, &mouseX, &mouseY);
-	camera->rotateY(-mouseSensitivity * (float)mouseX, SceneObject::RIGHT);
-	camera->rotateX(-mouseSensitivity * (float)mouseY, SceneObject::RIGHT);
-	glfwSetCursorPos(window, 0, 0); // reset the mouse, so it doesn't leave the window
-
-	// camera movement
-	// note: we apply rotation before translation since we dont want the distance from the origin
-	// to affect how we rotate
-    if (glfwGetKey(window, 'W')) {
-		camera->translate(camera->getMatrix()[2].xyz() * -timeDelta * moveSpeed, SceneObject::LEFT);
-    }
-	else if (glfwGetKey(window, 'S')) {
-		camera->translate(camera->getMatrix()[2].xyz() * timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-
-	if (glfwGetKey(window, 'A')) {
-		camera->translate(camera->getMatrix()[0].xyz() * -timeDelta * moveSpeed, SceneObject::LEFT);
-    }
-	else if (glfwGetKey(window, 'D')) {
-		camera->translate(camera->getMatrix()[0].xyz() * timeDelta * moveSpeed, SceneObject::LEFT);
-    }
-
-	if (glfwGetKey(window, 'Q')) {
-	    camera->translate(glm::vec3(0,1,0) * timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-	else if (glfwGetKey(window, 'E')) {
-	    camera->translate(glm::vec3(0,1,0) * -timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-
-	// handle camera zoom by changing the field of view depending on mouse scroll since last frame
-	float zoomSensitivity = -0.1f;
-	float fieldOfView = camera->getFieldOfView() + zoomSensitivity * (float)scrollY;
-	if (fieldOfView < degToRad(20.0f)) fieldOfView = degToRad(20.0f);
-	if (fieldOfView > degToRad(60.0f)) fieldOfView = degToRad(60.0f);
-	camera->setFieldOfView(fieldOfView);
-	scrollY = 0.0;
-
 }
 
 /**
@@ -413,45 +257,3 @@ void frameBufferResize(GLFWwindow *window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
-
-/**
- * @brief glfw callback on mouse scroll
- * @param window pointer to active window
- * @param deltaX the scroll delta on scroll axis X
- * @param deltaY the scroll delta on scroll axis Y
- */
-void onScroll(GLFWwindow *window, double deltaX, double deltaY)
-{
-	scrollY += deltaY;
-}
-
-/**
- * @brief glfw keyCallback on key events
- * @param window pointer to active window
- * @param key the key code of the key that caused the event
- * @param scancode a system and platform specific constant
- * @param action type of key event: GLFW_PRESS, GLFW_RELEASE, GLFW_REPEAT
- * @param mods modifier keys held down on event
- */
-void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
-{
-	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-	    if (cameraNavMode == FOLLOW_PLAYER) {
-			cameraNavMode = FREE_FLY;
-		}
-		else if (cameraNavMode == FREE_FLY) {
-			cameraNavMode = FOLLOW_PLAYER;
-		}
-	}
-}
-
-/**
-* @brief convert angle from degree to radian convention
-* @param degree the angle in degree to convert
-* @return the angle in radians
-*/
-float degToRad(float deg)
-{
-	return deg * glm::pi<float>()/180.0f;
-}
-
