@@ -22,7 +22,7 @@ class Cube : public Geometry
 
 
 public:
-	Cube(const glm::mat4 &matrix_, Shader *shader_, Texture *texture_);
+	Cube(const glm::mat4 &matrix_);
 	virtual ~Cube();
 
 	virtual void update(float timeDelta);

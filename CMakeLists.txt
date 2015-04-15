@@ -29,11 +29,13 @@ if(MSVC)
     set(GLFW_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw-3.1.1.bin.WIN32)
 	set(GLM_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/glm)
 	set(FreeImage_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/FreeImage)
+	set(Assimp_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/Assimp3.0)
 else(MSVC)
 	find_package(GLEW REQUIRED)
 	find_package(GLFW REQUIRED)
 	find_package(GLM REQUIRED)
 	find_package(FreeImage REQUIRED)
+	find_package(Assimp REQUIRED)
 endif(MSVC)
 
 
@@ -52,9 +54,11 @@ set(SRC_CLASSES
 	src/camera.cpp
 	src/geometry.h
 	src/geometry.cpp
+	src/surface.h
+	src/surface.cpp
     
-	src/geometry/player.h
-	src/geometry/player.cpp
+	src/player.h
+	src/player.cpp
 	src/geometry/cube.h
 	src/geometry/cube.cpp
     )
@@ -91,8 +95,9 @@ else(MSVC)
 	### INCLUDE HEADER FILES ###
 	include_directories(${OPENGL_INCLUDE_DIRS} 
 						${GLEW_INCLUDE_DIRS} 
-						${GLFW_INCLUDE_DIRS}
+						${GLFW_INCLUDE_DIR}
 						${FreeImage_INCLUDE_DIR}
+						${ASSIMP_INCLUDE_DIRS}
 				    )
 
 	### LINK LIBRARIES ###
@@ -101,5 +106,6 @@ else(MSVC)
 						  ${GLEW_LIBRARY}
 						  ${GLFW_LIBRARY}
 						  ${FreeImage_LIBRARY}
+						  ${ASSIMP_LIBRARIES}
 						  )
 endif(MSVC)

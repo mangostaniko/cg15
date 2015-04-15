@@ -18,7 +18,7 @@
 #include "shader.h"
 #include "sceneobject.h"
 #include "camera.h"
-#include "geometry/player.h"
+#include "player.h"
 #include "geometry/cube.h"
 
 
@@ -31,8 +31,9 @@ GLFWwindow *window;
 
 Shader *shader;
 Texture *texture;
-Player *player;
-std::vector<std::shared_ptr<SceneObject>> cubes;
+Geometry *player;
+Geometry *world;
+std::vector<std::shared_ptr<Geometry>> cubes;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
 
@@ -188,23 +189,18 @@ void init(GLFWwindow *window)
 	shader->useShader();
 
 
-	// INIT TEXTURES
-	// note: use 8 bit RGB, no alpha channel
-
-	//texture = new Texture("../data/textures/uv_debug_tex.png");
-	texture = new Texture("../data/textures/skunk_drawing.jpg");
-
-
 	// INIT OBJECTS
 
+	world = new Geometry(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, -3, 0)), "../data/models/world/world.dae");
+
 	for (int i = 0; i < 3; ++i) {
-		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, 0, 0)), shader, texture));
+		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, 0, 0))));
 	}
 	for (int i = 0; i < 3; ++i) {
-		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, 2, 0)), shader, texture));
+		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, 2, 0))));
 	}
 	for (int i = 0; i < 3; ++i) {
-		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, -2, 0)), shader, texture));
+		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, -2, 0))));
 	}
 
 
@@ -214,7 +210,7 @@ void init(GLFWwindow *window)
 	glfwGetWindowSize(window, &width, &height);
 	Camera *camera = new Camera(glm::mat4(1.0f), glm::radians(60.0f), width/(float)height, 0.2f, 60.0f); // mat, fov, aspect, znear, zfar
 
-	player = new Player(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 6)), shader, texture, camera, window);
+	player = new Player(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 6)), camera, window, "../data/models/hawk/hawk.dae");
 	camera = nullptr;
 
 }
@@ -224,7 +220,7 @@ void update(float timeDelta)
 	player->update(timeDelta);
 
 	// update cubes
-	for (unsigned i = 0; i < cubes.size(); ++i) {
+	for (unsigned int i = 0; i < cubes.size(); ++i) {
 		cubes[i]->update(((i%2)-0.5) * (i%cubes.size()/2+1) * timeDelta);
 	}
 
@@ -232,10 +228,11 @@ void update(float timeDelta)
 
 void draw()
 {
-	player->draw();
+	player->draw(shader);
+	world->draw(shader);
 
-	for (unsigned i = 0; i < cubes.size(); ++i) {
-		cubes[i]->draw();
+	for (unsigned int i = 0; i < cubes.size(); ++i) {
+		cubes[i]->draw(shader);
 	}
 
 }
@@ -245,6 +242,7 @@ void cleanup()
 	delete shader; shader = nullptr;
 	delete texture; texture = nullptr;
 	delete player; player = nullptr;
+	delete world; world = nullptr;
 }
 
 /**

@@ -33,11 +33,6 @@ void Camera::update(float timeDelta)
 	/* left empty */
 }
 
-void Camera::draw()
-{
-	/* left empty */
-}
-
 
 glm::mat4 Camera::getViewMatrix() const
 {

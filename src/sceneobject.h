@@ -53,11 +53,6 @@ public:
 	virtual void update(float timeDelta) = 0;
 
 	/**
-	 * @brief draw the SceneObject
-	 */
-	virtual void draw() = 0;
-
-	/**
 	 * @brief apply a transformation matrix to the current matrix
 	 * @param transform_ matrix defining a transformation
 	 * @param inverse_ the inverse matrix of transform

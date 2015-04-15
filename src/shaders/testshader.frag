@@ -6,10 +6,12 @@ layout(location = 0) out vec4 outColor;
 in vec3 worldNormal; // range [-1, 1]
 in vec2 texCoord;
 
-uniform sampler2D colorTexture;
+uniform sampler2D diffuseTexture;
+uniform sampler2D specularTexture;
+uniform sampler2D normalTexture;
 
 void main()
 {
-	outColor = vec4(1.2 - texture(colorTexture, texCoord).rgb, 1) * vec4(0.5 + worldNormal/2, 1);
+	outColor = vec4(1.2 - texture(diffuseTexture, texCoord).rgb, 1) * vec4(0.5 + worldNormal/2, 1);
 }
 

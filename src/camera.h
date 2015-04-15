@@ -22,7 +22,6 @@ public:
 	virtual ~Camera();
 
 	virtual void update(float timeDelta);
-	virtual void draw();
 
 	/**
 	 * @brief get the view matrix, i.e. the inverse camera model matrix

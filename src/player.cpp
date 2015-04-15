@@ -1,14 +1,13 @@
 #include "player.h"
 
-Player::CameraNavigationMode Player::cameraNavMode = FOLLOW_PLAYER;
+Player::CameraNavigationMode Player::cameraNavMode = FREE_FLY;
 double Player::scrollY = 0.0;
 
-Player::Player(const glm::mat4 &matrix_, Shader *shader_, Texture *texture_, Camera *camera_, GLFWwindow *window_)
-    : Cube(matrix_, shader_, texture_)
+Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, const std::string &filePath)
+    : Geometry(matrix_, filePath)
+    , camera(camera_)
+    , window(window_)
 {
-	camera = camera_;
-	window = window_;
-
 	// set glfw callbacks
 	glfwSetScrollCallback(window, onScroll);
 	glfwSetKeyCallback(window, keyCallback);
@@ -35,11 +34,16 @@ void Player::update(float timeDelta)
 	camera->update(timeDelta);
 	//camera->lookAt(glm::vec3(cubes.at(6)->getLocation())); // broken
 
+}
+
+void Player::draw(Shader *shader)
+{
 	// pass camera view and projection matrices to shader
 	glm::mat4 viewProjMat = camera->getProjectionMatrix() * camera->getViewMatrix();
 	GLint viewProjMatLocation = glGetUniformLocation(shader->programHandle, "viewProjMat"); // get uniform location in shader
 	glUniformMatrix4fv(viewProjMatLocation, 1, GL_FALSE, glm::value_ptr(viewProjMat)); // shader location, count, transpose?, value pointer
 
+	Geometry::draw(shader);
 }
 
 void Player::handleInput(GLFWwindow *window, float timeDelta)

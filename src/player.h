@@ -3,17 +3,14 @@
 
 #define GLM_SWIZZLE
 
-#include "cube.h"
-#include "../camera.h"
+#include "geometry.h"
+#include "camera.h"
 
 /**
  * @brief The Player class. This stores the player Geometry and a Camera,
  * as well as a GLFWwindow to handle input.
- *
- * !!! TODO !!!: to have something to draw the player class currently inherits from Cube.
- * This should be changed to Geometry when collada import is implemented.
  */
-class Player : public Cube
+class Player : public Geometry
 {
 	Camera *camera;
 	GLFWwindow *window;
@@ -63,10 +60,11 @@ class Player : public Cube
 
 
 public:
-	Player(const glm::mat4 &matrix_, Shader *shader_, Texture *texture_, Camera *camera_, GLFWwindow *window_);
+	Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, const std::string &filePath);
 	virtual ~Player();
 
 	virtual void update(float timeDelta);
+	virtual void draw(Shader *shader);
 
 };
 

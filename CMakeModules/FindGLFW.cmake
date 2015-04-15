@@ -26,7 +26,7 @@ MACRO(DBG_MSG _MSG)
 ENDMACRO(DBG_MSG)
 
 #Search for the include file...
-FIND_PATH(GLFW_INCLUDE_DIR glfw.h DOC "Path to GLFW include directory."
+FIND_PATH(GLFW_INCLUDE_DIR glfw3.h DOC "Path to GLFW include directory."
   HINTS
   $ENV{GLFW_ROOT}
   PATH_SUFFIX include #For finding the include file under the root of the glfw expanded archive, typically on Windows.

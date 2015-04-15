@@ -5,57 +5,66 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <vector>
+#include <memory>
 
 #include "sceneobject.h"
+#include "surface.h"
 #include "shader.h"
 #include "texture.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 /**
- * @brief Geometry defines all SceneObjects that use vertex data.
- * This communicates with Vertex Buffer Objects to store vertex data directly on GPU memory.
- * This also points to shaders, textures and other things associated with vertex data
- * and communicates with compiler shader programs for drawing.
+ * @brief A Geometry is a SceneObject that holds Surfaces which contain mesh data and textures.
  */
 class Geometry : public SceneObject
 {
-protected:
-	// TODO TEMPORARY used to create subclasses that contain the data.
-	// this is just a temporary solution!!
-	Geometry(const glm::mat4 &matrix_, Shader *shader_, Texture *texture_,
-	         const std::vector<GLfloat> &positions_,
-	         const std::vector<GLfloat> &normals_,
-	         const std::vector<GLfloat> &uvs_,
-	         const std::vector<GLuint> &indices_);
 
-	Shader *shader; // TODO for player only! make private when object loading works and player is a geometry
+	// surfaces store mesh data and textures
+	std::vector<std::shared_ptr<Surface>> surfaces;
 
-private:
-	GLuint vao;
-	GLuint positionBuffer, normalBuffer, uvBuffer, indexBuffer;
-	Texture *texture;
+	// the path of the directory containing the model file to load
+	std::string directoryPath;
 
-	std::vector<GLfloat> positions; // vertex positions
-	std::vector<GLfloat> normals; // vertex normals
-	std::vector<GLfloat> uvs; // vertex uvs
-	std::vector<GLuint> indices; // indices associate vertices to define mesh topology
+	/**
+	 * @brief load surfaces from file
+	 * note: this loads only the first diffuse, specular and normal texture for each surface
+	 * and stores them in this order in the surface
+	 * @param filePath the path of the file to load surfaces from
+	 */
+	void loadSurfaces(const std::string &filePath);
 
-	// TEMPORARY solution
-	void init();
+	/**
+	 * @brief process all meshes contained in given node
+	 * and recursively process all child nodes
+	 * @param node the current node to process
+	 * @param scene the aiScene containing the node
+	 */
+	void processNode(aiNode *node, const aiScene *scene);
+
+	/**
+	 * @brief load data from assimp aiMesh to new Surface object
+	 * note: this loads only the first diffuse, specular and normal texture for each surface
+	 * and stores them in this order in the surface
+	 * @param mesh the aiMesh to process
+	 * @param scene the aiScene containing the mesh
+	 * @return
+	 */
+	void processMesh(aiMesh *mesh, const aiScene *scene);
 
 public:
-	Geometry(const glm::mat4 &matrix_, Shader *shader_, Texture *texture_);
+
+	Geometry(const glm::mat4 &matrix_, const std::string &filePath);
 	virtual ~Geometry();
 
-	virtual void update(float timeDelta) = 0;
-	virtual void draw();
+	virtual void update(float timeDelta);
 
-	// TEMPORARY the following are placeholders to fill in data in a given format.
-	// TODO: replace with proper object loading from open standars like COLLADA
-	// TODO: comments
-	void setPositions(const std::vector<GLfloat> &positions_);
-	void setNormals(const std::vector<GLfloat> &normals_);
-	void setUVs(const std::vector<GLfloat> &uvs_);
-	void setIndices(const std::vector<GLuint> &indices_);
+	/**
+	 * @brief draw the SceneObject using given shader
+	 */
+	virtual void draw(Shader *shader);
 
 };
 

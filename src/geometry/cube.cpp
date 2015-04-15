@@ -1,11 +1,7 @@
 #include "cube.h"
 
-Cube::Cube(const glm::mat4 &matrix_, Shader *shader_, Texture *texture_)
-	: Geometry(matrix_, shader_, texture_
-    , std::vector<GLfloat>(std::begin(positionsData), std::end(positionsData))
-    , std::vector<GLfloat>(std::begin(normalsData), std::end(normalsData))
-    , std::vector<GLfloat>(std::begin(uvsData), std::end(uvsData))
-    , std::vector<GLuint>(std::begin(indicesData), std::end(indicesData)))
+Cube::Cube(const glm::mat4 &matrix_)
+	: Geometry(matrix_, "../data/models/skunk/skunk.dae")
 {
 }
 
@@ -17,7 +13,7 @@ Cube::~Cube()
 void Cube::update(float timeDelta)
 {
 	// rotate cube a given angle per second around given axis
-	//rotate(timeDelta, LEFT, glm::vec3(1, 1, 2));
+	rotate(timeDelta, LEFT, glm::vec3(1, 1, 2));
 
 }
 
