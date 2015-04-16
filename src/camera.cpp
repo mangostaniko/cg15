@@ -9,7 +9,6 @@ Camera::Camera(const glm::mat4 &matrix_, float fieldOfView_, float aspectRatio_,
     , nearPlane(nearPlane_)
     , farPlane(farPlane_)
 {
-
 }
 
 Camera::Camera(const glm::mat4 &matrix_)
@@ -86,27 +85,6 @@ void Camera::setFarPlane(float farPlane_)
 
 void Camera::lookAt(const glm::vec3 &target)
 {
-	glm::vec3 up = getMatrix()[1].xyz(); // assume the camera up vector to be the y axis
-
-	glm::vec3 Z = getLocation() - target; // look in opposite direction to camera, which looks in -z
-	Z = glm::normalize(Z);
-	glm::vec3 X = glm::cross(up, Z);
-	glm::vec3 Y = glm::cross(X, Z); // y is still the up vector, but kind of 'rotated' around x to fit with z
-
-	X = glm::normalize(X);
-	Y = glm::normalize(Y);
-
-	glm::mat4 lookAtMat;
-	lookAtMat[0] = glm::vec4(X, 0);
-	lookAtMat[1] = glm::vec4(Y, 0);
-	lookAtMat[2] = glm::vec4(Z, 0);
-	lookAtMat[3] = glm::vec4(0, 0, 0, 1);
-
-	applyTransformation(lookAtMat, glm::inverse(lookAtMat), LEFT);
-
-	std::cout << matrixToString(getMatrix()) << std::endl;
-	std::cout << matrixToString(getInverseMatrix()) << std::endl;
-
-
+	setTransform(glm::lookAt(getLocation(), target, glm::vec3(0, 1, 0)));
 }
 

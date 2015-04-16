@@ -14,6 +14,10 @@ class Player : public Geometry
 {
 	Camera *camera;
 	GLFWwindow *window;
+	glm::vec3 camDirection;
+	glm::vec3 camRight;
+	glm::vec3 camUp;
+	glm::mat4 viewProjMat;
 
 	enum CameraNavigationMode
 	{

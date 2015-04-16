@@ -12,9 +12,9 @@
 #include "shader.h"
 #include "texture.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
 
 /**
  * @brief A Geometry is a SceneObject that holds Surfaces which contain mesh data and textures.

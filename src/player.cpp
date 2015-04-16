@@ -12,7 +12,11 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	glfwSetScrollCallback(window, onScroll);
 	glfwSetKeyCallback(window, keyCallback);
 
-	camera->translate(glm::vec3(0, 0, 10), SceneObject::LEFT); // move camera back a bit
+	camera->setTransform(glm::translate(glm::mat4(1.0f), getLocation()+glm::vec3(0,0,10)));  //move camera back a bit
+	camDirection = glm::normalize(camera->getLocation() - getLocation());
+	camUp = glm::vec3(0, 1, 0);
+	camRight = glm::normalize(glm::cross(camUp, camDirection));
+
 }
 
 Player::~Player()
@@ -26,20 +30,20 @@ void Player::update(float timeDelta)
 	// note: camera navigation mode is toggled on tab key press, look for keyCallback
 	if (cameraNavMode == FOLLOW_PLAYER) {
 		handleInput(window, timeDelta);
+		viewProjMat = camera->getProjectionMatrix() * glm::lookAt(camera->getLocation(), getLocation(), camUp);
 	}
-	else if (cameraNavMode == FREE_FLY) {
+	else {
 		handleInputFreeCamera(window, timeDelta);
+		viewProjMat = camera->getProjectionMatrix() * camera->getViewMatrix();
 	}
 
-	camera->update(timeDelta);
-	//camera->lookAt(glm::vec3(cubes.at(6)->getLocation())); // broken
+	//camera->update(timeDelta);
 
 }
 
 void Player::draw(Shader *shader)
 {
 	// pass camera view and projection matrices to shader
-	glm::mat4 viewProjMat = camera->getProjectionMatrix() * camera->getViewMatrix();
 	GLint viewProjMatLocation = glGetUniformLocation(shader->programHandle, "viewProjMat"); // get uniform location in shader
 	glUniformMatrix4fv(viewProjMatLocation, 1, GL_FALSE, glm::value_ptr(viewProjMat)); // shader location, count, transpose?, value pointer
 
@@ -54,57 +58,60 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 		moveSpeed = 20.0f;
 	}
 
-	// lock camera to player
-	// for some reason it only works of we modify the player location, not the camera location
-	setLocation(camera->getLocation());
-	translate(-5.0f * glm::vec3(camera->getMatrix()[2][0], 0, camera->getMatrix()[2][2]), SceneObject::RIGHT);
 
 	// camera movement
 	// note: we apply rotation before translation since we dont want the distance from the origin
 	// to affect how we rotate
     if (glfwGetKey(window, 'W')) {
-		camera->translate(glm::vec3(camera->getMatrix()[2][0], 0, camera->getMatrix()[2][2]) * -timeDelta * moveSpeed, SceneObject::LEFT);
+		translate(glm::vec3(0.0f, 0.0f, -0.1f) * timeDelta * moveSpeed, SceneObject::RIGHT);
     }
 	else if (glfwGetKey(window, 'S')) {
-		camera->translate(glm::vec3(camera->getMatrix()[2][0], 0, camera->getMatrix()[2][2]) * timeDelta * moveSpeed, SceneObject::LEFT);
+		translate(glm::vec3(0.0f, 0.0f, 0.1f) * timeDelta * moveSpeed, SceneObject::RIGHT);
+
 	}
 
 	if (glfwGetKey(window, 'A')) {
-		camera->translate(glm::vec3(camera->getMatrix()[0][0], 0, camera->getMatrix()[0][2]) * -timeDelta * moveSpeed, SceneObject::LEFT);
+		rotateY(timeDelta * glm::radians(90.f), SceneObject::RIGHT);
     }
 	else if (glfwGetKey(window, 'D')) {
-		camera->translate(glm::vec3(camera->getMatrix()[0][0], 0, camera->getMatrix()[0][2]) * timeDelta * moveSpeed, SceneObject::LEFT);
+		rotateY(timeDelta * glm::radians(-90.f), SceneObject::RIGHT);
     }
 
 	if (glfwGetKey(window, 'Q')) {
-	    camera->translate(glm::vec3(0,1,0) * timeDelta * moveSpeed, SceneObject::LEFT);
+	    translate(glm::vec3(0,1,0) * timeDelta * moveSpeed, SceneObject::LEFT);
 	}
 	else if (glfwGetKey(window, 'E')) {
-	    camera->translate(glm::vec3(0,1,0) * -timeDelta * moveSpeed, SceneObject::LEFT);
+	    translate(glm::vec3(0,1,0) * -timeDelta * moveSpeed, SceneObject::LEFT);
 	}
 
-	// lock camera to player
-	// for some reason it only works of we modify the player location, not the camera location
-	setLocation(camera->getLocation());
-	translate(-5.0f * glm::vec3(camera->getMatrix()[2][0], 0, camera->getMatrix()[2][2]), SceneObject::LEFT);
-
-	// rotate camera based on mouse movement
-	// the mouse pointer is reset to (0, 0) every frame, and we just take the displacement of that frame
+	
+	//// rotate camera based on mouse movement
+	//// the mouse pointer is reset to (0, 0) every frame, and we just take the displacement of that frame
 	const float mouseSensitivity = 0.01f;
 	double mouseX, mouseY;
 	glfwGetCursorPos(window, &mouseX, &mouseY);
-	camera->rotateY(-mouseSensitivity * (float)mouseX, SceneObject::LEFT);
-	camera->rotateX(mouseSensitivity * (float)mouseY, SceneObject::LEFT);
+
+	glm::vec3 camToTarget = camera->getLocation() - getLocation();
+	glm::vec3 rightVec = glm::normalize(glm::cross(camToTarget, glm::vec3(0, 1, 0)));
+	glm::mat4 rotateYaw = glm::rotate(glm::mat4(), -mouseSensitivity * (float)mouseX, glm::vec3(0, 1, 0));
+	glm::mat4 rotatePitch = glm::rotate(glm::mat4(), mouseSensitivity * (float)mouseY, rightVec);
+
+	camToTarget = glm::vec3(rotateYaw * glm::vec4(camToTarget, 0));
+	camToTarget = glm::vec3(rotatePitch * glm::vec4(camToTarget, 0));
+	camToTarget = camToTarget + getLocation();
+	
+	camera->setLocation(camToTarget);
+
+	
 	glfwSetCursorPos(window, 0, 0); // reset the mouse, so it doesn't leave the window
 
-	// handle camera zoom by changing the field of view depending on mouse scroll since last frame
+	//// handle camera zoom by changing the field of view depending on mouse scroll since last frame
 	float zoomSensitivity = -0.1f;
 	float fieldOfView = camera->getFieldOfView() + zoomSensitivity * (float)scrollY;
 	if (fieldOfView < glm::radians(20.0f)) fieldOfView = glm::radians(20.0f);
 	if (fieldOfView > glm::radians(60.0f)) fieldOfView = glm::radians(60.0f);
 	camera->setFieldOfView(fieldOfView);
-	scrollY = 0.0;
-
+	scrollY = 0.0;	
 }
 
 void Player::handleInputFreeCamera(GLFWwindow *window, float timeDelta)

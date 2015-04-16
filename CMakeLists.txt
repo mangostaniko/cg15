@@ -62,13 +62,13 @@ set(SRC_CLASSES
 	src/geometry/cube.h
 	src/geometry/cube.cpp
     )
-
+	
 # relative path to shader files
 set(SRC_SHADERS
-	src/shaders/testshader.vert
-	src/shaders/testshader.frag
-    )
-
+		src/shaders/testshader.vert
+		src/shaders/testshader.frag
+		)
+		
 # adds an executable target with given name to be built from the source files listed afterwards
 add_executable(${PROJECT_NAME} ${SRC_CLASSES} ${SRC_SHADERS})
 

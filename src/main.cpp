@@ -211,8 +211,6 @@ void init(GLFWwindow *window)
 	Camera *camera = new Camera(glm::mat4(1.0f), glm::radians(60.0f), width/(float)height, 0.2f, 60.0f); // mat, fov, aspect, znear, zfar
 
 	player = new Player(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 6)), camera, window, "../data/models/hawk/hawk.dae");
-	camera = nullptr;
-
 }
 
 void update(float timeDelta)
@@ -220,8 +218,10 @@ void update(float timeDelta)
 	player->update(timeDelta);
 
 	// update cubes
-	for (unsigned int i = 0; i < cubes.size(); ++i) {
-		cubes[i]->update(((i%2)-0.5) * (i%cubes.size()/2+1) * timeDelta);
+	for (unsigned i = 0; i < cubes.size(); ++i) {
+		if (i % 2 == 0) {
+			cubes[i]->update(((i % 2) - 0.5) * (i%cubes.size() / 2 + 1) * timeDelta);
+		}
 	}
 
 }
@@ -231,8 +231,10 @@ void draw()
 	player->draw(shader);
 	world->draw(shader);
 
-	for (unsigned int i = 0; i < cubes.size(); ++i) {
-		cubes[i]->draw(shader);
+	for (unsigned i = 0; i < cubes.size(); ++i) {
+		if (i % 2 == 0) {
+			cubes[i]->draw(shader);
+		}
 	}
 
 }
