@@ -17,7 +17,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 ### COMPILER FLAGS ###
 # note: add_definitions can be used as well, but is intended for preprocessor definitions
 
-set(CMAKE_CXX_FLAGS "-Wall -std=c++0x")
+set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
 
 
 ### EXTERNAL LIBRARIES ###
@@ -65,8 +65,10 @@ set(SRC_CLASSES
 	
 # relative path to shader files
 set(SRC_SHADERS
-		src/shaders/testshader.vert
-		src/shaders/testshader.frag
+		src/shaders/texture_shader.vert
+		src/shaders/texture_shader.frag
+		src/shaders/normals_shader.vert
+		src/shaders/normals_shader.frag
 		)
 		
 # adds an executable target with given name to be built from the source files listed afterwards
@@ -90,7 +92,7 @@ if(MSVC)
 						${GLFW_ROOT_DIR}/lib-vc2013
 						${FreeImage_ROOT_DIR}/Dist/x32
 						${FreeImage_ROOT_DIR}/Wrapper/FreeImagePlus/dist/x32
-                      )
+                        )
 else(MSVC)
 	### INCLUDE HEADER FILES ###
 	include_directories(${OPENGL_INCLUDE_DIRS} 
@@ -98,7 +100,7 @@ else(MSVC)
 						${GLFW_INCLUDE_DIR}
 						${FreeImage_INCLUDE_DIR}
 						${ASSIMP_INCLUDE_DIRS}
-				    )
+				        )
 
 	### LINK LIBRARIES ###
 	target_link_libraries(${PROJECT_NAME}

@@ -1,6 +1,7 @@
 #include "texture.h"
 
-Texture::Texture(const std::string &filePath)
+Texture::Texture(const std::string &filePath_)
+	: filePath(filePath_)
 {
 	glGenTextures(1, &handle);
 	glActiveTexture(GL_TEXTURE0); // select the active texture unit of the context
@@ -29,6 +30,7 @@ Texture::Texture(const std::string &filePath)
 	// magnification: how to interpolate texture to fill remaining space
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 }
 
 Texture::~Texture()
@@ -38,7 +40,12 @@ Texture::~Texture()
 
 void Texture::bind(int unit)
 {
-	glActiveTexture(GL_TEXTURE0 + unit);
+	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, handle);
+}
+
+std::string Texture::getFilePath() const
+{
+	return filePath;
 }
 

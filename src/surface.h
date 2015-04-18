@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <vector>
+#include <memory>
 #include <stddef.h>
 
 #include "shader.h"
@@ -31,7 +32,7 @@ class Surface
 	std::vector<GLuint> indices; // indices associate vertices to define mesh topology
 
 	// Textures
-	std::vector<Texture> textures;
+	std::vector<std::shared_ptr<Texture>> textures;
 
 	// handle for vertex array object (vao). the vao simply stores the bindings set when its active
 	// so that they can be reactived quickly later, instead of setting it up all over again.
@@ -46,7 +47,7 @@ class Surface
 	void init();
 
 public:
-	Surface(const std::vector<Vertex> &vertices_, const std::vector<GLuint> &indices_, const std::vector<Texture> &textures_);
+	Surface(const std::vector<Vertex> &vertices_, const std::vector<GLuint> &indices_, const std::vector<std::shared_ptr<Texture>> &textures_);
 	~Surface();
 
 	/**

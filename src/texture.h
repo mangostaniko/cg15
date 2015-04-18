@@ -16,6 +16,7 @@
 class Texture
 {
 	GLuint handle;
+	const std::string &filePath;
 
 public:
 	Texture(const std::string &filePath);
@@ -26,6 +27,8 @@ public:
 	 * @param unit the opengl texture unit to bind to
 	 */
 	void bind(int unit);
+
+	std::string getFilePath() const;
 };
 
 #endif // TEXTURE_H

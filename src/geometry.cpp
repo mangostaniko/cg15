@@ -36,10 +36,10 @@ void Geometry::loadSurfaces(const std::string &filePath)
 	// IMPORTANT ASSIMP POSTPROCESS FLAGS
 	// - aiProcess_PreTransformVertices: to load vertices in world space i.e. apply transformation matrices, which we dont load
 	// - aiProcess_Triangulate: needed for OpenGL
-	// - aiProcess_FlipUVs: needed for OpenGL
+	// if there are problems with the uvs, try aiProcess_FlipUVs
 	// note: experiment with flags like aiProcess_SplitLargeMeshes, aiProcess_OptimizeMeshes, when using bigger models.
     Assimp::Importer importer;
-	const aiScene *scene = importer.ReadFile(filePath, aiProcess_PreTransformVertices | aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene *scene = importer.ReadFile(filePath, aiProcess_PreTransformVertices | aiProcess_Triangulate);
 
     // check for errors
 	if (!scene || !scene->mRootNode || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE) {
@@ -75,7 +75,7 @@ void Geometry::processMesh(aiMesh *mesh, const aiScene *scene)
 {
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
-	std::vector<Texture> textures;
+	std::vector<std::shared_ptr<Texture>> surfaceTextures;
 
 	// process mesh vertices (positions, normals, uvs)
 	for (GLuint i = 0; i < mesh->mNumVertices; ++i) {
@@ -124,27 +124,54 @@ void Geometry::processMesh(aiMesh *mesh, const aiScene *scene)
 	// and store them in this order
 	if (mesh->mMaterialIndex >= 0) {
 
-		aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-
-		aiString texturePath;
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		std::shared_ptr<Texture> texture;
 
 		// load diffuse texture
-		material->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath);
-		Texture diffuseTexture(directoryPath + '/' + texturePath.C_Str());
-		textures.push_back(diffuseTexture);
+		texture = loadMaterialTexture(material, aiTextureType_DIFFUSE);
+		if (texture) { surfaceTextures.push_back(texture); }
 
 		// load specular texture
-		material->GetTexture(aiTextureType_SPECULAR, 0, &texturePath);
-		Texture specularTexture(directoryPath + '/' + texturePath.C_Str());
-		textures.push_back(specularTexture);
+		texture = loadMaterialTexture(material, aiTextureType_SPECULAR);
+		if (texture) { surfaceTextures.push_back(texture); }
 
-		// load normal texture
-		material->GetTexture(aiTextureType_NORMALS, 0, &texturePath);
-		Texture normalTexture(directoryPath + '/' + texturePath.C_Str());
-		textures.push_back(normalTexture);
+		// load normals texture
+		texture = loadMaterialTexture(material, aiTextureType_NORMALS);
+		if (texture) { surfaceTextures.push_back(texture); }
 
 	}
 
 	// return a Surface object created from the extracted aiMesh data
-	surfaces.push_back(std::make_shared<Surface>(vertices, indices, textures));
+	surfaces.push_back(std::make_shared<Surface>(vertices, indices, surfaceTextures));
+}
+
+std::shared_ptr<Texture> Geometry::loadMaterialTexture(aiMaterial *mat, aiTextureType type)
+{
+	aiString texturePath;
+	std::shared_ptr<Texture> texture = nullptr;
+
+	if (mat->GetTexture(type, 0, &texturePath) == AI_SUCCESS) {
+
+		// check if we already loaded the texture of the given path for another mesh
+		bool skip = false;
+		for (auto existingTexture : loadedTextures) {
+			std::cout << existingTexture->getFilePath() << std::endl;
+			std::cout << texturePath.C_Str() << std::endl;
+	        if (existingTexture->getFilePath() == texturePath.C_Str()) {
+				skip = true;
+	            texture = existingTexture; // use pointer to existing texture
+				break;
+	        }
+	    }
+
+		// otherwise load the texture from the file
+		if (!skip) {
+			loadedTextures.push_back(std::make_shared<Texture>(directoryPath + '/' + texturePath.C_Str()));
+			std::cout << "loaded texture: " << texturePath.C_Str() << std::endl;
+			texture = loadedTextures.back();
+		}
+
+	}
+
+	return texture;
 }

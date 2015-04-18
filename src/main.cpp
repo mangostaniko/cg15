@@ -29,8 +29,7 @@ void cleanup();
 
 GLFWwindow *window;
 
-Shader *shader;
-Texture *texture;
+Shader *textureShader, *normalsShader;
 Geometry *player;
 Geometry *world;
 std::vector<std::shared_ptr<Geometry>> cubes;
@@ -185,8 +184,9 @@ void init(GLFWwindow *window)
 
 	// INIT SHADERS
 
-	shader = new Shader("../src/shaders/testshader.vert", "../src/shaders/testshader.frag");
-	shader->useShader();
+	textureShader = new Shader("../src/shaders/texture_shader.vert", "../src/shaders/texture_shader.frag");
+	normalsShader = new Shader("../src/shaders/normals_shader.vert", "../src/shaders/normals_shader.frag");
+	textureShader->useShader(); // non-trivial cost
 
 
 	// INIT OBJECTS
@@ -202,7 +202,6 @@ void init(GLFWwindow *window)
 	for (int i = 0; i < 3; ++i) {
 		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, -2, 0))));
 	}
-
 
 	// INIT PLAYER + CAMERA
 
@@ -228,21 +227,23 @@ void update(float timeDelta)
 
 void draw()
 {
-	player->draw(shader);
-	world->draw(shader);
+	player->draw(textureShader);
 
 	for (unsigned i = 0; i < cubes.size(); ++i) {
 		if (i % 2 == 0) {
-			cubes[i]->draw(shader);
+			cubes[i]->draw(textureShader);
 		}
 	}
+
+	world->draw(textureShader);
+
 
 }
 
 void cleanup()
 {
-	delete shader; shader = nullptr;
-	delete texture; texture = nullptr;
+	delete textureShader; textureShader = nullptr;
+	delete normalsShader; normalsShader = nullptr;
 	delete player; player = nullptr;
 	delete world; world = nullptr;
 }

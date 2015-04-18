@@ -126,15 +126,6 @@ void Player::handleInputFreeCamera(GLFWwindow *window, float timeDelta)
 	/// CAMERA MOVEMENT
 	//////////////////////////
 
-	// rotate camera based on mouse movement
-	// the mouse pointer is reset to (0, 0) every frame, and we just take the displacement of that frame
-	const float mouseSensitivity = 0.01f;
-	double mouseX, mouseY;
-	glfwGetCursorPos(window, &mouseX, &mouseY);
-	camera->rotateY(-mouseSensitivity * (float)mouseX, SceneObject::RIGHT);
-	camera->rotateX(-mouseSensitivity * (float)mouseY, SceneObject::RIGHT);
-	glfwSetCursorPos(window, 0, 0); // reset the mouse, so it doesn't leave the window
-
 	// camera movement
 	// note: we apply rotation before translation since we dont want the distance from the origin
 	// to affect how we rotate
@@ -158,6 +149,15 @@ void Player::handleInputFreeCamera(GLFWwindow *window, float timeDelta)
 	else if (glfwGetKey(window, 'E')) {
 	    camera->translate(glm::vec3(0,1,0) * -timeDelta * moveSpeed, SceneObject::LEFT);
 	}
+
+	// rotate camera based on mouse movement
+	// the mouse pointer is reset to (0, 0) every frame, and we just take the displacement of that frame
+	const float mouseSensitivity = 0.01f;
+	double mouseX, mouseY;
+	glfwGetCursorPos(window, &mouseX, &mouseY);
+	camera->rotateX(-mouseSensitivity * (float)mouseY, SceneObject::RIGHT);
+	camera->rotateY(-mouseSensitivity * (float)mouseX, SceneObject::RIGHT);
+	glfwSetCursorPos(window, 0, 0); // reset the mouse, so it doesn't leave the window
 
 	// handle camera zoom by changing the field of view depending on mouse scroll since last frame
 	float zoomSensitivity = -0.1f;

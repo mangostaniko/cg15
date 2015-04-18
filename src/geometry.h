@@ -28,6 +28,9 @@ class Geometry : public SceneObject
 	// the path of the directory containing the model file to load
 	std::string directoryPath;
 
+	// pointers to all textures loaded by the surfaces of this geometry, to avoid loading twice
+	std::vector<std::shared_ptr<Texture>> loadedTextures;
+
 	/**
 	 * @brief load surfaces from file
 	 * note: this loads only the first diffuse, specular and normal texture for each surface
@@ -53,6 +56,15 @@ class Geometry : public SceneObject
 	 * @return
 	 */
 	void processMesh(aiMesh *mesh, const aiScene *scene);
+
+	/**
+	 * @brief load assimp aiMesh texture of given type.
+	 * textures of same filePath are reused among the geometry object.
+	 * @param mat the assimp mesh material
+	 * @param type the aiTextureType
+	 * @return a pointer to the texture
+	 */
+	std::shared_ptr<Texture> loadMaterialTexture(aiMaterial *mat, aiTextureType type);
 
 public:
 

@@ -1,7 +1,7 @@
 #include "cube.h"
 
 Cube::Cube(const glm::mat4 &matrix_)
-	: Geometry(matrix_, "../data/models/skunk/skunk.dae")
+	: Geometry(matrix_, "../data/models/cube/cube.dae")
 {
 }
 

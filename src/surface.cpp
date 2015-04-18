@@ -1,6 +1,6 @@
 #include "surface.h"
 
-Surface::Surface(const std::vector<Vertex> &vertices_, const std::vector<GLuint> &indices_, const std::vector<Texture> &textures_)
+Surface::Surface(const std::vector<Vertex> &vertices_, const std::vector<GLuint> &indices_, const std::vector<std::shared_ptr<Texture>> &textures_)
     : vertices(vertices_)
 	, indices(indices_)
 	, textures(textures_)
@@ -68,17 +68,17 @@ void Surface::draw(Shader *shader)
 
 		GLint texLocation;
 		if (i == 0) {
-			textures[i].bind(0); // bind texture to texture unit 0
+			textures[i]->bind(0); // bind texture to texture unit 0
 			texLocation = glGetUniformLocation(shader->programHandle, "diffuseTexture"); // get uniform location in shader
 			glUniform1i(texLocation, 0); // associate texture unit 0 with the shader uniform
-		}
+		}		
 		else if (i == 1) {
-			textures[i].bind(1);
+			textures[i]->bind(1);
 			texLocation = glGetUniformLocation(shader->programHandle, "specularTexture");
 			glUniform1i(texLocation, 1);
 		}
 		else if (i == 2) {
-			textures[i].bind(2);
+			textures[i]->bind(2);
 			texLocation = glGetUniformLocation(shader->programHandle, "normalTexture");
 			glUniform1i(texLocation, 2);
 		}
@@ -89,7 +89,7 @@ void Surface::draw(Shader *shader)
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0); // use given indices
 	glBindVertexArray(0);
 
-	// TODO DELETEME
+	// DEBUG PRINT VERTICES
 	//std::cout << vertices.size() << std::endl;
 	/*//
 	for (unsigned int i = 0; i < vertices.size(); ++i) {
@@ -99,6 +99,5 @@ void Surface::draw(Shader *shader)
 
 	}
 	//*/
-
 
 }
