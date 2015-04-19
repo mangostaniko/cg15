@@ -30,14 +30,13 @@ void Player::update(float timeDelta)
 	// note: camera navigation mode is toggled on tab key press, look for keyCallback
 	if (cameraNavMode == FOLLOW_PLAYER) {
 		handleInput(window, timeDelta);
-		viewProjMat = camera->getProjectionMatrix() * glm::lookAt(camera->getLocation(), getLocation(), camUp);
+		glm::vec3 v = glm::normalize(getLocation() - camera->getLocation()) * 15.f;
+		viewProjMat = camera->getProjectionMatrix() * glm::lookAt(getLocation()-v, getLocation(), camUp);
 	}
 	else {
 		handleInputFreeCamera(window, timeDelta);
 		viewProjMat = camera->getProjectionMatrix() * camera->getViewMatrix();
 	}
-
-	//camera->update(timeDelta);
 
 }
 
@@ -57,9 +56,9 @@ void Player::draw(Shader *shader)
 void Player::handleInput(GLFWwindow *window, float timeDelta)
 {
 
-	float moveSpeed = 5.0f;
+	float moveSpeed = 10.0f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
-		moveSpeed = 20.0f;
+		moveSpeed = 40.0f;
 	}
 
 
@@ -71,7 +70,6 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
     }
 	else if (glfwGetKey(window, 'S')) {
 		translate(glm::vec3(0.0f, 0.0f, 0.1f) * timeDelta * moveSpeed, SceneObject::RIGHT);
-
 	}
 
 	if (glfwGetKey(window, 'A')) {
@@ -103,7 +101,6 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	camToTarget = glm::vec3(rotateYaw * glm::vec4(camToTarget, 0));
 	camToTarget = glm::vec3(rotatePitch * glm::vec4(camToTarget, 0));
 	camToTarget = camToTarget + getLocation();
-	
 	camera->setLocation(camToTarget);
 
 	
@@ -121,11 +118,11 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 void Player::handleInputFreeCamera(GLFWwindow *window, float timeDelta)
 {
 
-	float moveSpeed = 5.0f;
+	float moveSpeed = 10.0f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
-		moveSpeed = 20.0f;
+		moveSpeed = 30.0f;
 	}
-
+	
 	//////////////////////////
 	/// CAMERA MOVEMENT
 	//////////////////////////
