@@ -12,9 +12,11 @@
 #include "shader.h"
 #include "texture.h"
 
+#pragma warning(push, 0)  // -> turn off warnings for visual c++; only use it for headers from external libs
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
+#pragma warning(pop) // -> turn off warnings for visual c++
 
 /**
  * @brief A Geometry is a SceneObject that holds Surfaces which contain mesh data and textures.

@@ -1,3 +1,5 @@
+#pragma warning(push, 0)  // -> turn off warnings for visual c++; only use it for headers from external libs
+
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -8,6 +10,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#pragma warning(pop) // -> turn off warnings for visual c++
 
 #include <iostream>
 #include <sstream>

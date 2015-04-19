@@ -29,7 +29,7 @@ if(MSVC)
     set(GLFW_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw-3.1.1.bin.WIN32)
 	set(GLM_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/glm)
 	set(FreeImage_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/FreeImage)
-	set(Assimp_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/Assimp3.0)
+	set(Assimp_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/assimp--3.0.1270-sdk)
 else(MSVC)
 	find_package(GLEW REQUIRED)
 	find_package(GLFW REQUIRED)
@@ -83,15 +83,17 @@ if(MSVC)
 						${GLM_PACKAGE_DIR}
 						${FreeImage_ROOT_DIR}/Dist/x32
 						${FreeImage_ROOT_DIR}/Wrapper/FreeImagePlus/dist/x32
+						${Assimp_ROOT_DIR}/include
 						)
 
 	### LINK LIBRARIES ###
 	target_link_libraries(${PROJECT_NAME}
 						${OPENGL_LIBRARIES}
-						${GLEW_ROOT_DIR}/lib/Release/Win32
-						${GLFW_ROOT_DIR}/lib-vc2013
-						${FreeImage_ROOT_DIR}/Dist/x32
-						${FreeImage_ROOT_DIR}/Wrapper/FreeImagePlus/dist/x32
+						glew32s.lib
+						glfw3.lib
+						FreeImage.lib
+						FreeImagePlus.lib
+						assimp.lib
                         )
 else(MSVC)
 	### INCLUDE HEADER FILES ###
