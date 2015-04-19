@@ -47,6 +47,10 @@ void Player::draw(Shader *shader)
 	GLint viewProjMatLocation = glGetUniformLocation(shader->programHandle, "viewProjMat"); // get uniform location in shader
 	glUniformMatrix4fv(viewProjMatLocation, 1, GL_FALSE, glm::value_ptr(viewProjMat)); // shader location, count, transpose?, value pointer
 
+	// pass camera position to shader
+	GLint cameraPosLocation = glGetUniformLocation(shader->programHandle, "cameraPos");
+	glUniform3f(cameraPosLocation, camera->getLocation().x, camera->getLocation().y, camera->getLocation().z);
+
 	Geometry::draw(shader);
 }
 

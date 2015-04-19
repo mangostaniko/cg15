@@ -78,6 +78,17 @@ public:
 	 */
 	virtual void draw(Shader *shader);
 
+	/**
+	 * @brief return a the transposed inverse of the modelMatrix.
+	 * this should be used to transform normals into world space.
+	 * the inverse is used since the normals of a scaled vector are inversely scaled,
+	 * the transpose is used to revert the inversion of the rotational components
+	 * while not affecting the scale factors which lie on the main diagonal.
+	 * mat3 is used since the translational component is irrelevant for normals.
+	 * @return the matrix to transform normals into world space.
+	 */
+	glm::mat3 getNormalMatrix() const;
+
 };
 
 #endif // GEOMETRY_H

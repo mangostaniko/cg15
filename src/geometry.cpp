@@ -11,6 +11,11 @@ Geometry::~Geometry()
 
 }
 
+glm::mat3 Geometry::getNormalMatrix() const
+{
+	return glm::transpose(glm::mat3(getInverseMatrix()));
+}
+
 void Geometry::update(float timeDelta)
 {
 
@@ -21,6 +26,11 @@ void Geometry::draw(Shader *shader)
 	// pass model matrix to shader
 	GLint modelMatLocation = glGetUniformLocation(shader->programHandle, "modelMat"); // get uniform location in shader
 	glUniformMatrix4fv(modelMatLocation, 1, GL_FALSE, glm::value_ptr(getMatrix())); // shader location, count, transpose?, value pointer
+
+	// pass normal matrix to shader
+	GLint normalMatLocation = glGetUniformLocation(shader->programHandle, "normalMat");
+	glUniformMatrix3fv(normalMatLocation, 1, GL_FALSE, glm::value_ptr(getNormalMatrix()));
+
 
 	for (GLuint i = 0; i < surfaces.size(); ++i) {
 		surfaces[i]->draw(shader);
