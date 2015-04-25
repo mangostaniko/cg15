@@ -31,6 +31,7 @@ GLFWwindow *window;
 
 Shader *textureShader, *normalsShader;
 Geometry *player;
+Geometry *hawk;
 Geometry *world;
 std::vector<std::shared_ptr<Geometry>> cubes;
 
@@ -189,7 +190,7 @@ void init(GLFWwindow *window)
 	textureShader->useShader(); // non-trivial cost
 
 
-	// INIT OBJECTS
+	// INIT WORLD + OBJECTS
 
 	world = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/world.dae");
 
@@ -210,11 +211,18 @@ void init(GLFWwindow *window)
 	Camera *camera = new Camera(glm::mat4(1.0f), glm::radians(60.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
 
 	player = new Player(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 6)), camera, window, "../data/models/skunk/skunk.dae");
+
+
+	// INIT HAWK
+
+	hawk = new Geometry(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(30, 30, 30)), glm::vec3(0, 1, -5)), "../data/models/hawk/hawk.dae");
+
 }
 
 void update(float timeDelta)
 {
 	player->update(timeDelta);
+	hawk->update(timeDelta);
 
 	// update cubes
 	for (unsigned i = 0; i < cubes.size(); ++i) {
@@ -228,6 +236,7 @@ void update(float timeDelta)
 void draw()
 {
 	player->draw(textureShader);
+	hawk->draw(textureShader);
 
 	for (unsigned i = 0; i < cubes.size(); ++i) {
 		if (i % 2 == 0) {
@@ -245,6 +254,7 @@ void cleanup()
 	delete textureShader; textureShader = nullptr;
 	delete normalsShader; normalsShader = nullptr;
 	delete player; player = nullptr;
+	delete hawk; hawk = nullptr;
 	delete world; world = nullptr;
 }
 

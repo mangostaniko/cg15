@@ -12,7 +12,7 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	glfwSetScrollCallback(window, onScroll);
 	glfwSetKeyCallback(window, keyCallback);
 
-	camera->setTransform(glm::translate(glm::mat4(1.0f), getLocation()+glm::vec3(0,0,5)));  //move camera back a bit
+	camera->setTransform(glm::translate(glm::mat4(1.0f), getLocation()+glm::vec3(0,0,10)));  //move camera back a bit
 	camDirection = glm::normalize(camera->getLocation() - getLocation());
 	camUp = glm::vec3(0, 1, 0);
 	camRight = glm::normalize(glm::cross(camUp, camDirection));
