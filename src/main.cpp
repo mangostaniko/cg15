@@ -1,5 +1,3 @@
-#pragma warning(push, 0)  // -> turn off warnings for visual c++; only use it for headers from external libs
-
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -10,8 +8,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#pragma warning(pop) // -> turn off warnings for visual c++
 
 #include <iostream>
 #include <sstream>
@@ -195,7 +191,7 @@ void init(GLFWwindow *window)
 
 	// INIT OBJECTS
 
-	world = new Geometry(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, -3, 0)), "../data/models/world/world.dae");
+	world = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/world.dae");
 
 	for (int i = 0; i < 3; ++i) {
 		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, 0, 0))));
@@ -211,9 +207,9 @@ void init(GLFWwindow *window)
 
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
-	Camera *camera = new Camera(glm::mat4(1.0f), glm::radians(60.0f), width/(float)height, 0.2f, 60.0f); // mat, fov, aspect, znear, zfar
+	Camera *camera = new Camera(glm::mat4(1.0f), glm::radians(60.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
 
-	player = new Player(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 6)), camera, window, "../data/models/hawk/hawk.dae");
+	player = new Player(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 6)), camera, window, "../data/models/skunk/skunk.dae");
 }
 
 void update(float timeDelta)

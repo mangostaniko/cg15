@@ -165,8 +165,7 @@ std::shared_ptr<Texture> Geometry::loadMaterialTexture(aiMaterial *mat, aiTextur
 		// check if we already loaded the texture of the given path for another mesh
 		bool skip = false;
 		for (auto existingTexture : loadedTextures) {
-			std::cout << existingTexture->getFilePath() << std::endl;
-			std::cout << texturePath.C_Str() << std::endl;
+
 	        if (existingTexture->getFilePath() == texturePath.C_Str()) {
 				skip = true;
 	            texture = existingTexture; // use pointer to existing texture

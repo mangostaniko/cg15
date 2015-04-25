@@ -12,7 +12,7 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	glfwSetScrollCallback(window, onScroll);
 	glfwSetKeyCallback(window, keyCallback);
 
-	camera->setTransform(glm::translate(glm::mat4(1.0f), getLocation()+glm::vec3(0,0,10)));  //move camera back a bit
+	camera->setTransform(glm::translate(glm::mat4(1.0f), getLocation()+glm::vec3(0,0,5)));  //move camera back a bit
 	camDirection = glm::normalize(camera->getLocation() - getLocation());
 	camUp = glm::vec3(0, 1, 0);
 	camRight = glm::normalize(glm::cross(camUp, camDirection));
@@ -30,7 +30,7 @@ void Player::update(float timeDelta)
 	// note: camera navigation mode is toggled on tab key press, look for keyCallback
 	if (cameraNavMode == FOLLOW_PLAYER) {
 		handleInput(window, timeDelta);
-		glm::vec3 v = glm::normalize(getLocation() - camera->getLocation()) * 15.f;
+		glm::vec3 v = glm::normalize(getLocation() - camera->getLocation()) * 15.0f;
 		viewProjMat = camera->getProjectionMatrix() * glm::lookAt(getLocation()-v, getLocation(), camUp);
 	}
 	else {
@@ -58,25 +58,25 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 
 	float moveSpeed = 10.0f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
-		moveSpeed = 40.0f;
+		moveSpeed = 30.0f;
 	}
 
 
-	// camera movement
+	// player movement
 	// note: we apply rotation before translation since we dont want the distance from the origin
 	// to affect how we rotate
     if (glfwGetKey(window, 'W')) {
-		translate(glm::vec3(0.0f, 0.0f, -0.1f) * timeDelta * moveSpeed, SceneObject::RIGHT);
+		translate(glm::vec3(0.0f, 0.0f, -1.0f) * timeDelta * moveSpeed, SceneObject::RIGHT);
     }
 	else if (glfwGetKey(window, 'S')) {
-		translate(glm::vec3(0.0f, 0.0f, 0.1f) * timeDelta * moveSpeed, SceneObject::RIGHT);
+		translate(glm::vec3(0.0f, 0.0f, 1.0f) * timeDelta * moveSpeed, SceneObject::RIGHT);
 	}
 
 	if (glfwGetKey(window, 'A')) {
-		rotateY(timeDelta * glm::radians(90.f), SceneObject::RIGHT);
+		rotateY(timeDelta * glm::radians(200.f), SceneObject::RIGHT);
     }
 	else if (glfwGetKey(window, 'D')) {
-		rotateY(timeDelta * glm::radians(-90.f), SceneObject::RIGHT);
+		rotateY(timeDelta * glm::radians(-200.f), SceneObject::RIGHT);
     }
 
 	if (glfwGetKey(window, 'Q')) {
