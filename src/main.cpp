@@ -224,7 +224,7 @@ void update(float timeDelta)
 {
 	player->update(timeDelta);
 
-	hawk->update(timeDelta);
+	//hawk->update(timeDelta);
 	hawk->rotateY(3*timeDelta, SceneObject::LEFT);
 	hawk->translate(glm::vec3(0, glm::cos(glfwGetTime())/20, 0), SceneObject::RIGHT);
 	hawk->rotateZ(glm::cos(glfwGetTime())/200, SceneObject::RIGHT);
