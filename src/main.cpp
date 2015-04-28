@@ -210,7 +210,7 @@ void init(GLFWwindow *window)
 	glfwGetWindowSize(window, &width, &height);
 	Camera *camera = new Camera(glm::mat4(1.0f), glm::radians(60.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
 
-	player = new Player(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 6)), camera, window, "../data/models/skunk/skunk.dae");
+	player = new Player(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), camera, window, "../data/models/skunk/skunk.dae");
 
 
 	// INIT HAWK
@@ -240,7 +240,7 @@ void draw()
 
 	for (unsigned i = 0; i < cubes.size(); ++i) {
 		if (i % 2 == 0) {
-			cubes[i]->draw(textureShader);
+			//cubes[i]->draw(textureShader);
 		}
 	}
 

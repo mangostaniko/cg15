@@ -120,7 +120,7 @@ void Player::handleInputFreeCamera(GLFWwindow *window, float timeDelta)
 
 	float moveSpeed = 10.0f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
-		moveSpeed = 30.0f;
+		moveSpeed = 60.0f;
 	}
 	
 	//////////////////////////
@@ -156,8 +156,11 @@ void Player::handleInputFreeCamera(GLFWwindow *window, float timeDelta)
 	const float mouseSensitivity = 0.01f;
 	double mouseX, mouseY;
 	glfwGetCursorPos(window, &mouseX, &mouseY);
-	camera->rotateX(-mouseSensitivity * (float)mouseY, SceneObject::RIGHT);
-	camera->rotateY(-mouseSensitivity * (float)mouseX, SceneObject::RIGHT);
+	camera->rotateX(-mouseSensitivity * (float)mouseY, SceneObject::RIGHT); // rotate around local x axis (tilt up/down)
+	glm::vec3 location = camera->getLocation();
+	camera->translate(-location, SceneObject::LEFT);
+	camera->rotateY(-mouseSensitivity * (float)mouseX, SceneObject::LEFT); // rotate around global y at local position
+	camera->translate(location, SceneObject::LEFT);
 	glfwSetCursorPos(window, 0, 0); // reset the mouse, so it doesn't leave the window
 
 	// handle camera zoom by changing the field of view depending on mouse scroll since last frame

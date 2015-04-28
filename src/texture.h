@@ -16,7 +16,7 @@
 class Texture
 {
 	GLuint handle;
-	const std::string &filePath;
+	const std::string filePath;
 
 public:
 	Texture(const std::string &filePath);
