@@ -12,7 +12,8 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	glfwSetScrollCallback(window, onScroll);
 	glfwSetKeyCallback(window, keyCallback);
 
-	camera->setTransform(glm::translate(glm::mat4(1.0f), getLocation()+glm::vec3(0,0,10)));  //move camera back a bit
+	camera->setTransform(glm::translate(glm::mat4(1.0f), getLocation()+glm::vec3(0,2,6)));  //move camera back a bit
+	lastCamTransform = camera->getMatrix();
 	camDirection = glm::normalize(camera->getLocation() - getLocation());
 	camUp = glm::vec3(0, 1, 0);
 	camRight = glm::normalize(glm::cross(camUp, camDirection));
@@ -28,9 +29,10 @@ Player::~Player()
 void Player::update(float timeDelta)
 {
 	// note: camera navigation mode is toggled on tab key press, look for keyCallback
+	handleNavModeChange();
 	if (cameraNavMode == FOLLOW_PLAYER) {
 		handleInput(window, timeDelta);
-		glm::vec3 v = glm::normalize(getLocation() - camera->getLocation()) * 15.0f;
+		glm::vec3 v = glm::normalize(getLocation() - camera->getLocation()) * 5.0f;
 		viewProjMat = camera->getProjectionMatrix() * glm::lookAt(getLocation()-v, getLocation(), camUp);
 	}
 	else {
@@ -109,8 +111,8 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	//// handle camera zoom by changing the field of view depending on mouse scroll since last frame
 	float zoomSensitivity = -0.1f;
 	float fieldOfView = camera->getFieldOfView() + zoomSensitivity * (float)scrollY;
-	if (fieldOfView < glm::radians(20.0f)) fieldOfView = glm::radians(20.0f);
-	if (fieldOfView > glm::radians(60.0f)) fieldOfView = glm::radians(60.0f);
+	if (fieldOfView < glm::radians(ZOOM_MIN)) fieldOfView = glm::radians(ZOOM_MIN);
+	if (fieldOfView > glm::radians(ZOOM_MAX)) fieldOfView = glm::radians(ZOOM_MAX);
 	camera->setFieldOfView(fieldOfView);
 	scrollY = 0.0;	
 }
@@ -120,7 +122,7 @@ void Player::handleInputFreeCamera(GLFWwindow *window, float timeDelta)
 
 	float moveSpeed = 10.0f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
-		moveSpeed = 60.0f;
+		moveSpeed = 50.0f;
 	}
 	
 	//////////////////////////
@@ -166,8 +168,8 @@ void Player::handleInputFreeCamera(GLFWwindow *window, float timeDelta)
 	// handle camera zoom by changing the field of view depending on mouse scroll since last frame
 	float zoomSensitivity = -0.1f;
 	float fieldOfView = camera->getFieldOfView() + zoomSensitivity * (float)scrollY;
-	if (fieldOfView < glm::radians(20.0f)) fieldOfView = glm::radians(20.0f);
-	if (fieldOfView > glm::radians(60.0f)) fieldOfView = glm::radians(60.0f);
+	if (fieldOfView < glm::radians(ZOOM_MIN)) fieldOfView = glm::radians(ZOOM_MIN);
+	if (fieldOfView > glm::radians(ZOOM_MAX)) fieldOfView = glm::radians(ZOOM_MAX);
 	camera->setFieldOfView(fieldOfView);
 	scrollY = 0.0;
 
@@ -189,3 +191,17 @@ void Player::keyCallback(GLFWwindow *window, int key, int scancode, int action, 
 		}
 	}
 }
+
+void Player::handleNavModeChange()
+{
+	if (cameraNavMode == lastNavMode) {
+		return;
+	}
+
+	glm::mat4 temp = camera->getMatrix();
+	camera->setTransform(lastCamTransform);
+	lastCamTransform = temp;
+
+	lastNavMode = cameraNavMode;
+}
+

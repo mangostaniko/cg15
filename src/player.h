@@ -6,6 +6,9 @@
 #include "geometry.h"
 #include "camera.h"
 
+#define ZOOM_MIN 30.0f
+#define ZOOM_MAX 80.0f
+
 /**
  * @brief The Player class. This stores the player Geometry and a Camera,
  * as well as a GLFWwindow to handle input.
@@ -26,8 +29,16 @@ class Player : public Geometry
 	};
 
 	static CameraNavigationMode cameraNavMode;
+	CameraNavigationMode lastNavMode;
+	glm::mat4 lastCamTransform; // safe transformation matrix when changing modes
 
 	static double scrollY; // amount scrolled since last frame
+
+	/**
+	 * @brief check if the camera navigation mode has changed and set camera accordingly
+	 * NOTE: currently only works if there are only 2 nav modes
+	 */
+	void handleNavModeChange();
 
 	/**
 	 * @brief glfw keyCallback on key events

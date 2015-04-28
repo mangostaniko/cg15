@@ -208,21 +208,27 @@ void init(GLFWwindow *window)
 
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
-	Camera *camera = new Camera(glm::mat4(1.0f), glm::radians(60.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
+	Camera *camera = new Camera(glm::mat4(1.0f), glm::radians(80.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
 
 	player = new Player(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), camera, window, "../data/models/skunk/skunk.dae");
 
 
 	// INIT HAWK
 
-	hawk = new Geometry(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(30, 30, 30)), glm::vec3(0, 1, -5)), "../data/models/hawk/hawk.dae");
+	hawk = new Geometry(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)), "../data/models/hawk/hawk.dae");
+	hawk->rotateY(glm::radians(270.0), SceneObject::RIGHT);
 
 }
 
 void update(float timeDelta)
 {
 	player->update(timeDelta);
+
 	hawk->update(timeDelta);
+	hawk->rotateY(3*timeDelta, SceneObject::LEFT);
+	hawk->translate(glm::vec3(0, glm::cos(glfwGetTime())/20, 0), SceneObject::RIGHT);
+	hawk->rotateZ(glm::cos(glfwGetTime())/200, SceneObject::RIGHT);
+	hawk->rotateX(glm::cos(glfwGetTime())/200, SceneObject::RIGHT);
 
 	// update cubes
 	for (unsigned i = 0; i < cubes.size(); ++i) {
