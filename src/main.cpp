@@ -14,12 +14,13 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <random>
+#include <ctime>
 
 #include "shader.h"
 #include "sceneobject.h"
 #include "camera.h"
 #include "player.h"
-#include "geometry/cube.h"
 
 
 void init(GLFWwindow *window);
@@ -28,12 +29,18 @@ void draw();
 void cleanup();
 
 GLFWwindow *window;
+bool running = true;
+bool paused = false;
 
 Shader *textureShader, *normalsShader;
 Geometry *player;
 Geometry *hawk;
 Geometry *world;
-std::vector<std::shared_ptr<Geometry>> cubes;
+
+Geometry *carrot;
+glm::vec3 carrotPos;
+//std::vector<std::shared_ptr<Geometry>> carrots;
+const float timeToStarvation = 32;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
 
@@ -121,26 +128,39 @@ int main(int argc, char **argv)
 	double deltaT = 0.0;
 	double deltaShowFpsTime = 0.0;
 
-	bool running = true;
-
 	while (running && !glfwWindowShouldClose(window)) {
 
-		//////////////////////////
-		/// UPDATE
-		//////////////////////////
+		if (!paused) {
 
-		time = glfwGetTime(); // seconds
-		deltaT = time - lastTime;
-		lastTime = time;
+			//////////////////////////
+			/// UPDATE
+			//////////////////////////
 
-		// print framerate around every second (console output is costly)
-		deltaShowFpsTime += deltaT;
-		if (deltaShowFpsTime > 1.0) {
-			deltaShowFpsTime = 0;
-			std::cout << "fps: " << (int)(1/deltaT) << std::endl;
+			time = glfwGetTime(); // seconds
+			deltaT = time - lastTime;
+			lastTime = time;
+
+			// print framerate around every second (console output is costly)
+			deltaShowFpsTime += deltaT;
+			if (deltaShowFpsTime > 1.0) {
+				deltaShowFpsTime = 0;
+				std::cout << "fps: " << (int)(1/deltaT) << std::endl;
+
+				// print time until starvation
+				std::cout << "time until starvation: " << int(timeToStarvation - glfwGetTime()) << std::endl;
+			}
+
+			update(deltaT);
+
+			// pause on starvation
+			if (glfwGetTime() > timeToStarvation-1) {
+				std::cout << "YOU STARVED!!! :(\nPress ESC to exit." << std::endl;
+				player->rotateZ(3.14159/2, SceneObject::RIGHT);
+				player->translate(glm::vec3(0, 0.3, 0), SceneObject::LEFT);
+				paused = true;
+			}
+
 		}
-
-		update(deltaT);
 
 
 		//////////////////////////
@@ -163,7 +183,9 @@ int main(int argc, char **argv)
 			std::cerr << "ERROR: OpenGL Error " << glErr << std::endl;
 		}
 
-		running = !glfwGetKey(window, GLFW_KEY_ESCAPE);
+		if (running) {
+			running = !glfwGetKey(window, GLFW_KEY_ESCAPE);
+		}
 
 	}
 
@@ -194,15 +216,12 @@ void init(GLFWwindow *window)
 
 	world = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/world.dae");
 
-	for (int i = 0; i < 3; ++i) {
-		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, 0, 0))));
-	}
-	for (int i = 0; i < 3; ++i) {
-		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, 2, 0))));
-	}
-	for (int i = 0; i < 3; ++i) {
-		cubes.push_back(std::make_shared<Cube>(glm::translate(glm::mat4(1.0f), glm::vec3(-2 + i*2, -2, 0))));
-	}
+	std::default_random_engine randGen(time(nullptr));
+	std::uniform_int_distribution<int> randDistribution(-49,49);
+	randDistribution(randGen);
+	carrotPos = glm::vec3(randDistribution(randGen), 0, randDistribution(randGen));
+	carrot = new Geometry(glm::translate(glm::mat4(1.0f), carrotPos), "../data/models/world/carrot.dae");
+
 
 	// INIT PLAYER + CAMERA
 
@@ -223,19 +242,16 @@ void init(GLFWwindow *window)
 void update(float timeDelta)
 {
 	player->update(timeDelta);
+	if (glm::length(glm::abs(player->getLocation() - carrotPos)) < 1.0f) {
+		std::cout << "YOU FOUND THE CARROT!!! WOOHOO!!" << std::endl;
+		running = false;
+	}
 
 	//hawk->update(timeDelta);
 	hawk->rotateY(3*timeDelta, SceneObject::LEFT);
 	hawk->translate(glm::vec3(0, glm::cos(glfwGetTime())/20, 0), SceneObject::RIGHT);
 	hawk->rotateZ(glm::cos(glfwGetTime())/200, SceneObject::RIGHT);
 	hawk->rotateX(glm::cos(glfwGetTime())/200, SceneObject::RIGHT);
-
-	// update cubes
-	for (unsigned i = 0; i < cubes.size(); ++i) {
-		if (i % 2 == 0) {
-			cubes[i]->update(((i % 2) - 0.5) * (i%cubes.size() / 2 + 1) * timeDelta);
-		}
-	}
 
 }
 
@@ -244,14 +260,8 @@ void draw()
 	player->draw(textureShader);
 	hawk->draw(textureShader);
 
-	for (unsigned i = 0; i < cubes.size(); ++i) {
-		if (i % 2 == 0) {
-			//cubes[i]->draw(textureShader);
-		}
-	}
-
 	world->draw(textureShader);
-
+	carrot->draw(textureShader);
 
 }
 
@@ -262,6 +272,7 @@ void cleanup()
 	delete player; player = nullptr;
 	delete hawk; hawk = nullptr;
 	delete world; world = nullptr;
+	delete carrot; carrot = nullptr;
 }
 
 /**

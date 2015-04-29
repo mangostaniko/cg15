@@ -59,8 +59,6 @@ set(SRC_CLASSES
     
 	src/player.h
 	src/player.cpp
-	src/geometry/cube.h
-	src/geometry/cube.cpp
     )
 	
 # relative path to shader files

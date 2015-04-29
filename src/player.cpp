@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player::CameraNavigationMode Player::cameraNavMode = FREE_FLY;
+Player::CameraNavigationMode Player::cameraNavMode = FOLLOW_PLAYER;
 double Player::scrollY = 0.0;
 
 Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, const std::string &filePath)
@@ -58,7 +58,7 @@ void Player::draw(Shader *shader)
 void Player::handleInput(GLFWwindow *window, float timeDelta)
 {
 
-	float moveSpeed = 10.0f;
+	float moveSpeed = 15.0f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
 		moveSpeed = 30.0f;
 	}
