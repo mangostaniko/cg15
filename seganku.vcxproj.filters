@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="Windows-1252"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Sebastian\Desktop\CGUE\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Sebastian\Desktop\CGUE\src\shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Sebastian\Desktop\CGUE\src\texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Sebastian\Desktop\CGUE\src\sceneobject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Sebastian\Desktop\CGUE\src\camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Sebastian\Desktop\CGUE\src\geometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Sebastian\Desktop\CGUE\src\surface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Sebastian\Desktop\CGUE\src\player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Sebastian\Desktop\CGUE\src\shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Sebastian\Desktop\CGUE\src\texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Sebastian\Desktop\CGUE\src\sceneobject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Sebastian\Desktop\CGUE\src\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Sebastian\Desktop\CGUE\src\geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Sebastian\Desktop\CGUE\src\surface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Sebastian\Desktop\CGUE\src\player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Sebastian\Desktop\CGUE\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Sebastian\Desktop\CGUE\src\shaders\texture_shader.vert" />
+    <None Include="C:\Users\Sebastian\Desktop\CGUE\src\shaders\texture_shader.frag" />
+    <None Include="C:\Users\Sebastian\Desktop\CGUE\src\shaders\normals_shader.vert" />
+    <None Include="C:\Users\Sebastian\Desktop\CGUE\src\shaders\normals_shader.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{320CED66-6092-42EB-87C0-021105B03BB7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{AC78C02F-940B-4238-9FA3-5CAF3129459F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
