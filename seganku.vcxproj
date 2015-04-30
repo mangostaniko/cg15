@@ -86,7 +86,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalOptions> -g -std=c++0x %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>C:\Users\Sebastian\Desktop\CGUE\external\glew-1.1.0\include;C:\Users\Sebastian\Desktop\CGUE\external\glfw-3.1.1.bin.WIN32\include;C:\Users\Sebastian\Desktop\CGUE\external\glm;C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\assimp--3.0.1270-sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\external\glew-1.1.0\include;$(SolutionDir)\external\glfw-3.1.1.bin.WIN32\include;$(SolutionDir)\external\glm;$(SolutionDir)\external\FreeImage\Dist\x32;$(SolutionDir)\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;$(SolutionDir)\external\assimp--3.0.1270-sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -116,7 +116,7 @@
     <Link>
       <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glu32.lib;opengl32.lib;glew32s.lib;glfw3.lib;FreeImage.lib;FreeImagePlus.lib;assimp.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\glew-1.1.0\lib\Release\Win32;C:\Users\Sebastian\Desktop\CGUE\external\glfw-3.1.1.bin.WIN32\lib-vc2013;C:\Users\Sebastian\Desktop\CGUE\external\assimp--3.0.1270-sdk\lib\assimp_release-dll_win32;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\external\FreeImage\Dist\x32;$(SolutionDir)\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;$(SolutionDir)\external\glew-1.1.0\lib\Release\Win32;$(SolutionDir)\external\glfw-3.1.1.bin.WIN32\lib-vc2013;$(SolutionDir)\external\assimp--3.0.1270-sdk\lib\assimp_release-dll_win32;</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>C:/Users/Sebastian/Desktop/CGUE/Debug/seganku.lib</ImportLibrary>
@@ -132,7 +132,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalOptions> -g -std=c++0x %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>C:\Users\Sebastian\Desktop\CGUE\external\glew-1.1.0\include;C:\Users\Sebastian\Desktop\CGUE\external\glfw-3.1.1.bin.WIN32\include;C:\Users\Sebastian\Desktop\CGUE\external\glm;C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\assimp--3.0.1270-sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\external\glew-1.1.0\include;$(SolutionDir)\external\glfw-3.1.1.bin.WIN32\include;$(SolutionDir)\external\glm;$(SolutionDir)\external\FreeImage\Dist\x32;$(SolutionDir)\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;$(SolutionDir)\external\assimp--3.0.1270-sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>
@@ -162,7 +162,7 @@
     <Link>
       <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glu32.lib;opengl32.lib;glew32s.lib;glfw3.lib;FreeImage.lib;FreeImagePlus.lib;assimp.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\glew-1.1.0\lib\Release\Win32;C:\Users\Sebastian\Desktop\CGUE\external\glfw-3.1.1.bin.WIN32\lib-vc2013;C:\Users\Sebastian\Desktop\CGUE\external\assimp--3.0.1270-sdk\lib\assimp_release-dll_win32;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\external\FreeImage\Dist\x32;$(SolutionDir)\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;$(SolutionDir)\external\glew-1.1.0\lib\Release\Win32;$(SolutionDir)\external\glfw-3.1.1.bin.WIN32\lib-vc2013;$(SolutionDir)\external\assimp--3.0.1270-sdk\lib\assimp_release-dll_win32;</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>C:/Users/Sebastian/Desktop/CGUE/Release/seganku.lib</ImportLibrary>
@@ -178,7 +178,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
     <ClCompile>
       <AdditionalOptions> -g -std=c++0x %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>C:\Users\Sebastian\Desktop\CGUE\external\glew-1.1.0\include;C:\Users\Sebastian\Desktop\CGUE\external\glfw-3.1.1.bin.WIN32\include;C:\Users\Sebastian\Desktop\CGUE\external\glm;C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\assimp--3.0.1270-sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\external\glew-1.1.0\include;$(SolutionDir)\external\glfw-3.1.1.bin.WIN32\include;$(SolutionDir)\external\glm;$(SolutionDir)\external\FreeImage\Dist\x32;$(SolutionDir)\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;$(SolutionDir)\external\assimp--3.0.1270-sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>
@@ -208,7 +208,7 @@
     <Link>
       <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glu32.lib;opengl32.lib;glew32s.lib;glfw3.lib;FreeImage.lib;FreeImagePlus.lib;assimp.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\glew-1.1.0\lib\Release\Win32;C:\Users\Sebastian\Desktop\CGUE\external\glfw-3.1.1.bin.WIN32\lib-vc2013;C:\Users\Sebastian\Desktop\CGUE\external\assimp--3.0.1270-sdk\lib\assimp_release-dll_win32;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\external\FreeImage\Dist\x32;$(SolutionDir)\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;$(SolutionDir)\external\glew-1.1.0\lib\Release\Win32;$(SolutionDir)\external\glfw-3.1.1.bin.WIN32\lib-vc2013;$(SolutionDir)\external\assimp--3.0.1270-sdk\lib\assimp_release-dll_win32;</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>C:/Users/Sebastian/Desktop/CGUE/MinSizeRel/seganku.lib</ImportLibrary>
@@ -224,7 +224,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
     <ClCompile>
       <AdditionalOptions> -g -std=c++0x %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>C:\Users\Sebastian\Desktop\CGUE\external\glew-1.1.0\include;C:\Users\Sebastian\Desktop\CGUE\external\glfw-3.1.1.bin.WIN32\include;C:\Users\Sebastian\Desktop\CGUE\external\glm;C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\assimp--3.0.1270-sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\external\glew-1.1.0\include;$(SolutionDir)\external\glfw-3.1.1.bin.WIN32\include;$(SolutionDir)\external\glm;$(SolutionDir)\external\FreeImage\Dist\x32;$(SolutionDir)\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;$(SolutionDir)\external\assimp--3.0.1270-sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -253,7 +253,7 @@
     <Link>
       <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glu32.lib;opengl32.lib;glew32s.lib;glfw3.lib;FreeImage.lib;FreeImagePlus.lib;assimp.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;C:\Users\Sebastian\Desktop\CGUE\external\glew-1.1.0\lib\Release\Win32;C:\Users\Sebastian\Desktop\CGUE\external\glfw-3.1.1.bin.WIN32\lib-vc2013;C:\Users\Sebastian\Desktop\CGUE\external\assimp--3.0.1270-sdk\lib\assimp_release-dll_win32;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\external\FreeImage\Dist\x32;$(SolutionDir)\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;$(SolutionDir)\external\glew-1.1.0\lib\Release\Win32;$(SolutionDir)\external\glfw-3.1.1.bin.WIN32\lib-vc2013;$(SolutionDir)\external\assimp--3.0.1270-sdk\lib\assimp_release-dll_win32;</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>C:/Users/Sebastian/Desktop/CGUE/RelWithDebInfo/seganku.lib</ImportLibrary>
