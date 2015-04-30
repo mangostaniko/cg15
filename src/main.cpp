@@ -244,7 +244,7 @@ void update(float timeDelta)
 	player->update(timeDelta);
 	if (glm::length(glm::abs(player->getLocation() - carrotPos)) < 1.0f) {
 		std::cout << "YOU FOUND THE CARROT!!! WOOHOO!!" << std::endl;
-		running = false;
+		paused = true;
 	}
 
 	//hawk->update(timeDelta);
