@@ -68,10 +68,10 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	// note: we apply rotation before translation since we dont want the distance from the origin
 	// to affect how we rotate
     if (glfwGetKey(window, 'W')) {
-		translate(glm::vec3(0.0f, 0.0f, -1.0f) * timeDelta * moveSpeed, SceneObject::RIGHT);
+		translate(glm::vec3(0.0f, 0.0f, 1.0f) * timeDelta * moveSpeed, SceneObject::RIGHT);
     }
 	else if (glfwGetKey(window, 'S')) {
-		translate(glm::vec3(0.0f, 0.0f, 1.0f) * timeDelta * moveSpeed, SceneObject::RIGHT);
+		translate(glm::vec3(0.0f, 0.0f, -1.0f) * timeDelta * moveSpeed, SceneObject::RIGHT);
 	}
 
 	if (glfwGetKey(window, 'A')) {

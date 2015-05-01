@@ -21,6 +21,7 @@
 #include "sceneobject.h"
 #include "camera.h"
 #include "player.h"
+#include "light.h"
 
 
 void init(GLFWwindow *window);
@@ -36,11 +37,13 @@ Shader *textureShader, *normalsShader;
 Geometry *player;
 Geometry *hawk;
 Geometry *world;
+Camera *camera;
+Light *sun;
 
 Geometry *carrot;
 glm::vec3 carrotPos;
 //std::vector<std::shared_ptr<Geometry>> carrots;
-const float timeToStarvation = 32;
+const float timeToStarvation = 60;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
 
@@ -99,8 +102,9 @@ int main(int argc, char **argv)
 	glfwSetCursorPos(window, 0, 0);
 
 	//glClearColor(1, 1, 1, 1); // white
-	glClearColor(0.68f, 0.78f, 1.0f, 1.0f); // warm sky blue
+	//glClearColor(0.68f, 0.78f, 1.0f, 1.0f); // warm sky blue
 	//glClearColor(0.11f, 0.1f, 0.14f, 1.0f); // dark grey
+	glClearColor(0.f, 0.f, 0.f, 1.f);
 	glViewport(0, 0, windowWidth, windowHeigth);
 
 	// print OpenGL version
@@ -130,6 +134,8 @@ int main(int argc, char **argv)
 
 	while (running && !glfwWindowShouldClose(window)) {
 
+		glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
+
 		if (!paused) {
 
 			//////////////////////////
@@ -148,6 +154,9 @@ int main(int argc, char **argv)
 
 				// print time until starvation
 				std::cout << "time until starvation: " << int(timeToStarvation - glfwGetTime()) << std::endl;
+				std::cout << "Location of the sun; " << sun->getLocation().x << " " << sun->getLocation().y << " " << sun->getLocation().z << std::endl;
+				std::cout << "Color of the sun; " << sun->getColor().x << " " << sun->getColor().y << " " << sun->getColor().z << std::endl;
+
 			}
 
 			update(deltaT);
@@ -176,6 +185,8 @@ int main(int argc, char **argv)
 		glfwSwapBuffers(window);
 
 		glfwPollEvents();
+		
+
 
 		GLenum glErr = glGetError();
 		if (glErr != GL_NO_ERROR) {
@@ -221,13 +232,18 @@ void init(GLFWwindow *window)
 	randDistribution(randGen);
 	carrotPos = glm::vec3(randDistribution(randGen), 0, randDistribution(randGen));
 	carrot = new Geometry(glm::translate(glm::mat4(1.0f), carrotPos), "../data/models/world/carrot.dae");
+	
+	//const glm::mat4 &modelMatrix_, glm::vec3 endPos, glm::vec3 startCol, glm::vec3 endCol, float seconds
+
+	glm::mat4 lightStart(glm::translate(glm::mat4(1.0f), glm::vec3(-120, 30, 0)));
+	sun = new Light(lightStart, glm::vec3(40, 30, 0), glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), 30.f);
 
 
 	// INIT PLAYER + CAMERA
 
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
-	Camera *camera = new Camera(glm::mat4(1.0f), glm::radians(80.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
+	camera = new Camera(glm::mat4(1.0f), glm::radians(80.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
 
 	player = new Player(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), camera, window, "../data/models/skunk/skunk.dae");
 
@@ -252,6 +268,15 @@ void update(float timeDelta)
 	hawk->translate(glm::vec3(0, glm::cos(glfwGetTime())/20, 0), SceneObject::RIGHT);
 	hawk->rotateZ(glm::cos(glfwGetTime())/200, SceneObject::RIGHT);
 	hawk->rotateX(glm::cos(glfwGetTime())/200, SceneObject::RIGHT);
+
+	sun->update(timeDelta);
+
+	// SET POSITION AND COLOR IN SHADER
+	GLint lightPosLocation = glGetUniformLocation(textureShader->programHandle, "lightPos");
+	glUniform3f(lightPosLocation, sun->getLocation().x, sun->getLocation().y, sun->getLocation().z);
+
+	GLint lightColorLocation = glGetUniformLocation(textureShader->programHandle, "lightColor");
+	glUniform3f(lightColorLocation, sun->getColor().x, sun->getColor().y, sun->getColor().z);
 
 }
 

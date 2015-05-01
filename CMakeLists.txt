@@ -56,6 +56,8 @@ set(SRC_CLASSES
 	SEGANKU/geometry.cpp
 	SEGANKU/surface.h
 	SEGANKU/surface.cpp
+	SEGANKU/light.h
+	SEGANKU/light.cpp
     
 	SEGANKU/player.h
 	SEGANKU/player.cpp

@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="geometry.cpp" />
+    <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="sceneobject.cpp" />
@@ -23,6 +24,7 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="geometry.h" />
+    <ClInclude Include="light.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="sceneobject.h" />
     <ClInclude Include="shader.h" />
