@@ -1,9 +1,16 @@
 #include "light.h"
 
 
-Light::Light(const glm::mat4 &modelMatrix_, glm::vec3 endPos, glm::vec3 startCol, glm::vec3 endCol, float seconds)
-	: SceneObject(modelMatrix_), endPosition(endPos), startColor(startCol), endColor(endCol), currentColor(startCol), 
-	daySectionDuration(seconds), timePassed(0.f), noonColor(0.51f, 0.74f, 0.96f), nightColor(0.1f, 0.1f, 0.1f)
+Light::Light(const glm::mat4 &modelMatrix_, glm::vec3 endPos, glm::vec3 startCol, glm::vec3 endCol, float cycleDuration_)
+	: SceneObject(modelMatrix_)
+    , endPosition(endPos)
+    , startColor(startCol)
+    , endColor(endCol)
+    , currentColor(startCol)
+    , cycleDuration(cycleDuration_)
+    , timePassed(0.f)
+    , noonColor(0.51f, 0.74f, 0.96f)
+    , nightColor(0.1f, 0.1f, 0.1f)
 {
 	startPosition = getLocation();
 	direction = glm::normalize(endPosition - getLocation());
@@ -15,6 +22,7 @@ void Light::update(float timeDelta)
 {
 	timePassed += timeDelta;
 
+	float daySectionDuration = cycleDuration * 0.25f;
 	float t = (timePassed / daySectionDuration);
 
 	/*

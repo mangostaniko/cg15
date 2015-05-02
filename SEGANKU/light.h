@@ -17,11 +17,6 @@ private:
 		MORNING = 0, AFTERNOON = 1, EVENING = 2, NIGHT = 3
 	} dayTime;
 
-
-	float daySectionDuration;	// duration of one section of the day
-	float distance;				// distance between start and endpoint (= distance to interpolate)
-	float timePassed;			// accumulated time change 
-
 	glm::vec3 startPosition;
 	glm::vec3 endPosition;
 	glm::vec3 direction;		// unit vector pointing from start to end
@@ -30,12 +25,16 @@ private:
 	glm::vec3 endColor;   
 	glm::vec3 currentColor;		// current color as calculated by interpolation
 
+	float cycleDuration;		// duration of one whole day/night cycle
+	float distance;				// distance between start and endpoint (= distance to interpolate)
+	float timePassed;			// accumulated time change
+
 	const glm::vec3 noonColor;		// color of the noon (sky blue)
 	const glm::vec3 nightColor;		// color of the night (dark grey)
 
 public:
 
-	Light(const glm::mat4 &modelMatrix_, glm::vec3 endPos, glm::vec3 startCol, glm::vec3 endCol, float seconds);
+	Light(const glm::mat4 &modelMatrix_, glm::vec3 endPos, glm::vec3 startCol, glm::vec3 endCol, float cycleDuration_);
 
 	virtual void update(float timeDelta);
 

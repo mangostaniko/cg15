@@ -236,7 +236,7 @@ void init(GLFWwindow *window)
 	//const glm::mat4 &modelMatrix_, glm::vec3 endPos, glm::vec3 startCol, glm::vec3 endCol, float seconds
 
 	glm::mat4 lightStart(glm::translate(glm::mat4(1.0f), glm::vec3(-120, 30, 0)));
-	sun = new Light(lightStart, glm::vec3(40, 30, 0), glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), 30.f);
+	sun = new Light(lightStart, glm::vec3(40, 30, 0), glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
 
 
 	// INIT PLAYER + CAMERA
