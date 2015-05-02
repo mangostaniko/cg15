@@ -34,6 +34,7 @@ bool running = true;
 bool paused = false;
 
 Shader *textureShader, *normalsShader;
+Shader *activeShader;
 Geometry *player;
 Geometry *hawk;
 Geometry *world;
@@ -220,7 +221,8 @@ void init(GLFWwindow *window)
 
 	textureShader = new Shader("../SEGANKU/shaders/texture_shader.vert", "../SEGANKU/shaders/texture_shader.frag");
 	normalsShader = new Shader("../SEGANKU/shaders/normals_shader.vert", "../SEGANKU/shaders/normals_shader.frag");
-	textureShader->useShader(); // non-trivial cost
+	activeShader = textureShader;
+	activeShader->useShader(); // non-trivial cost
 
 
 	// INIT WORLD + OBJECTS
@@ -272,21 +274,21 @@ void update(float timeDelta)
 	sun->update(timeDelta);
 
 	// SET POSITION AND COLOR IN SHADER
-	GLint lightPosLocation = glGetUniformLocation(textureShader->programHandle, "lightPos");
+	GLint lightPosLocation = glGetUniformLocation(activeShader->programHandle, "lightPos");
 	glUniform3f(lightPosLocation, sun->getLocation().x, sun->getLocation().y, sun->getLocation().z);
 
-	GLint lightColorLocation = glGetUniformLocation(textureShader->programHandle, "lightColor");
+	GLint lightColorLocation = glGetUniformLocation(activeShader->programHandle, "lightColor");
 	glUniform3f(lightColorLocation, sun->getColor().x, sun->getColor().y, sun->getColor().z);
 
 }
 
 void draw()
 {
-	player->draw(textureShader);
-	hawk->draw(textureShader);
+	player->draw(activeShader);
+	hawk->draw(activeShader);
 
-	world->draw(textureShader);
-	carrot->draw(textureShader);
+	world->draw(activeShader);
+	carrot->draw(activeShader);
 
 }
 
@@ -294,6 +296,8 @@ void cleanup()
 {
 	delete textureShader; textureShader = nullptr;
 	delete normalsShader; normalsShader = nullptr;
+	activeShader = nullptr;
+
 	delete player; player = nullptr;
 	delete hawk; hawk = nullptr;
 	delete world; world = nullptr;

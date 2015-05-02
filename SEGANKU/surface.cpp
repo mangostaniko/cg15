@@ -1,9 +1,11 @@
 #include "surface.h"
 
-Surface::Surface(const std::vector<Vertex> &vertices_, const std::vector<GLuint> &indices_, const std::vector<std::shared_ptr<Texture>> &textures_)
+Surface::Surface(const std::vector<Vertex> &vertices_, const std::vector<GLuint> &indices_, const std::shared_ptr<Texture> &texDiffuse_, const std::shared_ptr<Texture> &texSpecular_, const std::shared_ptr<Texture> &texNormal_)
     : vertices(vertices_)
 	, indices(indices_)
-	, textures(textures_)
+	, texDiffuse(texDiffuse_)
+	, texSpecular(texSpecular_)
+	, texNormal(texNormal_)
 {
 	init();
 }
@@ -64,24 +66,21 @@ void Surface::draw(Shader *shader)
 {
 	// pass textures to shader
 	// for now just uses the diffuse, specular and normal textures.
-	for (GLuint i = 0; i < this->textures.size(); ++i) {
 
-		GLint texLocation;
-		if (i == 0) {
-			textures[i]->bind(0); // bind texture to texture unit 0
-			texLocation = glGetUniformLocation(shader->programHandle, "diffuseTexture"); // get uniform location in shader
-			glUniform1i(texLocation, 0); // associate texture unit 0 with the shader uniform
-		}		
-		else if (i == 1) {
-			textures[i]->bind(1);
-			texLocation = glGetUniformLocation(shader->programHandle, "specularTexture");
-			glUniform1i(texLocation, 1);
-		}
-		else if (i == 2) {
-			textures[i]->bind(2);
-			texLocation = glGetUniformLocation(shader->programHandle, "normalTexture");
-			glUniform1i(texLocation, 2);
-		}
+	if (texDiffuse) {
+		texDiffuse->bind(0); // bind texture to texture unit 0
+		GLint diffuseTexLocation = glGetUniformLocation(shader->programHandle, "diffuseTexture"); // get uniform location in shader
+		glUniform1i(diffuseTexLocation, 0); // associate texture unit 0 with the shader uniform
+	}
+	if (texSpecular) {
+		texSpecular->bind(1);
+		GLint specularTexLocation = glGetUniformLocation(shader->programHandle, "specularTexture");
+		glUniform1i(specularTexLocation, 1);
+	}
+	if (texNormal) {
+		texNormal->bind(2);
+		GLint normalsTexLocation = glGetUniformLocation(shader->programHandle, "normalTexture");
+		glUniform1i(normalsTexLocation, 2);
 	}
 
 	// draw triangles from given indices
