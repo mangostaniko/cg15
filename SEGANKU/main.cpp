@@ -154,9 +154,6 @@ int main(int argc, char **argv)
 
 				// print time until starvation
 				std::cout << "time until starvation: " << int(timeToStarvation - glfwGetTime()) << std::endl;
-				std::cout << "Location of the sun; " << sun->getLocation().x << " " << sun->getLocation().y << " " << sun->getLocation().z << std::endl;
-				std::cout << "Color of the sun; " << sun->getColor().x << " " << sun->getColor().y << " " << sun->getColor().z << std::endl;
-
 			}
 
 			update(deltaT);
@@ -237,6 +234,7 @@ void init(GLFWwindow *window)
 
 	glm::mat4 lightStart(glm::translate(glm::mat4(1.0f), glm::vec3(-120, 30, 0)));
 	sun = new Light(lightStart, glm::vec3(40, 30, 0), glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
+
 
 
 	// INIT PLAYER + CAMERA

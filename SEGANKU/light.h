@@ -36,6 +36,7 @@ public:
 
 	Light(const glm::mat4 &modelMatrix_, glm::vec3 endPos, glm::vec3 startCol, glm::vec3 endCol, float cycleDuration_);
 
+
 	virtual void update(float timeDelta);
 
 	/**
