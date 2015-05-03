@@ -11,7 +11,6 @@ uniform vec3 cameraPos;
 
 uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
-uniform sampler2D normalTexture;
 
 uniform vec3 lightPos; 
 uniform vec3 lightColor; 

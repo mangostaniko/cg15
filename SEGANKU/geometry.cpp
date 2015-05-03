@@ -85,7 +85,7 @@ void Geometry::processMesh(aiMesh *mesh, const aiScene *scene)
 {
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
-	std::vector<std::shared_ptr<Texture>> surfaceTextures;
+	std::shared_ptr<Texture> surfaceTextureDiffuse, surfaceTextureSpecular, surfaceTextureNormal;
 
 	// process mesh vertices (positions, normals, uvs)
 	for (GLuint i = 0; i < mesh->mNumVertices; ++i) {
@@ -135,24 +135,14 @@ void Geometry::processMesh(aiMesh *mesh, const aiScene *scene)
 	if (mesh->mMaterialIndex >= 0) {
 
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-		std::shared_ptr<Texture> texture;
 
-		// load diffuse texture
-		texture = loadMaterialTexture(material, aiTextureType_DIFFUSE);
-		if (texture) { surfaceTextures.push_back(texture); }
-
-		// load specular texture
-		texture = loadMaterialTexture(material, aiTextureType_SPECULAR);
-		if (texture) { surfaceTextures.push_back(texture); }
-
-		// load normals texture
-		texture = loadMaterialTexture(material, aiTextureType_NORMALS);
-		if (texture) { surfaceTextures.push_back(texture); }
-
+		surfaceTextureDiffuse = loadMaterialTexture(material, aiTextureType_DIFFUSE);
+		surfaceTextureSpecular = loadMaterialTexture(material, aiTextureType_SPECULAR);
+		surfaceTextureNormal = loadMaterialTexture(material, aiTextureType_NORMALS);
 	}
 
 	// return a Surface object created from the extracted aiMesh data
-	surfaces.push_back(std::make_shared<Surface>(vertices, indices, surfaceTextures));
+	surfaces.push_back(std::make_shared<Surface>(vertices, indices, surfaceTextureDiffuse, surfaceTextureSpecular, surfaceTextureNormal));
 }
 
 std::shared_ptr<Texture> Geometry::loadMaterialTexture(aiMaterial *mat, aiTextureType type)

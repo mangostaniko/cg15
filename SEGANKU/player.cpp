@@ -32,6 +32,7 @@ void Player::update(float timeDelta)
 	handleNavModeChange();
 	if (cameraNavMode == FOLLOW_PLAYER) {
 		handleInput(window, timeDelta);
+
 		glm::vec3 v = glm::normalize(getLocation() - camera->getLocation()) * 5.0f;
 		viewProjMat = camera->getProjectionMatrix() * glm::lookAt(getLocation()-v, getLocation(), camUp);
 	}
@@ -105,8 +106,8 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	camToTarget = camToTarget + getLocation();
 	camera->setLocation(camToTarget);
 
-	
 	glfwSetCursorPos(window, 0, 0); // reset the mouse, so it doesn't leave the window
+
 
 	//// handle camera zoom by changing the field of view depending on mouse scroll since last frame
 	float zoomSensitivity = -0.1f;
