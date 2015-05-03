@@ -82,12 +82,14 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 		rotateY(timeDelta * glm::radians(-200.f), SceneObject::RIGHT);
     }
 
+	/*
 	if (glfwGetKey(window, 'Q')) {
 	    translate(glm::vec3(0,1,0) * timeDelta * moveSpeed, SceneObject::LEFT);
 	}
 	else if (glfwGetKey(window, 'E')) {
 	    translate(glm::vec3(0,1,0) * -timeDelta * moveSpeed, SceneObject::LEFT);
 	}
+	*/
 
 	
 	//// rotate camera based on mouse movement
