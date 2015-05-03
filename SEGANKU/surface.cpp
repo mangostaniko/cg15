@@ -69,12 +69,12 @@ void Surface::draw(Shader *shader)
 
 	if (texDiffuse) {
 		texDiffuse->bind(0); // bind texture to texture unit 0
-		GLint diffuseTexLocation = glGetUniformLocation(shader->programHandle, "diffuseTexture"); // get uniform location in shader
+		GLint diffuseTexLocation = glGetUniformLocation(shader->programHandle, "material.diffuse"); // get uniform location in shader
 		glUniform1i(diffuseTexLocation, 0); // associate texture unit 0 with the shader uniform
 	}
 	if (texSpecular) {
 		texSpecular->bind(1);
-		GLint specularTexLocation = glGetUniformLocation(shader->programHandle, "specularTexture");
+		GLint specularTexLocation = glGetUniformLocation(shader->programHandle, "material.specular");
 		glUniform1i(specularTexLocation, 1);
 	}
 	if (texNormal) {

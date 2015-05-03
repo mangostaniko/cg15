@@ -1,43 +1,51 @@
 #version 330 core
 
+struct Material {
+	
+	sampler2D diffuse;
+	vec3 specular;
+	float shininess;
+
+	// could use specular and normal Maps later on
+	//sampler2D specular;
+	sampler2D normal;
+};
+
+struct Light {
+	vec3 position;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
 layout(location = 0) out vec4 outColor;
 
-// these are vertex shader variables interpolated by the gpu
-in vec3 P; // world space position
-in vec3 N; // world space normal
-in vec2 texCoord; // interpolated texture coordinates
+in vec3 P;			
+in vec3 N;			
+in vec2 texCoord;
 
 uniform vec3 cameraPos;
-
-uniform sampler2D diffuseTexture;
-uniform sampler2D specularTexture;
-
-uniform vec3 lightPos; 
-uniform vec3 lightColor; 
-
-const float ambientFactor = 0.2f;
-
-// TODO: these should be made uniforms and defined by object materials
-const float shininess = 16.0f;
+uniform Material material;
+uniform Light light;
 
 void main()
 {
-	vec3 N = normalize(N);
-	vec3 L = normalize(lightPos - P); // light vector (point to light)
-	vec3 V = normalize(cameraPos - P);
-
-
-	vec3 diffuseColor = texture(diffuseTexture, texCoord).rgb;
+	// Normalize normal, light and view vectors
+	vec3 norm = normalize(N);
+	vec3 lightDir = normalize(light.position - P); 
+	vec3 viewDir = normalize(cameraPos - P);
 	
-	vec3 specularColor = vec3(1.0f); //texture(specularTexture, texCoord).rgb;
+	// Ambient
+	vec3 ambient = light.ambient * texture(material.diffuse, texCoord).rgb;
 
-	vec3 ambient = ambientFactor * lightColor * diffuseColor;
-	vec3 diffuse = max(dot(N, L), 0.0f) * lightColor * diffuseColor;
-
-	vec3 H = normalize(L + V); // half vector of light and view vectors
+	// Diffuse
+	vec3 diffuseColor = texture(material.diffuse, texCoord).rgb;	
+	vec3 diffuse = max(dot(norm, lightDir), 0.0f) * diffuseColor * light.diffuse;
 	
-	// note that N is the half vector of light vector and its specular reflection
-	vec3 specular = pow(max(dot(H, N), 0.0f), shininess) * lightColor * diffuseColor;
+	// Specular
+	vec3 halfVec = normalize(lightDir + viewDir); // half vector of light and view vectors
+	vec3 specularColor = vec3(1.0f); //texture(specularTexture, texCoord).rgb;	
+	vec3 specular = pow(max(dot(halfVec, norm), 0.0f), material.shininess) * light.specular * material.specular;
 
 	outColor = vec4(ambient + diffuse + specular, 1);
 }

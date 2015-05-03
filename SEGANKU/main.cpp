@@ -272,20 +272,33 @@ void update(float timeDelta)
 	sun->update(timeDelta);
 
 	// SET POSITION AND COLOR IN SHADER
-	GLint lightPosLocation = glGetUniformLocation(activeShader->programHandle, "lightPos");
-	glUniform3f(lightPosLocation, sun->getLocation().x, sun->getLocation().y, sun->getLocation().z);
+	GLint lightPosLocation = glGetUniformLocation(activeShader->programHandle, "light.position");
+	GLint lightAmbientLocation = glGetUniformLocation(activeShader->programHandle, "light.ambient");
+	GLint lightDiffuseLocation = glGetUniformLocation(activeShader->programHandle, "light.diffuse");
+	GLint lightSpecularLocation = glGetUniformLocation(activeShader->programHandle, "light.specular");
 
-	GLint lightColorLocation = glGetUniformLocation(activeShader->programHandle, "lightColor");
-	glUniform3f(lightColorLocation, sun->getColor().x, sun->getColor().y, sun->getColor().z);
+	GLint materialSpecularLocation = glGetUniformLocation(activeShader->programHandle, "material.specular");
+	glUniform3f(materialSpecularLocation, 0.2f, 0.2f, 0.2f);
+
+	glUniform3f(lightPosLocation, sun->getLocation().x, sun->getLocation().y, sun->getLocation().z);
+	glUniform3f(lightAmbientLocation, sun->getColor().x * 0.3f, sun->getColor().y * 0.3f, sun->getColor().z * 0.3f);
+	glUniform3f(lightDiffuseLocation, sun->getColor().x, sun->getColor().y, sun->getColor().z);
+	glUniform3f(lightSpecularLocation, sun->getColor().x * 0.8f, sun->getColor().y * 0.8f, sun->getColor().z * 0.8f);
 
 }
 
 void draw()
 {
+	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
 	player->draw(activeShader);
+
+	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
 	hawk->draw(activeShader);
 
+	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
 	world->draw(activeShader);
+
+	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
 	carrot->draw(activeShader);
 
 }
