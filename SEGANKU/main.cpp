@@ -264,10 +264,11 @@ void update(float timeDelta)
 	}
 
 	//hawk->update(timeDelta);
-	hawk->rotateY(3*timeDelta, SceneObject::LEFT);
-	hawk->translate(glm::vec3(0, glm::cos(glfwGetTime())/20, 0), SceneObject::RIGHT);
-	hawk->rotateZ(glm::cos(glfwGetTime())/200, SceneObject::RIGHT);
-	hawk->rotateX(glm::cos(glfwGetTime())/200, SceneObject::RIGHT);
+	hawk->rotate(0.5f * timeDelta, SceneObject::LEFT, glm::vec3(0.f, 1.f, 0.f));
+	//hawk->rotateY(3*timeDelta, SceneObject::LEFT);
+	//hawk->translate(glm::vec3(0, glm::cos(glfwGetTime())/20, 0), SceneObject::RIGHT);
+	hawk->rotateZ(glm::cos(-glfwGetTime())/2000, SceneObject::RIGHT);
+	hawk->rotateX(glm::cos(-glfwGetTime())/2000, SceneObject::RIGHT);
 
 	sun->update(timeDelta);
 
