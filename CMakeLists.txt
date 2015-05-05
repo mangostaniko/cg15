@@ -36,6 +36,7 @@ else(MSVC)
 	find_package(GLM REQUIRED)
 	find_package(FreeImage REQUIRED)
 	find_package(Assimp REQUIRED)
+	find_package(Freetype REQUIRED)
 endif(MSVC)
 
 
@@ -43,24 +44,30 @@ endif(MSVC)
 
 # relative path to every single h and cpp file
 set(SRC_CLASSES 
+
     SEGANKU/main.cpp
+
 	SEGANKU/shader.h
 	SEGANKU/shader.cpp
 	SEGANKU/texture.h
 	SEGANKU/texture.cpp
+	SEGANKU/textrenderer.h
+	SEGANKU/textrenderer.cpp
+
 	SEGANKU/sceneobject.h
 	SEGANKU/sceneobject.cpp
 	SEGANKU/camera.h
 	SEGANKU/camera.cpp
+	SEGANKU/light.h
+	SEGANKU/light.cpp
 	SEGANKU/geometry.h
 	SEGANKU/geometry.cpp
 	SEGANKU/surface.h
 	SEGANKU/surface.cpp
-	SEGANKU/light.h
-	SEGANKU/light.cpp
-    
+
 	SEGANKU/player.h
 	SEGANKU/player.cpp
+
     )
 	
 # relative path to shader files
@@ -69,6 +76,9 @@ set(SRC_SHADERS
 		SEGANKU/shaders/texture_shader.frag
 		SEGANKU/shaders/normals_shader.vert
 		SEGANKU/shaders/normals_shader.frag
+
+		SEGANKU/shaders/text_shader.vert
+		SEGANKU/shaders/text_shader.frag
 		)
 		
 # adds an executable target with given name to be built from the source files listed afterwards
@@ -102,6 +112,7 @@ else(MSVC)
 						${GLFW_INCLUDE_DIR}
 						${FreeImage_INCLUDE_DIR}
 						${ASSIMP_INCLUDE_DIRS}
+                        ${FREETYPE_INCLUDE_DIRS}
 				        )
 
 	### LINK LIBRARIES ###
@@ -111,5 +122,6 @@ else(MSVC)
 						  ${GLFW_LIBRARY}
 						  ${FreeImage_LIBRARY}
 						  ${ASSIMP_LIBRARIES}
+						  ${FREETYPE_LIBRARIES}
 						  )
 endif(MSVC)
