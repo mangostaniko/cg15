@@ -9,17 +9,16 @@ TextRenderer::TextRenderer(const std::string &fontPath, const GLuint &windowWidt
 
 	// compile and configure text shader
 	// note that we use an orthographic projection matrix defining the origin at the bottom left of the screen
-	Shader shader("../SEGANKU/shaders/text_shader.vert", "../SEGANKU/shaders/text_shader.frag");
+	textShader = new Shader("../SEGANKU/shaders/text_shader.vert", "../SEGANKU/shaders/text_shader.frag");
 	glm::mat4 projMat = glm::ortho(0.0f, static_cast<GLfloat>(windowWidth), 0.0f, static_cast<GLfloat>(windowHeight));
-	shader.useShader();
-	glUniformMatrix4fv(glGetUniformLocation(shader.programHandle, "projMat"), 1, GL_FALSE, glm::value_ptr(projMat));
+	textShader->useShader();
+	glUniformMatrix4fv(glGetUniformLocation(textShader->programHandle, "projMat"), 1, GL_FALSE, glm::value_ptr(projMat));
 
 	// load FreeType glyphs for each character of 7-bit ASCII and create opengl textures from glyph bitmaps
 	// the resulting Glyph structs (texture and glyph metrics) are stored in the glyphs map
 	loadGlyphs(fontPath);
 
 	// generate vao and vbo handles
-	GLuint vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
 
@@ -41,6 +40,60 @@ TextRenderer::TextRenderer(const std::string &fontPath, const GLuint &windowWidt
 
 TextRenderer::~TextRenderer()
 {
+	delete textShader; textShader = nullptr;
+}
+
+void TextRenderer::renderText(const std::string &text, GLfloat x, GLfloat y, GLfloat scaleFactor, const glm::vec3 &color)
+{
+	// set bindings
+	textShader->useShader();
+	glUniform3f(glGetUniformLocation(textShader->programHandle, "textColor"), color.x, color.y, color.z);
+	glActiveTexture(GL_TEXTURE0);
+	glBindVertexArray(vao);
+
+	// for each character in the text, get the corresponding glyph and render its texture to a quad
+	std::string::const_iterator character;
+	for (character = text.begin(); character != text.end(); ++character) {
+
+		Glyph glyph = glyphs[*character]; // get preloaded glyph struct from the map
+
+		GLfloat xmin = x + glyph.bearing.x * scaleFactor; // horizontal bearing is distance from origin to left of glyph
+		GLfloat ymin = y - (glyph.size.y - glyph.bearing.y) * scaleFactor; // vertical bearing is baseline to top (size can be bigger, so ymin can be below baseline)
+
+		GLfloat width = glyph.size.x * scaleFactor;
+		GLfloat height = glyph.size.y * scaleFactor;
+
+		// define quad vertices (2 triangles)
+		GLfloat quadVertices[6][4] = {
+		    { xmin,          ymin + height,  0.0, 0.0 },
+		    { xmin,          ymin,           0.0, 1.0 },
+		    { xmin + width,  ymin,           1.0, 1.0 },
+
+		    { xmin,          ymin + height,  0.0, 0.0 },
+		    { xmin + width,  ymin,           1.0, 1.0 },
+		    { xmin + width,  ymin + height,  1.0, 0.0 }
+		};
+
+		// render the glyph opengl texture onto the quad
+		glBindTexture(GL_TEXTURE_2D, glyph.textureId);
+
+		// update vbo memory with new quad vertex data
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quadVertices), quadVertices); // use glBufferSubData instead of glBufferData
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		// draw the quad
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		// advance xmin to next position as defined in Glyph struct
+		x += (glyph.advance >> 6) * scaleFactor; // division by 64 since Glyph.advance is defined in 1/64 pixels
+
+	}
+
+
+	// unbind
+	glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
 }
 

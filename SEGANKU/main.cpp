@@ -22,6 +22,7 @@
 #include "camera.h"
 #include "player.h"
 #include "light.h"
+#include "textrenderer.h"
 
 
 void init(GLFWwindow *window);
@@ -35,6 +36,8 @@ bool paused = false;
 
 Shader *textureShader, *normalsShader;
 Shader *activeShader;
+TextRenderer *textRenderer;
+
 Geometry *player;
 Geometry *hawk;
 Geometry *world;
@@ -213,6 +216,14 @@ void init(GLFWwindow *window)
 	// enable z buffer test
 	glEnable(GL_DEPTH_TEST);
 
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+
+
+	// INIT TEXT RENDERER
+
+	textRenderer = new TextRenderer("../data/fonts/VeraMono.ttf", width, height);
+
 
 	// INIT SHADERS
 
@@ -220,6 +231,8 @@ void init(GLFWwindow *window)
 	normalsShader = new Shader("../SEGANKU/shaders/normals_shader.vert", "../SEGANKU/shaders/normals_shader.frag");
 	activeShader = textureShader;
 	activeShader->useShader(); // non-trivial cost
+	// note that the following initializations depend are intended to communicate with this shader
+	// so dont activate any shader of different structure before those initializations are done
 
 
 	// INIT WORLD + OBJECTS
@@ -238,13 +251,9 @@ void init(GLFWwindow *window)
 	sun = new Light(lightStart, glm::vec3(40, 30, 0), glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
 
 
-
 	// INIT PLAYER + CAMERA
 
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
 	camera = new Camera(glm::mat4(1.0f), glm::radians(80.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
-
 	player = new Player(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), camera, window, "../data/models/skunk/skunk.dae");
 
 
@@ -290,6 +299,8 @@ void update(float timeDelta)
 
 void draw()
 {
+	activeShader->useShader();
+
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
 	player->draw(activeShader);
 
@@ -302,6 +313,11 @@ void draw()
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
 	carrot->draw(activeShader);
 
+
+	// DRAW TEXT
+
+	textRenderer->renderText("test", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+
 }
 
 void cleanup()
@@ -310,10 +326,13 @@ void cleanup()
 	delete normalsShader; normalsShader = nullptr;
 	activeShader = nullptr;
 
+	delete textRenderer; textRenderer = nullptr;
+
 	delete player; player = nullptr;
 	delete hawk; hawk = nullptr;
 	delete world; world = nullptr;
 	delete carrot; carrot = nullptr;
+
 }
 
 /**
