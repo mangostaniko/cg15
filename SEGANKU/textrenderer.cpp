@@ -2,7 +2,8 @@
 
 TextRenderer::TextRenderer(const std::string &fontPath, const GLuint &windowWidth, const GLuint &windowHeight)
 {
-	// set OpenGL options. we need blending for the text alpha.
+	// set OpenGL options.
+	// we need blending for the text alpha (disable to see the quads onto which the glyph textures are drawn)
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -11,6 +12,7 @@ TextRenderer::TextRenderer(const std::string &fontPath, const GLuint &windowWidt
 	// note that we use an orthographic projection matrix defining the origin at the bottom left of the screen
 	textShader = new Shader("../SEGANKU/shaders/text_shader.vert", "../SEGANKU/shaders/text_shader.frag");
 	glm::mat4 projMat = glm::ortho(0.0f, static_cast<GLfloat>(windowWidth), 0.0f, static_cast<GLfloat>(windowHeight));
+	projMat = glm::translate(projMat, glm::vec3(0, 0, 1)); // closer to camera to make sure it doesnt get occluded
 	textShader->useShader();
 	glUniformMatrix4fv(glGetUniformLocation(textShader->programHandle, "projMat"), 1, GL_FALSE, glm::value_ptr(projMat));
 

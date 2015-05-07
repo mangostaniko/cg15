@@ -10,7 +10,6 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 {
 	// set glfw callbacks
 	glfwSetScrollCallback(window, onScroll);
-	glfwSetKeyCallback(window, keyCallback);
 
 	camera->setTransform(glm::translate(glm::mat4(1.0f), getLocation()+glm::vec3(0,2,6)));  //move camera back a bit
 	lastCamTransform = camera->getMatrix();
@@ -183,15 +182,13 @@ void Player::onScroll(GLFWwindow *window, double deltaX, double deltaY)
 	scrollY += deltaY;
 }
 
-void Player::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+void Player::toggleNavMode()
 {
-	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-	    if (cameraNavMode == FOLLOW_PLAYER) {
-			cameraNavMode = FREE_FLY;
-		}
-		else if (cameraNavMode == FREE_FLY) {
-			cameraNavMode = FOLLOW_PLAYER;
-		}
+	if (cameraNavMode == FOLLOW_PLAYER) {
+		cameraNavMode = FREE_FLY;
+	}
+	else if (cameraNavMode == FREE_FLY) {
+		cameraNavMode = FOLLOW_PLAYER;
 	}
 }
 

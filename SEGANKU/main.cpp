@@ -33,12 +33,13 @@ void cleanup();
 GLFWwindow *window;
 bool running = true;
 bool paused = false;
+bool isDebugInfoEnabled = true;
 
 Shader *textureShader, *normalsShader;
 Shader *activeShader;
 TextRenderer *textRenderer;
 
-Geometry *player;
+Player *player;
 Geometry *hawk;
 Geometry *world;
 Camera *camera;
@@ -50,6 +51,7 @@ glm::vec3 carrotPos;
 const float timeToStarvation = 60;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 
 int main(int argc, char **argv)
@@ -123,6 +125,7 @@ int main(int argc, char **argv)
 
 	// set callbacks
 	glfwSetFramebufferSizeCallback(window, frameBufferResize);
+	glfwSetKeyCallback(window, keyCallback);
 
 	init(window);
 
@@ -138,27 +141,20 @@ int main(int argc, char **argv)
 
 	while (running && !glfwWindowShouldClose(window)) {
 
-		glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
+		time = glfwGetTime(); // seconds
+		deltaT = time - lastTime;
+		lastTime = time;
+
+		// glUseProgram calls are rather expensive state changes, so try to keep to a minimum
+		// if more shaders are used for different objects, restructuring of these calls will be necessary
+		// since a lot of other calls depend on the currently bound shader
+		activeShader->useShader();
 
 		if (!paused) {
 
 			//////////////////////////
 			/// UPDATE
 			//////////////////////////
-
-			time = glfwGetTime(); // seconds
-			deltaT = time - lastTime;
-			lastTime = time;
-
-			// print framerate around every second (console output is costly)
-			deltaShowFpsTime += deltaT;
-			if (deltaShowFpsTime > 1.0) {
-				deltaShowFpsTime = 0;
-				std::cout << "fps: " << (int)(1/deltaT) << std::endl;
-
-				// print time until starvation
-				std::cout << "time until starvation: " << int(timeToStarvation - glfwGetTime()) << std::endl;
-			}
 
 			update(deltaT);
 
@@ -179,21 +175,35 @@ int main(int argc, char **argv)
 
 		// clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
 
 		draw();
 
+		// draw debug info
+		if (isDebugInfoEnabled) {
+
+			textRenderer->renderText("delta time: " + std::to_string(int(deltaT*1000 + 0.5)) + " ms", 25.0f, 25.0f, 0.4f, glm::vec3(1));
+			textRenderer->renderText("fps: " + std::to_string(int(1/deltaT + 0.5)), 25.0f, 50.0f, 0.4f, glm::vec3(1));
+
+			// draw time until starvation
+			textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, 100.0f, 0.4f, glm::vec3(1));
+		}
+
 		// end the current frame (swaps the front and back buffers)
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(window);		
 
-		glfwPollEvents();
-		
 
+		//////////////////////////
+		/// ERRORS AND EVENTS
+		//////////////////////////
 
 		GLenum glErr = glGetError();
 		if (glErr != GL_NO_ERROR) {
 			// handle errors
 			std::cerr << "ERROR: OpenGL Error " << glErr << std::endl;
 		}
+
+		glfwPollEvents();
 
 		if (running) {
 			running = !glfwGetKey(window, GLFW_KEY_ESCAPE);
@@ -299,8 +309,6 @@ void update(float timeDelta)
 
 void draw()
 {
-	activeShader->useShader();
-
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
 	player->draw(activeShader);
 
@@ -316,7 +324,7 @@ void draw()
 
 	// DRAW TEXT
 
-	textRenderer->renderText("test", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+	//textRenderer->renderText("test", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 
 }
 
@@ -344,4 +352,23 @@ void cleanup()
 void frameBufferResize(GLFWwindow *window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+}
+
+/**
+ * @brief glfw keyCallback on key events
+ * @param window pointer to active window
+ * @param key the key code of the key that caused the event
+ * @param scancode a system and platform specific constant
+ * @param action type of key event: GLFW_PRESS, GLFW_RELEASE, GLFW_REPEAT
+ * @param mods modifier keys held down on event
+ */
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+	if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS) {
+	    isDebugInfoEnabled = !isDebugInfoEnabled;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+	    player->toggleNavMode();
+	}
 }

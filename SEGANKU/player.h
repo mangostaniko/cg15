@@ -41,16 +41,6 @@ class Player : public Geometry
 	void handleNavModeChange();
 
 	/**
-	 * @brief glfw keyCallback on key events
-	 * @param window pointer to active window
-	 * @param key the key code of the key that caused the event
-	 * @param scancode a system and platform specific constant
-	 * @param action type of key event: GLFW_PRESS, GLFW_RELEASE, GLFW_REPEAT
-	 * @param mods modifier keys held down on event
-	 */
-	static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
-
-	/**
 	 * @brief glfw callback on mouse scroll
 	 * @param window pointer to active window
 	 * @param deltaX the scroll delta on scroll axis X
@@ -80,6 +70,11 @@ public:
 
 	virtual void update(float timeDelta);
 	virtual void draw(Shader *shader);
+
+	/**
+	 * @brief toggle the camera navigation mode
+	 */
+	void toggleNavMode();
 
 };
 
