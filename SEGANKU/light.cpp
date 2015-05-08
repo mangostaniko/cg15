@@ -10,7 +10,7 @@ Light::Light(const glm::mat4 &modelMatrix_, glm::vec3 endPos, glm::vec3 startCol
     , cycleDuration(cycleDuration_)
     , timePassed(0.f)
     , noonColor(0.51f, 0.74f, 0.96f)
-    , nightColor(0.1f, 0.1f, 0.1f)
+    , nightColor(0.3f, 0.3f, 0.3f)
 {
 	startPosition = getLocation();
 	direction = glm::normalize(endPosition - getLocation());

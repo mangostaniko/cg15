@@ -29,11 +29,13 @@ void init(GLFWwindow *window);
 void update(float timeDelta);
 void draw();
 void cleanup();
+void newGame();
 
 GLFWwindow *window;
 bool running = true;
 bool paused = false;
 bool isDebugInfoEnabled = true;
+bool found = false;
 
 Shader *textureShader, *normalsShader;
 Shader *activeShader;
@@ -141,6 +143,9 @@ int main(int argc, char **argv)
 
 	while (running && !glfwWindowShouldClose(window)) {
 
+		if (glfwGetTime() < lastTime) {
+			lastTime = 0;
+		}
 		time = glfwGetTime(); // seconds
 		deltaT = time - lastTime;
 		lastTime = time;
@@ -160,7 +165,6 @@ int main(int argc, char **argv)
 
 			// pause on starvation
 			if (glfwGetTime() > timeToStarvation-1) {
-				std::cout << "YOU STARVED!!! :(\nPress ESC to exit." << std::endl;
 				player->rotateZ(3.14159/2, SceneObject::RIGHT);
 				player->translate(glm::vec3(0, 0.3, 0), SceneObject::LEFT);
 				paused = true;
@@ -185,8 +189,17 @@ int main(int argc, char **argv)
 			textRenderer->renderText("delta time: " + std::to_string(int(deltaT*1000 + 0.5)) + " ms", 25.0f, 25.0f, 0.4f, glm::vec3(1));
 			textRenderer->renderText("fps: " + std::to_string(int(1/deltaT + 0.5)), 25.0f, 50.0f, 0.4f, glm::vec3(1));
 
-			// draw time until starvation
-			textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, 100.0f, 0.4f, glm::vec3(1));
+			if (!paused) {
+				// draw time until starvation
+				textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, 100.0f, 0.4f, glm::vec3(1));
+			}
+		}
+
+		if (paused && !found) {
+			textRenderer->renderText("YOU STARVED :(, TRY LOOKING HARDER NEXT TIME", 25.0f, 100.0f, 0.4f, glm::vec3(1));
+		}
+		else if (paused && found) {
+			textRenderer->renderText("CONGRATULATIONS, YOU FOUND THE CARROT", 25.0f, 100.0f, 0.4f, glm::vec3(1));
 		}
 
 		// end the current frame (swaps the front and back buffers)
@@ -223,12 +236,16 @@ int main(int argc, char **argv)
 
 void init(GLFWwindow *window)
 {
+	glfwSetTime(0);
+
 	// enable z buffer test
 	glEnable(GL_DEPTH_TEST);
 
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
 
+	paused = false;
+	found = false;
 
 	// INIT TEXT RENDERER
 
@@ -278,7 +295,7 @@ void update(float timeDelta)
 {
 	player->update(timeDelta);
 	if (glm::length(glm::abs(player->getLocation() - carrotPos)) < 1.0f) {
-		std::cout << "YOU FOUND THE CARROT!!! WOOHOO!!" << std::endl;
+		found = true;
 		paused = true;
 	}
 
@@ -328,6 +345,42 @@ void draw()
 
 }
 
+void newGame()
+{
+	delete sun; delete carrot;
+
+	glfwSetTime(0);
+
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+
+
+
+	// INIT WORLD + OBJECTS
+
+	std::default_random_engine randGen(time(nullptr));
+	std::uniform_int_distribution<int> randDistribution(-49, 49);
+	randDistribution(randGen);
+	carrotPos = glm::vec3(randDistribution(randGen), 0, randDistribution(randGen));
+	carrot = new Geometry(glm::translate(glm::mat4(1.0f), carrotPos), "../data/models/world/carrot.dae");
+
+	//const glm::mat4 &modelMatrix_, glm::vec3 endPos, glm::vec3 startCol, glm::vec3 endCol, float seconds
+
+	glm::mat4 lightStart(glm::translate(glm::mat4(1.0f), glm::vec3(-120, 30, 0)));
+	sun = new Light(lightStart, glm::vec3(40, 30, 0), glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
+
+
+	// INIT PLAYER + CAMERA
+	if (!found) {
+		player->rotateZ(-(3.14159 / 2.f), SceneObject::RIGHT);
+		player->translate(glm::vec3(0, -0.3, 0), SceneObject::LEFT);
+		player->setLocation(glm::vec3(0, 0, 0));
+	}
+
+	paused = false;
+	found = false;
+}
+
 void cleanup()
 {
 	delete textureShader; textureShader = nullptr;
@@ -370,5 +423,9 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 
 	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
 	    player->toggleNavMode();
+	}
+
+	if (paused && glfwGetKey(window, GLFW_KEY_F6)){
+		newGame();
 	}
 }
