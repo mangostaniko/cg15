@@ -41,8 +41,8 @@ Shader *textureShader, *normalsShader;
 Shader *activeShader;
 TextRenderer *textRenderer;
 
-Player *player;
-Geometry *hawk;
+Player *player; glm::mat4 playerInitTransform(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
+Geometry *hawk; glm::mat4 hawkInitTransform(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)));
 Geometry *world;
 Camera *camera;
 Light *sun;
@@ -196,10 +196,10 @@ int main(int argc, char **argv)
 		}
 
 		if (paused && !found) {
-			textRenderer->renderText("YOU STARVED :(, TRY LOOKING HARDER NEXT TIME", 25.0f, 100.0f, 0.4f, glm::vec3(1));
+			textRenderer->renderText("YOU STARVED :( TRY LOOKING HARDER NEXT TIME.", 25.0f, 100.0f, 0.5f, glm::vec3(1));
 		}
 		else if (paused && found) {
-			textRenderer->renderText("CONGRATULATIONS, YOU FOUND THE CARROT", 25.0f, 100.0f, 0.4f, glm::vec3(1));
+			textRenderer->renderText("CONGRATULATIONS!!! YOU FOUND THE CARROT!!", 25.0f, 100.0f, 0.5f, glm::vec3(1));
 		}
 
 		// end the current frame (swaps the front and back buffers)
@@ -281,12 +281,12 @@ void init(GLFWwindow *window)
 	// INIT PLAYER + CAMERA
 
 	camera = new Camera(glm::mat4(1.0f), glm::radians(80.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
-	player = new Player(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), camera, window, "../data/models/skunk/skunk.dae");
+	player = new Player(playerInitTransform, camera, window, "../data/models/skunk/skunk.dae");
 
 
 	// INIT HAWK
 
-	hawk = new Geometry(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)), "../data/models/hawk/hawk.dae");
+	hawk = new Geometry(hawkInitTransform, "../data/models/hawk/hawk.dae");
 	hawk->rotateY(glm::radians(270.0), SceneObject::RIGHT);
 
 }
@@ -347,7 +347,7 @@ void draw()
 
 void newGame()
 {
-	delete sun; delete carrot;
+	delete sun;
 
 	glfwSetTime(0);
 
@@ -355,14 +355,13 @@ void newGame()
 	glfwGetWindowSize(window, &width, &height);
 
 
-
-	// INIT WORLD + OBJECTS
+	// RESET WORLD + OBJECTS
 
 	std::default_random_engine randGen(time(nullptr));
 	std::uniform_int_distribution<int> randDistribution(-49, 49);
 	randDistribution(randGen);
 	carrotPos = glm::vec3(randDistribution(randGen), 0, randDistribution(randGen));
-	carrot = new Geometry(glm::translate(glm::mat4(1.0f), carrotPos), "../data/models/world/carrot.dae");
+	carrot->setTransform(glm::translate(glm::mat4(1.0f), carrotPos));
 
 	//const glm::mat4 &modelMatrix_, glm::vec3 endPos, glm::vec3 startCol, glm::vec3 endCol, float seconds
 
@@ -370,12 +369,11 @@ void newGame()
 	sun = new Light(lightStart, glm::vec3(40, 30, 0), glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
 
 
-	// INIT PLAYER + CAMERA
-	if (!found) {
-		player->rotateZ(-(3.14159 / 2.f), SceneObject::RIGHT);
-		player->translate(glm::vec3(0, -0.3, 0), SceneObject::LEFT);
-		player->setLocation(glm::vec3(0, 0, 0));
-	}
+	// RESET PLAYER + CAMERA
+	player->setTransform(playerInitTransform);
+	hawk->setTransform(hawkInitTransform);
+	hawk->rotateY(glm::radians(270.0), SceneObject::RIGHT);
+
 
 	paused = false;
 	found = false;
@@ -425,7 +423,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	    player->toggleNavMode();
 	}
 
-	if (paused && glfwGetKey(window, GLFW_KEY_F6)){
+	if (glfwGetKey(window, GLFW_KEY_F6)){
 		newGame();
 	}
 }
