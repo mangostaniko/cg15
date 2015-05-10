@@ -34,8 +34,9 @@ void newGame();
 GLFWwindow *window;
 bool running = true;
 bool paused = false;
-bool isDebugInfoEnabled = true;
-bool found = false;
+bool debugInfoEnabled = true;
+bool wireframeEnabled = false;
+bool foundCarrot = false;
 
 Shader *textureShader, *normalsShader;
 Shader *activeShader;
@@ -181,10 +182,12 @@ int main(int argc, char **argv)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
 
+		if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		draw();
+		if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
 		// draw debug info
-		if (isDebugInfoEnabled) {
+		if (debugInfoEnabled) {
 
 			textRenderer->renderText("delta time: " + std::to_string(int(deltaT*1000 + 0.5)) + " ms", 25.0f, 25.0f, 0.4f, glm::vec3(1));
 			textRenderer->renderText("fps: " + std::to_string(int(1/deltaT + 0.5)), 25.0f, 50.0f, 0.4f, glm::vec3(1));
@@ -195,10 +198,10 @@ int main(int argc, char **argv)
 			}
 		}
 
-		if (paused && !found) {
+		if (paused && !foundCarrot) {
 			textRenderer->renderText("YOU STARVED :( TRY LOOKING HARDER NEXT TIME.", 25.0f, 100.0f, 0.5f, glm::vec3(1));
 		}
-		else if (paused && found) {
+		else if (paused && foundCarrot) {
 			textRenderer->renderText("CONGRATULATIONS!!! YOU FOUND THE CARROT!!", 25.0f, 100.0f, 0.5f, glm::vec3(1));
 		}
 
@@ -245,7 +248,7 @@ void init(GLFWwindow *window)
 	glfwGetWindowSize(window, &width, &height);
 
 	paused = false;
-	found = false;
+	foundCarrot = false;
 
 	// INIT TEXT RENDERER
 
@@ -295,7 +298,7 @@ void update(float timeDelta)
 {
 	player->update(timeDelta);
 	if (glm::length(glm::abs(player->getLocation() - carrotPos)) < 1.0f) {
-		found = true;
+		foundCarrot = true;
 		paused = true;
 	}
 
@@ -326,6 +329,8 @@ void update(float timeDelta)
 
 void draw()
 {
+	// DRAW GEOMETRY
+
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
 	player->draw(activeShader);
 
@@ -337,11 +342,6 @@ void draw()
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
 	carrot->draw(activeShader);
-
-
-	// DRAW TEXT
-
-	//textRenderer->renderText("test", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 
 }
 
@@ -376,7 +376,7 @@ void newGame()
 
 
 	paused = false;
-	found = false;
+	foundCarrot = false;
 }
 
 void cleanup()
@@ -415,12 +415,16 @@ void frameBufferResize(GLFWwindow *window, int width, int height)
  */
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-	if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS) {
-	    isDebugInfoEnabled = !isDebugInfoEnabled;
-	}
-
 	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
 	    player->toggleNavMode();
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS) {
+	    debugInfoEnabled = !debugInfoEnabled;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_F3) == GLFW_PRESS) {
+	    wireframeEnabled = !wireframeEnabled;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F6)){
