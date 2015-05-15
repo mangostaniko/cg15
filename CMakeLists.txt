@@ -68,6 +68,9 @@ set(SRC_CLASSES
 	SEGANKU/player.h
 	SEGANKU/player.cpp
 
+	SEGANKU/effects/postprocessor.h
+	SEGANKU/effects/postprocessor.cpp
+
     )
 	
 # relative path to shader files
@@ -79,6 +82,11 @@ set(SRC_SHADERS
 
 		SEGANKU/shaders/text_shader.vert
 		SEGANKU/shaders/text_shader.frag
+
+		SEGANKU/shaders/postprocess_invert_shader.vert
+		SEGANKU/shaders/postprocess_invert_shader.frag
+		SEGANKU/shaders/postprocess_ssao_shader.vert
+		SEGANKU/shaders/postprocess_ssao_shader.frag
 		)
 		
 # adds an executable target with given name to be built from the source files listed afterwards

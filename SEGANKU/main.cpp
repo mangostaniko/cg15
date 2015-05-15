@@ -23,6 +23,7 @@
 #include "player.h"
 #include "light.h"
 #include "textrenderer.h"
+#include "effects/postprocessor.h"
 
 
 void init(GLFWwindow *window);
@@ -36,11 +37,13 @@ bool running = true;
 bool paused = false;
 bool debugInfoEnabled = true;
 bool wireframeEnabled = false;
+bool postprocessingEnabled = false;
 bool foundCarrot = false;
 
 Shader *textureShader, *normalsShader;
 Shader *activeShader;
 TextRenderer *textRenderer;
+PostProcessor *postProcessor;
 
 Player *player; glm::mat4 playerInitTransform(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
 Geometry *hawk; glm::mat4 hawkInitTransform(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)));
@@ -140,7 +143,6 @@ int main(int argc, char **argv)
 	double time = 0.0;
 	double lastTime = 0.0;
 	double deltaT = 0.0;
-	double deltaShowFpsTime = 0.0;
 
 	while (running && !glfwWindowShouldClose(window)) {
 
@@ -178,15 +180,23 @@ int main(int argc, char **argv)
 		/// DRAW
 		//////////////////////////
 
+		if (postprocessingEnabled) postProcessor->bindRenderScreenToTexture();
+
 		// clear the buffers
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-		draw();
+		draw(); // main draw routine
 		if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
-		// draw debug info
+		if (postprocessingEnabled) postProcessor->renderPostprocessed();
+
+
+		// DRAW TEXT
+
+		glDisable(GL_DEPTH_TEST);
+
 		if (debugInfoEnabled) {
 
 			textRenderer->renderText("delta time: " + std::to_string(int(deltaT*1000 + 0.5)) + " ms", 25.0f, 25.0f, 0.4f, glm::vec3(1));
@@ -197,13 +207,15 @@ int main(int argc, char **argv)
 				textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, 100.0f, 0.4f, glm::vec3(1));
 			}
 		}
-
 		if (paused && !foundCarrot) {
 			textRenderer->renderText("YOU STARVED :( TRY LOOKING HARDER NEXT TIME.", 25.0f, 100.0f, 0.5f, glm::vec3(1));
 		}
 		else if (paused && foundCarrot) {
 			textRenderer->renderText("CONGRATULATIONS!!! YOU FOUND THE CARROT!!", 25.0f, 100.0f, 0.5f, glm::vec3(1));
 		}
+
+		glEnable(GL_DEPTH_TEST);
+
 
 		// end the current frame (swaps the front and back buffers)
 		glfwSwapBuffers(window);		
@@ -250,9 +262,16 @@ void init(GLFWwindow *window)
 	paused = false;
 	foundCarrot = false;
 
+
 	// INIT TEXT RENDERER
 
 	textRenderer = new TextRenderer("../data/fonts/VeraMono.ttf", width, height);
+
+
+	// INIT SSAO POST PROCESSOR
+
+	postProcessor = new PostProcessor(width, height);
+	postProcessor->setPostprocessShader("../SEGANKU/shaders/postprocess_invert_shader.vert", "../SEGANKU/shaders/postprocess_invert_shader.frag");
 
 
 	// INIT SHADERS
@@ -386,6 +405,7 @@ void cleanup()
 	activeShader = nullptr;
 
 	delete textRenderer; textRenderer = nullptr;
+	delete postProcessor; postProcessor = nullptr;
 
 	delete player; player = nullptr;
 	delete hawk; hawk = nullptr;
@@ -419,15 +439,19 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	    player->toggleNavMode();
 	}
 
+	if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS){
+		newGame();
+	}
+
 	if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS) {
 	    debugInfoEnabled = !debugInfoEnabled;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F3) == GLFW_PRESS) {
 	    wireframeEnabled = !wireframeEnabled;
-	}
+	}	
 
-	if (glfwGetKey(window, GLFW_KEY_F6)){
-		newGame();
+	if (glfwGetKey(window, GLFW_KEY_F7) == GLFW_PRESS) {
+		postprocessingEnabled = !postprocessingEnabled;
 	}
 }

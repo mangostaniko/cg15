@@ -1,7 +1,5 @@
 #include "camera.h"
 
-#include <iostream>
-
 Camera::Camera(const glm::mat4 &matrix_, float fieldOfView_, float aspectRatio_, float nearPlane_, float farPlane_)
 	: SceneObject(matrix_)
     , fieldOfView(fieldOfView_)

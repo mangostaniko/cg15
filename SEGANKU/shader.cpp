@@ -1,8 +1,5 @@
 #include "shader.h"
 
-#include <iostream>
-#include <fstream>
-
 Shader::Shader(const std::string &vertexShader, const std::string &fragmentShader)
     : vertexHandle(0)
     , fragmentHandle(0)
