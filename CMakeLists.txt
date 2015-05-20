@@ -75,18 +75,21 @@ set(SRC_CLASSES
 	
 # relative path to shader files
 set(SRC_SHADERS
-		SEGANKU/shaders/texture_shader.vert
-		SEGANKU/shaders/texture_shader.frag
-		SEGANKU/shaders/normals_shader.vert
-		SEGANKU/shaders/normals_shader.frag
+		SEGANKU/shaders/textured_blinnphong.vert
+		SEGANKU/shaders/textured_blinnphong.frag
+		SEGANKU/shaders/normal_mapping.vert
+		SEGANKU/shaders/normal_mapping.frag
 
-		SEGANKU/shaders/text_shader.vert
-		SEGANKU/shaders/text_shader.frag
+		SEGANKU/shaders/text.vert
+		SEGANKU/shaders/text.frag
 
-		SEGANKU/shaders/postprocess_invert_shader.vert
-		SEGANKU/shaders/postprocess_invert_shader.frag
-		SEGANKU/shaders/postprocess_ssao_shader.vert
-		SEGANKU/shaders/postprocess_ssao_shader.frag
+		SEGANKU/shaders/view_positions.vert
+		SEGANKU/shaders/view_positions.frag
+
+		SEGANKU/shaders/invert_color.vert
+		SEGANKU/shaders/invert_color.frag
+		SEGANKU/shaders/ssao.vert
+		SEGANKU/shaders/ssao.frag
 		)
 		
 # adds an executable target with given name to be built from the source files listed afterwards

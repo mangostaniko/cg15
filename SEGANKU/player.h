@@ -20,7 +20,8 @@ class Player : public Geometry
 	glm::vec3 camDirection;
 	glm::vec3 camRight;
 	glm::vec3 camUp;
-	glm::mat4 viewProjMat;
+	glm::mat4 viewMat;
+	glm::mat4 projMat;
 
 	enum CameraNavigationMode
 	{
@@ -75,6 +76,18 @@ public:
 	 * @brief toggle the camera navigation mode
 	 */
 	void toggleNavMode();
+
+	/**
+	 * @brief get the current view matrix of the player camera
+	 * @return the current view matrix
+	 */
+	glm::mat4 getViewMat();
+
+	/**
+	 * @brief get the current projection matrix of the player camera
+	 * @return the current projection matrix
+	 */
+	glm::mat4 getProjMat();
 
 };
 

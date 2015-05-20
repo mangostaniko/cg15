@@ -8,5 +8,5 @@ uniform sampler2D screenDepthTexture;
 
 void main()
 {
-    outColor = vec4(vec3(1.0 - texture(screenColorTexture, texCoords)), 1.0);
+    outColor = vec4(vec3(1.0 - texture(screenDepthTexture, texCoords)), 1.0);
 }

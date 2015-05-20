@@ -68,19 +68,19 @@ void Surface::draw(Shader *shader)
 	// for now just uses the diffuse, specular and normal textures.
 
 	if (texDiffuse) {
-		texDiffuse->bind(0); // bind texture to texture unit 0
 		GLint diffuseTexLocation = glGetUniformLocation(shader->programHandle, "material.diffuse"); // get uniform location in shader
-		glUniform1i(diffuseTexLocation, 0); // associate texture unit 0 with the shader uniform
+		glUniform1i(diffuseTexLocation, 0); // bind shader texture location with texture unit 0
+		texDiffuse->bind(0); // activate texture unit 0 and bind texture to it
 	}
 	if (texSpecular) {
-		texSpecular->bind(1);
 		GLint specularTexLocation = glGetUniformLocation(shader->programHandle, "material.specular");
 		glUniform1i(specularTexLocation, 1);
+		texSpecular->bind(1);
 	}
 	if (texNormal) {
-		texNormal->bind(2);
 		GLint normalsTexLocation = glGetUniformLocation(shader->programHandle, "normalTexture");
 		glUniform1i(normalsTexLocation, 2);
+		texNormal->bind(2);
 	}
 
 	// draw triangles from given indices

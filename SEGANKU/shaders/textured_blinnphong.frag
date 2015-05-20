@@ -1,5 +1,7 @@
 #version 330 core
 
+layout(location = 0) out vec4 outColor;
+
 struct Material {
 	
 	sampler2D diffuse;
@@ -7,8 +9,8 @@ struct Material {
 	float shininess;
 
 	// specular and normal maps currently not used
-	//sampler2D specular;
-	//sampler2D normal;
+	// sampler2D specular;
+	// sampler2D normal;
 };
 
 struct Light {
@@ -17,8 +19,6 @@ struct Light {
 	vec3 diffuse;
 	vec3 specular;
 };
-
-layout(location = 0) out vec4 outColor;
 
 in vec3 P;			
 in vec3 N;			

@@ -28,19 +28,21 @@
 
 void init(GLFWwindow *window);
 void update(float timeDelta);
-void draw();
+void setActiveShader(Shader *shader);
+void drawScene();
+void drawText(double deltaT);
 void cleanup();
 void newGame();
 
 GLFWwindow *window;
-bool running = true;
-bool paused = false;
-bool debugInfoEnabled = true;
-bool wireframeEnabled = false;
-bool postprocessingEnabled = false;
+bool running     = true;
+bool paused      = false;
 bool foundCarrot = false;
+bool debugInfoEnabled      = true;
+bool wireframeEnabled      = false;
+bool postprocessingEnabled = true;
 
-Shader *textureShader, *normalsShader;
+Shader *textureShader, *ssaoViewPosPrepassShader;
 Shader *activeShader;
 TextRenderer *textRenderer;
 PostProcessor *postProcessor;
@@ -156,7 +158,7 @@ int main(int argc, char **argv)
 		// glUseProgram calls are rather expensive state changes, so try to keep to a minimum
 		// if more shaders are used for different objects, restructuring of these calls will be necessary
 		// since a lot of other calls depend on the currently bound shader
-		activeShader->useShader();
+		setActiveShader(textureShader);
 
 		if (!paused) {
 
@@ -180,42 +182,32 @@ int main(int argc, char **argv)
 		/// DRAW
 		//////////////////////////
 
-		if (postprocessingEnabled) postProcessor->bindRenderScreenToTexture();
+		if (postprocessingEnabled) {
 
-		// clear the buffers
-		glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			postProcessor->bindFramebufferColor();
+			glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			drawScene();
 
-		if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-		draw(); // main draw routine
-		if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+			postProcessor->bindFramebufferViewPos();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			Shader *lastShader = activeShader;
+			setActiveShader(ssaoViewPosPrepassShader);
+			glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "viewMat"), 1, GL_FALSE, glm::value_ptr(player->getViewMat()));
+			drawScene();
+			setActiveShader(lastShader); lastShader = nullptr;
 
-		if (postprocessingEnabled) postProcessor->renderPostprocessed();
+			postProcessor->renderPostprocessed();
 
-
-		// DRAW TEXT
-
-		glDisable(GL_DEPTH_TEST);
-
-		if (debugInfoEnabled) {
-
-			textRenderer->renderText("delta time: " + std::to_string(int(deltaT*1000 + 0.5)) + " ms", 25.0f, 25.0f, 0.4f, glm::vec3(1));
-			textRenderer->renderText("fps: " + std::to_string(int(1/deltaT + 0.5)), 25.0f, 50.0f, 0.4f, glm::vec3(1));
-
-			if (!paused) {
-				// draw time until starvation
-				textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, 100.0f, 0.4f, glm::vec3(1));
-			}
 		}
-		if (paused && !foundCarrot) {
-			textRenderer->renderText("YOU STARVED :( TRY LOOKING HARDER NEXT TIME.", 25.0f, 100.0f, 0.5f, glm::vec3(1));
-		}
-		else if (paused && foundCarrot) {
-			textRenderer->renderText("CONGRATULATIONS!!! YOU FOUND THE CARROT!!", 25.0f, 100.0f, 0.5f, glm::vec3(1));
+		else { // no postprocessing
+			glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			drawScene();
 		}
 
-		glEnable(GL_DEPTH_TEST);
 
+		drawText(deltaT);
 
 		// end the current frame (swaps the front and back buffers)
 		glfwSwapBuffers(window);		
@@ -268,18 +260,18 @@ void init(GLFWwindow *window)
 	textRenderer = new TextRenderer("../data/fonts/VeraMono.ttf", width, height);
 
 
-	// INIT SSAO POST PROCESSOR
+	// INIT SSAO POST PROCESSOR AND PREPASS SHADERS
 
 	postProcessor = new PostProcessor(width, height);
-	postProcessor->setPostprocessShader("../SEGANKU/shaders/postprocess_invert_shader.vert", "../SEGANKU/shaders/postprocess_invert_shader.frag");
+	postProcessor->setPostprocessShader("../SEGANKU/shaders/ssao.vert", "../SEGANKU/shaders/ssao.frag");
+
+	ssaoViewPosPrepassShader = new Shader("../SEGANKU/shaders/view_positions.vert", "../SEGANKU/shaders/view_positions.frag");
 
 
 	// INIT SHADERS
 
-	textureShader = new Shader("../SEGANKU/shaders/texture_shader.vert", "../SEGANKU/shaders/texture_shader.frag");
-	normalsShader = new Shader("../SEGANKU/shaders/normals_shader.vert", "../SEGANKU/shaders/normals_shader.frag");
-	activeShader = textureShader;
-	activeShader->useShader(); // non-trivial cost
+	textureShader = new Shader("../SEGANKU/shaders/textured_blinnphong.vert", "../SEGANKU/shaders/textured_blinnphong.frag");
+	setActiveShader(textureShader); // non-trivial cost
 	// note that the following initializations depend are intended to communicate with this shader
 	// so dont activate any shader of different structure before those initializations are done
 
@@ -346,8 +338,11 @@ void update(float timeDelta)
 
 }
 
-void draw()
+void drawScene()
 {
+
+	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // enable wireframe
+
 	// DRAW GEOMETRY
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
@@ -362,6 +357,33 @@ void draw()
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
 	carrot->draw(activeShader);
 
+
+
+	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); // disable wireframe
+}
+
+void drawText(double deltaT)
+{
+	glDisable(GL_DEPTH_TEST);
+
+	if (debugInfoEnabled) {
+
+		textRenderer->renderText("delta time: " + std::to_string(int(deltaT*1000 + 0.5)) + " ms", 25.0f, 25.0f, 0.4f, glm::vec3(1));
+		textRenderer->renderText("fps: " + std::to_string(int(1/deltaT + 0.5)), 25.0f, 50.0f, 0.4f, glm::vec3(1));
+
+		if (!paused) {
+			// draw time until starvation
+			textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, 100.0f, 0.4f, glm::vec3(1));
+		}
+	}
+	if (paused && !foundCarrot) {
+		textRenderer->renderText("YOU STARVED :( TRY LOOKING HARDER NEXT TIME.", 25.0f, 100.0f, 0.5f, glm::vec3(1));
+	}
+	else if (paused && foundCarrot) {
+		textRenderer->renderText("CONGRATULATIONS!!! YOU FOUND THE CARROT!!", 25.0f, 100.0f, 0.5f, glm::vec3(1));
+	}
+
+	glEnable(GL_DEPTH_TEST);
 }
 
 void newGame()
@@ -401,7 +423,7 @@ void newGame()
 void cleanup()
 {
 	delete textureShader; textureShader = nullptr;
-	delete normalsShader; normalsShader = nullptr;
+	delete ssaoViewPosPrepassShader; ssaoViewPosPrepassShader = nullptr;
 	activeShader = nullptr;
 
 	delete textRenderer; textRenderer = nullptr;
@@ -454,4 +476,10 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	if (glfwGetKey(window, GLFW_KEY_F7) == GLFW_PRESS) {
 		postprocessingEnabled = !postprocessingEnabled;
 	}
+}
+
+void setActiveShader(Shader *shader)
+{
+	activeShader = shader;
+	activeShader->useShader();
 }

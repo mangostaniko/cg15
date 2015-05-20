@@ -10,16 +10,16 @@
 #include "../shader.h"
 
 /**
- * @brief The PostProcessor class is used to implement a two pass rendering pipeline,
- * where in the first pass, the whole screen colors and depth are rendered to textures
+ * @brief The PostProcessor class is used to facilitate a two pass rendering pipeline,
+ * where in the first pass, the whole screen colors and other information are rendered to textures
  * which allows for postprocessing, and in the second pass the postprocessed texture is
  * rendered to a screen filling quad.
  */
 class PostProcessor
 {
 
-	GLuint fbo;
-	GLuint screenColorTexture, screenDepthTexture;
+	GLuint fboColor, screenColorTexture, screenDepthBuffer;
+	GLuint fboViewPos, viewPosTexture;
 
 	GLuint screenQuadVAO, screenQuadVBO;
 
@@ -31,11 +31,16 @@ public:
 	~PostProcessor();
 
 	/**
-	 * @brief bind an alternative framebuffer so that the following render calls
-	 * render the screen color and depth to textures, which can be used for post processing.
-	 * this should be followed by a call to renderPostprocessed.
+	 * @brief bind framebuffer in which screen colors should be stored for post processing.
+	 * after binding this, execute the required draw calls using appropriate shaders.
 	 */
-	void bindRenderScreenToTexture();
+	void bindFramebufferColor();
+
+	/**
+	 * @brief bind framebuffer in which view space vertex positions should be stored for post processing.
+	 * after binding this, execute the required draw calls using appropriate shaders.
+	 */
+	void bindFramebufferViewPos();
 
 	/**
 	 * @brief set shader to do the postprocessing of the prerendered screen texture
@@ -47,9 +52,9 @@ public:
 	                          const std::string &postprocessFragmentShaderPath);
 
 	/**
-	 * @brief apply postprocessing to the prerendered screen texture,
+	 * @brief apply postprocessing to the prerendered color texture,
 	 * switch back to default framebuffer and render the result to a screen filling quad.
-	 * this should be preceded by a call to bindRenderScreenToTexture.
+	 * this needs certain information rendered to textures via the bindFramebuffer methods.
 	 */
 	void renderPostprocessed();
 

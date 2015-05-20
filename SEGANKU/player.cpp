@@ -29,16 +29,21 @@ void Player::update(float timeDelta)
 {
 	// note: camera navigation mode is toggled on tab key press, look for keyCallback
 	handleNavModeChange();
-	if (cameraNavMode == FOLLOW_PLAYER) {
-		handleInput(window, timeDelta);
 
+	if (cameraNavMode == FOLLOW_PLAYER) {
+
+		handleInput(window, timeDelta);
 		glm::vec3 v = glm::normalize(getLocation() - camera->getLocation()) * 5.0f;
-		viewProjMat = camera->getProjectionMatrix() * glm::lookAt(getLocation()-v, getLocation(), camUp);
+		viewMat = glm::lookAt(getLocation()-v, getLocation(), camUp);
 	}
 	else {
+
 		handleInputFreeCamera(window, timeDelta);
-		viewProjMat = camera->getProjectionMatrix() * camera->getViewMatrix();
+		viewMat = camera->getViewMatrix();
 	}
+
+	projMat = camera->getProjectionMatrix();
+
 
 }
 
@@ -46,7 +51,7 @@ void Player::draw(Shader *shader)
 {
 	// pass camera view and projection matrices to shader
 	GLint viewProjMatLocation = glGetUniformLocation(shader->programHandle, "viewProjMat"); // get uniform location in shader
-	glUniformMatrix4fv(viewProjMatLocation, 1, GL_FALSE, glm::value_ptr(viewProjMat)); // shader location, count, transpose?, value pointer
+	glUniformMatrix4fv(viewProjMatLocation, 1, GL_FALSE, glm::value_ptr(projMat * viewMat)); // shader location, count, transpose?, value pointer
 
 	// pass camera position to shader
 	GLint cameraPosLocation = glGetUniformLocation(shader->programHandle, "cameraPos");
@@ -203,5 +208,15 @@ void Player::handleNavModeChange()
 	lastCamTransform = temp;
 
 	lastNavMode = cameraNavMode;
+}
+
+glm::mat4 Player::getViewMat()
+{
+	return viewMat;
+}
+
+glm::mat4 Player::getProjMat()
+{
+	return projMat;
 }
 
