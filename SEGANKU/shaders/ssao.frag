@@ -1,21 +1,26 @@
 #version 330 core
 
-in vec2 texCoord; // TODO: do we need this in range [0,1] ?
+in vec2 texCoord;
 layout(location = 0) out vec4 outColor;
 
-const int RANDOM_VECTOR_ARRAY_SIZE = 128;
-const float SAMPLE_RADIUS = 10; // TODO: play with this value
+const int RANDOM_VECTOR_ARRAY_MAX_SIZE = 32; // reference uses 64
+const float SAMPLE_RADIUS = 1.5f; // TODO: play with this value, reference uses 1.5
 
 uniform sampler2D screenColorTexture; // the whole rendered screen
 uniform sampler2D viewPosTexture; // interpolated vertex positions in view space
 
-// TODO PROVIDE:
 uniform mat4 projMat;
-uniform vec3 randomUnitVectors[RANDOM_VECTOR_ARRAY_SIZE];
+
+// we use a uniform buffer object for better performance
+layout (std140) uniform RandomVectors
+{
+    vec3 randomVectors[RANDOM_VECTOR_ARRAY_MAX_SIZE];
+};
 
 void main()
 {
-	vec3 screenColor = texture(screenColorTexture, texCoord).rgb;
+
+	vec4 screenColor = texture(screenColorTexture, texCoord).rgba;
     vec3 viewPos = texture(viewPosTexture, texCoord).xyz;
 
     float AO = 0.0;
@@ -23,10 +28,10 @@ void main()
 	// sample random points to compare depths around the view space position.
 	// the more sampled points lie in front of the actual depth at the sampled position,
 	// the higher the probability of the surface point to be occluded.
-    for (int i = 0; i < RANDOM_VECTOR_ARRAY_SIZE; ++i) {
+    for (int i = 0; i < RANDOM_VECTOR_ARRAY_MAX_SIZE; ++i) {
 
 		// take a random sample point.
-        vec3 samplePos = viewPos + randomUnitVectors[i];
+        vec3 samplePos = viewPos + randomVectors[i];
 
 		// project sample point onto near clipping plane
 		// to find the depth value (i.e. actual surface geometry)
@@ -50,7 +55,11 @@ void main()
 
 	// normalize the ratio of sampled points lying behind the surface to a probability in [0,1]
 	// the occlusion factor should make the color darker, not lighter, so we invert it.
-    AO = 1.0 - AO/(float)RANDOM_VECTOR_ARRAY_SIZE;
+    AO = 1.0 - AO / float(RANDOM_VECTOR_ARRAY_MAX_SIZE);
 
-    outColor = screenColor * vec4(pow(AO, 2.0)); // TODO: play with this function
+	///
+    outColor = (screenColor + mix(vec4(0.2), vec4(pow(AO, 2.0)), 1.0));
+	/*/
+	outColor = vec4(viewPos, 1);
+	//*/
 }

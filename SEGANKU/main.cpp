@@ -197,7 +197,7 @@ int main(int argc, char **argv)
 			drawScene();
 			setActiveShader(lastShader); lastShader = nullptr;
 
-			postProcessor->renderPostprocessed();
+			postProcessor->renderPostprocessedSSAO(player->getProjMat());
 
 		}
 		else { // no postprocessing

@@ -116,15 +116,15 @@ void PostProcessor::setPostprocessShader(const std::string &postprocessVertextSh
 	postprocessShader = new Shader(postprocessVertextShaderPath, postprocessFragmentShaderPath);
 }
 
-void PostProcessor::renderPostprocessed()
+void PostProcessor::renderPostprocessedSSAO(const glm::mat4 &projMat)
 {
 
 	// setup postprocessing shader
 
 	postprocessShader->useShader();
 
-	GLuint screenColorTexLocation = glGetUniformLocation(postprocessShader->programHandle, "screenColorTexture");
-	GLuint viewPosTexLocation = glGetUniformLocation(postprocessShader->programHandle, "viewPosTexture");
+	GLint screenColorTexLocation = glGetUniformLocation(postprocessShader->programHandle, "screenColorTexture");
+	GLint viewPosTexLocation = glGetUniformLocation(postprocessShader->programHandle, "viewPosTexture");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, fboColor);
 	glUniform1i(screenColorTexLocation, 0); // bind shader location to texture unit 0
@@ -136,10 +136,43 @@ void PostProcessor::renderPostprocessed()
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, viewPosTexture);
 
+	glUniformMatrix4fv(glGetUniformLocation(postprocessShader->programHandle, "projMat"), 1, GL_FALSE, glm::value_ptr(projMat));
+
+
+	// create array of random vectors for ssao sampling
+	glm::vec3 randomVectors[RANDOM_VECTOR_ARRAY_SIZE];
+    for (GLuint i = 0; i < RANDOM_VECTOR_ARRAY_SIZE; ++i) {
+
+        float scale = i / (float)(RANDOM_VECTOR_ARRAY_SIZE);
+        glm::vec3 randomVector;
+        randomVector.x = 2.0f * (float)rand()/RAND_MAX - 1.0f;
+        randomVector.y = 2.0f * (float)rand()/RAND_MAX - 1.0f;
+        randomVector.z = 2.0f * (float)rand()/RAND_MAX - 1.0f;
+
+        // use a quadratic falloff so that more points lie closer to the origin
+        randomVector *= (0.1f + 0.9f * scale * scale);
+
+        randomVectors[i] = randomVector;
+		//std::cout << "x: " << randomVector.x << ", y: " << randomVector.y << ", z: " << randomVector.z << std::endl;
+    }
+
+
+	// use uniform buffer object to pass random vectors to shader for better performance
+	glUniformBlockBinding(postprocessShader->programHandle, glGetUniformBlockIndex(postprocessShader->programHandle, "RandomVectors"), 0);
+	GLuint uboRandomVectors;
+	glGenBuffers(1, &uboRandomVectors);
+	glBindBuffer(GL_UNIFORM_BUFFER, uboRandomVectors);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec3) * RANDOM_VECTOR_ARRAY_SIZE, &randomVectors[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboRandomVectors, 0, sizeof(glm::vec3) * RANDOM_VECTOR_ARRAY_SIZE);
+	//alternative using simple uniform array:
+    //glUniform3fv(glGetUniformLocation(postprocessShader->programHandle, "randomVectors"), RANDOM_VECTOR_ARRAY_SIZE, (const GLfloat*)&randomVectors[0]);
+
 
 	// render quad to default framebuffer using postprocessing shader
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // bind back to default framebuffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDisable(GL_DEPTH_TEST); // no need for depth testing since we just draw a single quad
 	glBindVertexArray(screenQuadVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 6);

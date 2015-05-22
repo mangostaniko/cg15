@@ -4,6 +4,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <string>
 #include <iostream>
 
@@ -24,6 +28,8 @@ class PostProcessor
 	GLuint screenQuadVAO, screenQuadVBO;
 
 	Shader *postprocessShader = nullptr;
+
+	const static GLuint RANDOM_VECTOR_ARRAY_SIZE = 128;
 
 
 public:
@@ -56,7 +62,7 @@ public:
 	 * switch back to default framebuffer and render the result to a screen filling quad.
 	 * this needs certain information rendered to textures via the bindFramebuffer methods.
 	 */
-	void renderPostprocessed();
+	void renderPostprocessedSSAO(const glm::mat4 &projMat);
 
 };
 
