@@ -45,7 +45,7 @@ bool postprocessingEnabled = true;
 Shader *textureShader, *ssaoViewPosPrepassShader;
 Shader *activeShader;
 TextRenderer *textRenderer;
-PostProcessor *postProcessor;
+SSAOPostprocessor *postProcessor;
 
 Player *player; glm::mat4 playerInitTransform(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
 Geometry *hawk; glm::mat4 hawkInitTransform(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)));
@@ -262,8 +262,7 @@ void init(GLFWwindow *window)
 
 	// INIT SSAO POST PROCESSOR AND PREPASS SHADERS
 
-	postProcessor = new PostProcessor(width, height);
-	postProcessor->setPostprocessShader("../SEGANKU/shaders/ssao.vert", "../SEGANKU/shaders/ssao.frag");
+	postProcessor = new SSAOPostprocessor(width, height);
 
 	ssaoViewPosPrepassShader = new Shader("../SEGANKU/shaders/view_positions.vert", "../SEGANKU/shaders/view_positions.frag");
 

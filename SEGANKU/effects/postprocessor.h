@@ -1,5 +1,5 @@
-#ifndef POSTPROCESSOR_H
-#define POSTPROCESSOR_H
+#ifndef SSAOPOSTPROCESSOR_H
+#define SSAOPOSTPROCESSOR_H
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -14,12 +14,12 @@
 #include "../shader.h"
 
 /**
- * @brief The PostProcessor class is used to facilitate a two pass rendering pipeline,
- * where in the first pass, the whole screen colors and other information are rendered to textures
- * which allows for postprocessing, and in the second pass the postprocessed texture is
- * rendered to a screen filling quad.
+ * @brief The SSAOPostprocessor class facilitates Screen Space Ambient Occlusion
+ * using a two pass rendering pipeline, where in the first pass the screen colors
+ * and other information are rendered to textures to allow for postprocessing,
+ * and in the second pass the postprocessed texture is rendered to a screen filling quad.
  */
-class PostProcessor
+class SSAOPostprocessor
 {
 
 	GLuint fboColor, screenColorTexture, screenDepthBuffer;
@@ -27,38 +27,29 @@ class PostProcessor
 
 	GLuint screenQuadVAO, screenQuadVBO;
 
-	Shader *postprocessShader = nullptr;
+	Shader *ssaoShader = nullptr;
 
 	const static GLuint RANDOM_VECTOR_ARRAY_SIZE = 128;
 
 
 public:
-	PostProcessor(int windowWidth, int windowHeight);
-	~PostProcessor();
+	SSAOPostprocessor(int windowWidth, int windowHeight);
+	~SSAOPostprocessor();
 
 	/**
-	 * @brief bind framebuffer in which screen colors should be stored for post processing.
+	 * @brief bind framebuffer in which screen colors should be stored for ssao postprocessing.
 	 * after binding this, execute the required draw calls using appropriate shaders.
 	 */
 	void bindFramebufferColor();
 
 	/**
-	 * @brief bind framebuffer in which view space vertex positions should be stored for post processing.
+	 * @brief bind framebuffer in which view space vertex positions should be stored for ssao postprocessing.
 	 * after binding this, execute the required draw calls using appropriate shaders.
 	 */
 	void bindFramebufferViewPos();
 
 	/**
-	 * @brief set shader to do the postprocessing of the prerendered screen texture
-	 * and the rendering of the result to a screen filling quad
-	 * @param postprocessVertextShaderPath the postprocessing vertex shader
-	 * @param postprocessFragmentShaderPath the postprocessing fragment shader
-	 */
-	void setPostprocessShader(const std::string &postprocessVertextShaderPath,
-	                          const std::string &postprocessFragmentShaderPath);
-
-	/**
-	 * @brief apply postprocessing to the prerendered color texture,
+	 * @brief apply ssao postprocessing to the prerendered color texture,
 	 * switch back to default framebuffer and render the result to a screen filling quad.
 	 * this needs certain information rendered to textures via the bindFramebuffer methods.
 	 */
@@ -66,4 +57,4 @@ public:
 
 };
 
-#endif // POSTPROCESSOR_H
+#endif // SSAOPOSTPROCESSOR_H

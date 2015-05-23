@@ -12,9 +12,13 @@ GLfloat quadVertices[] = {
      1.0f,  1.0f,  1.0f, 1.0f
 };
 
-PostProcessor::PostProcessor(int windowWidth, int windowHeight)
+SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight)
 {
-	// setup vao for the screen quad onto which the screen texture will be mapped
+	/////////////////////////////////
+	/// SETUP SCREEN FILLING QUAD
+    /// setup vao for the screen quad onto which the screen texture will be mapped
+	/////////////////////////////////
+
     glGenVertexArrays(1, &screenQuadVAO);
     glGenBuffers(1, &screenQuadVBO);
     glBindVertexArray(screenQuadVAO);
@@ -29,18 +33,21 @@ PostProcessor::PostProcessor(int windowWidth, int windowHeight)
     glBindVertexArray(0);
 
 
-	// setup framebuffers with texture or renderbuffer objects as attachment
-	// - texture: optimized for later sampling (e.g. postprocessing)
-	// - renderbuffer object: optimized for use as render target, less flexible.
-	// here we use two texture attachments: one for the color and one for the depth
+	/////////////////////////////////
+	/// SETUP FRAMEBUFFERS
+	/// setup framebuffers with texture or renderbuffer objects as attachments
+	/// - texture: optimized for later sampling (e.g. for postprocessing)
+	/// - renderbuffer object: optimized for use as render target, less flexible.
+    /////////////////////////////////
 
 	// generate screen color texture
+	// note: GL_NEAREST interpolation is ok since there is no subpixel sampling anyway
 	glGenTextures(1, &screenColorTexture);
 	glBindTexture(GL_TEXTURE_2D, screenColorTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
 
 	// generate depth renderbuffer. without this, depth testing wont work.
@@ -52,94 +59,42 @@ PostProcessor::PostProcessor(int windowWidth, int windowHeight)
 	// generate vertex view space position texture
 	glGenTextures(1, &viewPosTexture);
 	glBindTexture(GL_TEXTURE_2D, viewPosTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, windowWidth, windowHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
 
-	// generate framebuffers and attach textures / renderbuffers
-
+	// generate framebuffers with color texture + depth renderbuffer attachments
 	glGenFramebuffers(1, &fboColor); // generate framebuffer object layout in vram and associate handle
 	glBindFramebuffer(GL_FRAMEBUFFER, fboColor); // bind fbo to active framebuffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenColorTexture, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, screenDepthBuffer);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cerr << "ERROR in Postprocessor::Postprocessor: Color Framebuffer not complete" << std::endl;
+		std::cerr << "ERROR in SSAOPostprocessor: Color Framebuffer not complete" << std::endl;
 	}
 
+	// generate framebuffers with view space positions texture
 	glGenFramebuffers(1, &fboViewPos);
 	glBindFramebuffer(GL_FRAMEBUFFER, fboViewPos);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, viewPosTexture, 0);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cerr << "ERROR in Postprocessor::Postprocessor: ViewPos Framebuffer not complete" << std::endl;
+		std::cerr << "ERROR in SSAOPostprocessor: ViewPos Framebuffer not complete" << std::endl;
 	}
 
 	// bind back to default framebuffer (as created by glfw)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-}
 
-PostProcessor::~PostProcessor()
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	/////////////////////////////////
+	/// SETUP SSAO SHADER
+    /// compile shader program and pass random vector used for depth sampling in shader
+    /// note: some other uniforms have to be passed each frame and are not included here
+    /////////////////////////////////
 
-	glDeleteFramebuffers(1, &fboColor);
-	glDeleteTextures(1, &screenColorTexture);
-	glDeleteFramebuffers(1, &fboViewPos);
-	glDeleteTextures(1, &viewPosTexture);
+	ssaoShader = new Shader("../SEGANKU/shaders/ssao.vert", "../SEGANKU/shaders/ssao.frag");
 
-	glDeleteBuffers(1, &screenQuadVBO);
-	glDeleteVertexArrays(1, &screenQuadVAO);
-
-	delete postprocessShader; postprocessShader = nullptr;
-
-}
-
-void PostProcessor::bindFramebufferColor()
-{
-	glEnable(GL_DEPTH_TEST);
-	glBindFramebuffer(GL_FRAMEBUFFER, fboColor);
-}
-
-void PostProcessor::bindFramebufferViewPos()
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, fboViewPos);
-}
-
-void PostProcessor::setPostprocessShader(const std::string &postprocessVertextShaderPath,
-                                         const std::string &postprocessFragmentShaderPath)
-{
-	if (postprocessShader) {
-		delete postprocessShader; postprocessShader = nullptr;
-	}
-	postprocessShader = new Shader(postprocessVertextShaderPath, postprocessFragmentShaderPath);
-}
-
-void PostProcessor::renderPostprocessedSSAO(const glm::mat4 &projMat)
-{
-
-	// setup postprocessing shader
-
-	postprocessShader->useShader();
-
-	GLint screenColorTexLocation = glGetUniformLocation(postprocessShader->programHandle, "screenColorTexture");
-	GLint viewPosTexLocation = glGetUniformLocation(postprocessShader->programHandle, "viewPosTexture");
-
-	glBindFramebuffer(GL_FRAMEBUFFER, fboColor);
-	glUniform1i(screenColorTexLocation, 0); // bind shader location to texture unit 0
-	glActiveTexture(GL_TEXTURE0 + 0); // activate texture unit 0
-	glBindTexture(GL_TEXTURE_2D, screenColorTexture); // bind texture to active texture unit
-
-	glBindFramebuffer(GL_FRAMEBUFFER, fboViewPos);
-	glUniform1i(viewPosTexLocation, 1);
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, viewPosTexture);
-
-	glUniformMatrix4fv(glGetUniformLocation(postprocessShader->programHandle, "projMat"), 1, GL_FALSE, glm::value_ptr(projMat));
-
-
-	// create array of random vectors for ssao sampling
+	// create array of random vectors for ssao depth sampling
 	glm::vec3 randomVectors[RANDOM_VECTOR_ARRAY_SIZE];
     for (GLuint i = 0; i < RANDOM_VECTOR_ARRAY_SIZE; ++i) {
 
@@ -156,9 +111,8 @@ void PostProcessor::renderPostprocessedSSAO(const glm::mat4 &projMat)
 		//std::cout << "x: " << randomVector.x << ", y: " << randomVector.y << ", z: " << randomVector.z << std::endl;
     }
 
-
 	// use uniform buffer object to pass random vectors to shader for better performance
-	glUniformBlockBinding(postprocessShader->programHandle, glGetUniformBlockIndex(postprocessShader->programHandle, "RandomVectors"), 0);
+	glUniformBlockBinding(ssaoShader->programHandle, glGetUniformBlockIndex(ssaoShader->programHandle, "RandomVectors"), 0);
 	GLuint uboRandomVectors;
 	glGenBuffers(1, &uboRandomVectors);
 	glBindBuffer(GL_UNIFORM_BUFFER, uboRandomVectors);
@@ -168,8 +122,60 @@ void PostProcessor::renderPostprocessedSSAO(const glm::mat4 &projMat)
 	//alternative using simple uniform array:
     //glUniform3fv(glGetUniformLocation(postprocessShader->programHandle, "randomVectors"), RANDOM_VECTOR_ARRAY_SIZE, (const GLfloat*)&randomVectors[0]);
 
+}
 
-	// render quad to default framebuffer using postprocessing shader
+SSAOPostprocessor::~SSAOPostprocessor()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glDeleteFramebuffers(1, &fboColor);
+	glDeleteTextures(1, &screenColorTexture);
+	glDeleteRenderbuffers(1, &screenDepthBuffer);
+
+	glDeleteFramebuffers(1, &fboViewPos);
+	glDeleteTextures(1, &viewPosTexture);
+
+	glDeleteBuffers(1, &screenQuadVBO);
+	glDeleteVertexArrays(1, &screenQuadVAO);
+
+	delete ssaoShader; ssaoShader = nullptr;
+
+}
+
+void SSAOPostprocessor::bindFramebufferColor()
+{
+	glEnable(GL_DEPTH_TEST);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboColor);
+}
+
+void SSAOPostprocessor::bindFramebufferViewPos()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, fboViewPos);
+}
+
+void SSAOPostprocessor::renderPostprocessedSSAO(const glm::mat4 &projMat)
+{
+
+	// activate shader and pass uniforms
+
+	ssaoShader->useShader();
+
+	glUniformMatrix4fv(glGetUniformLocation(ssaoShader->programHandle, "projMat"), 1, GL_FALSE, glm::value_ptr(projMat));
+
+	GLint screenColorTexLocation = glGetUniformLocation(ssaoShader->programHandle, "screenColorTexture");
+	glBindFramebuffer(GL_FRAMEBUFFER, fboColor);
+	glUniform1i(screenColorTexLocation, 0); // bind shader location to texture unit 0
+	glActiveTexture(GL_TEXTURE0 + 0); // activate texture unit 0
+	glBindTexture(GL_TEXTURE_2D, screenColorTexture); // bind texture to active texture unit
+
+	GLint viewPosTexLocation = glGetUniformLocation(ssaoShader->programHandle, "viewPosTexture");
+	glBindFramebuffer(GL_FRAMEBUFFER, fboViewPos);
+	glUniform1i(viewPosTexLocation, 1);
+	glActiveTexture(GL_TEXTURE0 + 1);
+	glBindTexture(GL_TEXTURE_2D, viewPosTexture);
+
+
+	// render quad to default framebuffer using ssao shader
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // bind back to default framebuffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -55,10 +55,10 @@ void main()
 
 	// normalize the ratio of sampled points lying behind the surface to a probability in [0,1]
 	// the occlusion factor should make the color darker, not lighter, so we invert it.
-    AO = 1.0 - AO / float(RANDOM_VECTOR_ARRAY_MAX_SIZE);
+    AO = AO / float(RANDOM_VECTOR_ARRAY_MAX_SIZE);
 
 	///
-    outColor = (screenColor + mix(vec4(0.2), vec4(pow(AO, 2.0)), 1.0));
+    outColor = screenColor * (1 - vec4(min(AO*AO, 0.2)));
 	/*/
 	outColor = vec4(viewPos, 1);
 	//*/
