@@ -48,7 +48,7 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
 	// generate depth renderbuffer. without this, depth testing wont work.
 	// we use a renderbuffer since we wont have to sample this, opengl uses it directly.
@@ -63,7 +63,7 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, windowWidth, windowHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, windowWidth, windowHeight, 0, GL_BGR, GL_FLOAT, NULL);
 
 	// generate framebuffers with color texture + depth renderbuffer attachments
 	glGenFramebuffers(1, &fboColor); // generate framebuffer object layout in vram and associate handle
@@ -78,6 +78,7 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight)
 	glGenFramebuffers(1, &fboViewPos);
 	glBindFramebuffer(GL_FRAMEBUFFER, fboViewPos);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, viewPosTexture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, screenDepthBuffer);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 		std::cerr << "ERROR in SSAOPostprocessor: ViewPos Framebuffer not complete" << std::endl;
 	}
@@ -98,13 +99,14 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight)
 	glm::vec3 randomVectors[RANDOM_VECTOR_ARRAY_SIZE];
     for (GLuint i = 0; i < RANDOM_VECTOR_ARRAY_SIZE; ++i) {
 
-        float scale = i / (float)(RANDOM_VECTOR_ARRAY_SIZE);
         glm::vec3 randomVector;
         randomVector.x = 2.0f * (float)rand()/RAND_MAX - 1.0f;
         randomVector.y = 2.0f * (float)rand()/RAND_MAX - 1.0f;
         randomVector.z = 2.0f * (float)rand()/RAND_MAX - 1.0f;
 
-        // use a quadratic falloff so that more points lie closer to the origin
+        // scale vectors depending on array index
+		// quadratic falloff so that more points lie closer to the origin
+		float scale = i / (float)(RANDOM_VECTOR_ARRAY_SIZE);
         randomVector *= (0.1f + 0.9f * scale * scale);
 
         randomVectors[i] = randomVector;
@@ -150,6 +152,7 @@ void SSAOPostprocessor::bindFramebufferColor()
 
 void SSAOPostprocessor::bindFramebufferViewPos()
 {
+	glEnable(GL_DEPTH_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, fboViewPos);
 }
 

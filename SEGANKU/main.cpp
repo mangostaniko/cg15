@@ -40,12 +40,12 @@ bool paused      = false;
 bool foundCarrot = false;
 bool debugInfoEnabled      = true;
 bool wireframeEnabled      = false;
-bool postprocessingEnabled = true;
+bool ssaoEnabled = true;
 
 Shader *textureShader, *ssaoViewPosPrepassShader;
 Shader *activeShader;
 TextRenderer *textRenderer;
-SSAOPostprocessor *postProcessor;
+SSAOPostprocessor *ssaoPostprocessor;
 
 Player *player; glm::mat4 playerInitTransform(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
 Geometry *hawk; glm::mat4 hawkInitTransform(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)));
@@ -182,23 +182,24 @@ int main(int argc, char **argv)
 		/// DRAW
 		//////////////////////////
 
-		if (postprocessingEnabled) {
+		if (ssaoEnabled) {
 
-			postProcessor->bindFramebufferColor();
+			ssaoPostprocessor->bindFramebufferColor();
 			glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			drawScene();
 
-			postProcessor->bindFramebufferViewPos();
+			ssaoPostprocessor->bindFramebufferViewPos();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			Shader *lastShader = activeShader;
 			setActiveShader(ssaoViewPosPrepassShader);
 			glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "viewMat"), 1, GL_FALSE, glm::value_ptr(player->getViewMat()));
 			drawScene();
+
+			ssaoPostprocessor->renderPostprocessedSSAO(player->getProjMat());
+
 			setActiveShader(lastShader); lastShader = nullptr;
-
-			postProcessor->renderPostprocessedSSAO(player->getProjMat());
-
 		}
 		else { // no postprocessing
 			glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
@@ -262,7 +263,7 @@ void init(GLFWwindow *window)
 
 	// INIT SSAO POST PROCESSOR AND PREPASS SHADERS
 
-	postProcessor = new SSAOPostprocessor(width, height);
+	ssaoPostprocessor = new SSAOPostprocessor(width, height);
 
 	ssaoViewPosPrepassShader = new Shader("../SEGANKU/shaders/view_positions.vert", "../SEGANKU/shaders/view_positions.frag");
 
@@ -426,7 +427,7 @@ void cleanup()
 	activeShader = nullptr;
 
 	delete textRenderer; textRenderer = nullptr;
-	delete postProcessor; postProcessor = nullptr;
+	delete ssaoPostprocessor; ssaoPostprocessor = nullptr;
 
 	delete player; player = nullptr;
 	delete hawk; hawk = nullptr;
@@ -473,7 +474,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	}	
 
 	if (glfwGetKey(window, GLFW_KEY_F7) == GLFW_PRESS) {
-		postprocessingEnabled = !postprocessingEnabled;
+		ssaoEnabled = !ssaoEnabled;
 	}
 }
 
