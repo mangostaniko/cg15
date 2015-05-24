@@ -6,7 +6,7 @@ layout(location = 0) out vec4 outColor;
 uniform sampler2D ssaoTexture; // the ssao factor for each fragment
 uniform sampler2D screenColorTexture; // the whole rendered screen
 
-uniform float blurEnabled; // the whole rendered screen
+uniform float blurEnabled; // whether to use blurring (glsl has no bool type so we check > 0.5)
 
 float offsets[5] = float[](-1.5f, -0.5f, 0.25f, 1.5f, 2.5f); // shifted a bit, somehow looks nicer
 float kernel5[25] = float[](.003f, .013f, .022f, .013f, .003f,
