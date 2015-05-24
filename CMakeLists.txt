@@ -85,11 +85,10 @@ set(SRC_SHADERS
 
 		SEGANKU/shaders/view_positions.vert
 		SEGANKU/shaders/view_positions.frag
-
-		SEGANKU/shaders/invert_color.vert
-		SEGANKU/shaders/invert_color.frag
 		SEGANKU/shaders/ssao.vert
 		SEGANKU/shaders/ssao.frag
+		SEGANKU/shaders/ssao_blur_mixing.vert
+		SEGANKU/shaders/ssao_blur_mixing.frag
 		)
 		
 # adds an executable target with given name to be built from the source files listed afterwards

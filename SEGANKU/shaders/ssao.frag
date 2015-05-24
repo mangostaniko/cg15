@@ -6,7 +6,6 @@ layout(location = 0) out vec4 outColor;
 const int RANDOM_VECTOR_ARRAY_MAX_SIZE = 32; // reference uses 64 [increase for better quality]
 const float SAMPLE_RADIUS = 1.5f; // reference uses 1.5 [causes issues, currently not used]
 
-uniform sampler2D screenColorTexture; // the whole rendered screen
 uniform sampler2D viewPosTexture; // interpolated vertex positions in view space
 
 uniform mat4 projMat;
@@ -20,7 +19,6 @@ layout (std140) uniform RandomVectors
 void main()
 {
 
-	vec3 screenColor = texture(screenColorTexture, texCoord).rgb;
     vec3 viewPos = texture(viewPosTexture, texCoord).xyz;
 
     float AO = 0.0f;
@@ -58,9 +56,5 @@ void main()
 	// normalize the ratio of sampled points lying behind the surface to a probability in [0,1]
 	AO = AO / float(RANDOM_VECTOR_ARRAY_MAX_SIZE);
 
-	// mix screen color with black color depending on occlusion factor
-	AO = AO*AO*1.5;
-	vec3 mixedColor = (1.0f-AO) * vec3(0.0f) + AO * screenColor;
-
-	outColor = vec4(vec3(mixedColor), 1.0f);
+	outColor = vec4(vec3(AO), 1);
 }
