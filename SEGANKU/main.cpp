@@ -187,17 +187,18 @@ int main(int argc, char **argv)
 			ssaoPostprocessor->bindFramebufferColor();
 			glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			drawScene();
 
 			ssaoPostprocessor->bindFramebufferViewPos();
+			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			Shader *lastShader = activeShader;
 			setActiveShader(ssaoViewPosPrepassShader);
 			glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "viewMat"), 1, GL_FALSE, glm::value_ptr(player->getViewMat()));
 			drawScene();
 
-			ssaoPostprocessor->renderPostprocessedSSAO(player->getProjMat());
+			glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
+			ssaoPostprocessor->renderPostprocessedSSAO(player->getProjMat(), true); // bool toggles blur
 
 			setActiveShader(lastShader); lastShader = nullptr;
 		}

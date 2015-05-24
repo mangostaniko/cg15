@@ -24,13 +24,19 @@ class SSAOPostprocessor
 
 	GLuint fboColor, screenColorTexture, screenDepthBuffer;
 	GLuint fboViewPos, viewPosTexture;
+	GLuint fboSSAO, ssaoTexture;
 
 	GLuint screenQuadVAO, screenQuadVBO;
 
 	Shader *ssaoShader = nullptr;
+	Shader *blurMixingShader = nullptr;
 
 	const static GLuint RANDOM_VECTOR_ARRAY_SIZE = 128;
 
+	/**
+	 * @brief draw a screen filling quad
+	 */
+	void drawQuad();
 
 public:
 	SSAOPostprocessor(int windowWidth, int windowHeight);
@@ -53,7 +59,7 @@ public:
 	 * switch back to default framebuffer and render the result to a screen filling quad.
 	 * this needs certain information rendered to textures via the bindFramebuffer methods.
 	 */
-	void renderPostprocessedSSAO(const glm::mat4 &projMat);
+	void renderPostprocessedSSAO(const glm::mat4 &projMat, bool blurEnabled);
 
 };
 
