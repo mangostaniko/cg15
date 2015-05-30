@@ -23,10 +23,46 @@ struct Light {
 in vec3 P;			
 in vec3 N;			
 in vec2 texCoord;
+in vec4 PLightSpace;
 
 uniform vec3 cameraPos;
 uniform Material material;
 uniform Light light;
+uniform sampler2D shadowMap;
+uniform bool useShadows;
+
+float calcShadow(vec4 lightSpacePos)
+{
+	vec3 projC = lightSpacePos.xyz / lightSpacePos.w;
+	projC = projC * 0.5 + 0.5;
+
+	float closestZ = texture(shadowMap, projC.xy).r;
+	float currentZ = projC.z;
+
+	// we are outside the far plane, don't waste computation time
+	if (projC.z > 1.0) {
+		return 0.0;
+	}
+
+	// Bias for Shadow Acne
+	float bias = max(0.005 * (1.0 - dot(normalize(N), normalize(light.position - P))), 0.0025);
+
+	//float shadow = currentZ - bias > closestZ ? 1.0 : 0.0;
+
+	// PCF for softer shadows
+	float shadow = 0.0;
+	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+	for (int x = -1; x <= 1; ++x) {
+		for (int y = -1; y <= 1; ++y) {
+			float pcfZ = texture(shadowMap, projC.xy + vec2(x,y) * texelSize).r;
+			shadow += currentZ - bias > pcfZ ? 1.0 : 0.0;
+		}
+	}
+	shadow /= 9;
+
+	return shadow;
+}
+
 
 void main()
 {
@@ -47,6 +83,18 @@ void main()
 	vec3 specularColor = vec3(1.0f); //texture(specularTexture, texCoord).rgb;	
 	vec3 specular = pow(max(dot(halfVec, normal), 0.0f), material.shininess) * light.specular * material.specular;
 
-	outColor = vec4(ambient + diffuse + specular, 1);
+	if (useShadows) {
+		float shadow = calcShadow(PLightSpace);
+		
+		vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular));
+
+		outColor = vec4(lighting, 1);
+	} else {
+		vec3 lighting = (ambient + diffuse + specular);
+
+		outColor = vec4(lighting, 1);
+	}
 }
+
+
 

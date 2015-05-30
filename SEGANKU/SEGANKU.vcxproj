@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="effects\postprocessor.cpp" />
     <ClCompile Include="geometry.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
@@ -24,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="effects\postprocessor.h" />
     <ClInclude Include="geometry.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="player.h" />
@@ -34,10 +36,22 @@
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\normals_shader.frag" />
-    <None Include="shaders\normals_shader.vert" />
-    <None Include="shaders\texture_shader.frag" />
-    <None Include="shaders\texture_shader.vert" />
+    <None Include="shaders\normal_mapping.frag" />
+    <None Include="shaders\normal_mapping.vert" />
+    <None Include="shaders\depth_shader.frag" />
+    <None Include="shaders\depth_shader.vert" />
+    <None Include="shaders\quad_debug.frag" />
+    <None Include="shaders\quad_debug.vert" />
+    <None Include="shaders\ssao.frag" />
+    <None Include="shaders\ssao.vert" />
+    <None Include="shaders\ssao_blur_mixing.frag" />
+    <None Include="shaders\ssao_blur_mixing.vert" />
+    <None Include="shaders\text.frag" />
+    <None Include="shaders\text.vert" />
+    <None Include="shaders\textured_blinnphong.frag" />
+    <None Include="shaders\textured_blinnphong.vert" />
+    <None Include="shaders\view_positions.frag" />
+    <None Include="shaders\view_positions.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7B5870C7-A5A7-48D5-9E9B-342A0EEEBCAA}</ProjectGuid>

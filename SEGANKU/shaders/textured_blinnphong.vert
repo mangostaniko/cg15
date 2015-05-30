@@ -9,18 +9,21 @@ layout(location = 2) in vec2 uv;
 out vec3 P;
 out vec3 N;
 out vec2 texCoord;
+out vec4 PLightSpace;
 
 // uniforms use the same value for all vertices
 uniform mat4 modelMat;
 uniform mat3 normalMat;
 uniform mat4 viewProjMat;
+uniform mat4 lightVP;
 
 void main()
 {
+	gl_Position = viewProjMat * modelMat * vec4(position, 1);
+
 	P = (modelMat * vec4(position, 1)).xyz;
 	N = normalMat * normal;
 	texCoord = uv;
-
-	gl_Position = viewProjMat * modelMat * vec4(position, 1);
+	PLightSpace = lightVP * vec4(P, 1.0);
 }
 
