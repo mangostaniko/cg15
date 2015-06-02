@@ -54,7 +54,8 @@ void main()
     }
 
 	// normalize the ratio of sampled points lying behind the surface to a probability in [0,1]
-	AO = AO / float(RANDOM_VECTOR_ARRAY_MAX_SIZE);
+	AO /= float(RANDOM_VECTOR_ARRAY_MAX_SIZE);
+	AO = AO;
 
-	outColor = vec4(vec3(AO), 1);
+	outColor = vec4(AO, AO, AO, 1);
 }

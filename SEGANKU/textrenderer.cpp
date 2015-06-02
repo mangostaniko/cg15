@@ -163,7 +163,7 @@ void TextRenderer::loadGlyphs(const std::string &fontPath)
 	        texture,
 	        glm::ivec2(typeface->glyph->bitmap.width, typeface->glyph->bitmap.rows),
 	        glm::ivec2(typeface->glyph->bitmap_left, typeface->glyph->bitmap_top),
-	        typeface->glyph->advance.x
+	        GLuint(typeface->glyph->advance.x)
 	    };
 
 	    glyphs.insert(std::pair<GLchar, Glyph>(character, glyph));

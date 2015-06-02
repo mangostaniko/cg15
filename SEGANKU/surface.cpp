@@ -12,7 +12,7 @@ Surface::Surface(const std::vector<Vertex> &vertices_, const std::vector<GLuint>
 
 void Surface::init()
 {
-	// generate vertex array object (vao) bindings. the vao simply stores the state of the bindings that follow
+	// generate vertex array object (vao) bindings. the vao simply stores the state of the subsequent bindings
 	// so that they can be reactived quickly later, instead of doing it all over again
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);

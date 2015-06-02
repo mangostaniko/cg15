@@ -19,7 +19,7 @@ class Texture
 	const std::string filePath;
 
 public:
-	Texture(const std::string &filePath);
+	Texture(const std::string &filePath, bool alpha);
 	~Texture();
 
 	/**

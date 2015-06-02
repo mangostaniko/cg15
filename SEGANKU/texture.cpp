@@ -1,6 +1,6 @@
 #include "texture.h"
 
-Texture::Texture(const std::string &filePath_)
+Texture::Texture(const std::string &filePath_, bool alpha)
 	: filePath(filePath_)
 {
 	glGenTextures(1, &handle);
@@ -17,7 +17,12 @@ Texture::Texture(const std::string &filePath_)
 	// a unit can contain multiple texture targets, but recommended to use only one per unit
 	// parameters: target, mipmap level, internal format, width, heigth, border width, internal format, data format, image data
 	// note: for some reason it seems that 8 bit RGB images are really stored in BGR format.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.getWidth(), img.getHeight(), 0, GL_BGR, GL_UNSIGNED_BYTE, img.accessPixels());
+	if (alpha) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.getWidth(), img.getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, img.accessPixels());
+	} else {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.getWidth(), img.getHeight(), 0, GL_BGR, GL_UNSIGNED_BYTE, img.accessPixels());
+	}
+
 
 	// automatically generate mipmaps (mip = multum in parvo, i.e. 'much in little')
 	// mipmaps are filtered and downsampled copies of the texture stored compactly in a single file,

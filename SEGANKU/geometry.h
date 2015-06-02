@@ -71,6 +71,10 @@ public:
 	Geometry(const glm::mat4 &matrix_, const std::string &filePath);
 	virtual ~Geometry();
 
+	/**
+	 * @brief update the state of the SceneObject
+	 * @param timeDelta the time passed since the last frame in seconds
+	 */
 	virtual void update(float timeDelta);
 
 	/**

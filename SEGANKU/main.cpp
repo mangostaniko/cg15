@@ -23,7 +23,8 @@
 #include "player.h"
 #include "light.h"
 #include "textrenderer.h"
-#include "effects/postprocessor.h"
+#include "effects/ssaopostprocessor.h"
+#include "effects/particlesystem.h"
 
 
 void init(GLFWwindow *window);
@@ -46,6 +47,7 @@ bool renderShadowMap	= false;
 Shader *textureShader, *ssaoViewPosPrepassShader, *depthMapShader, *debugDepthShader;
 Shader *activeShader;
 TextRenderer *textRenderer;
+ParticleSystem *particleSystem;
 SSAOPostprocessor *ssaoPostprocessor;
 
 Player *player; glm::mat4 playerInitTransform(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
@@ -78,11 +80,11 @@ void RenderQuad()
 	if (quadVAO == 0)
 	{
 		GLfloat quadVertices[] = {
-			// Positions        // Texture Coords
-			-1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-			1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-			1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+			// Positions         // Texture Coords
+			-1.0f,  1.0f, 0.0f,  0.0f, 1.0f,
+			-1.0f, -1.0f, 0.0f,  0.0f, 0.0f,
+			 1.0f,  1.0f, 0.0f,  1.0f, 1.0f,
+			 1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
 		};
 		// Setup plane VAO
 		glGenVertexArrays(1, &quadVAO);
@@ -293,6 +295,7 @@ int main(int argc, char **argv)
 		}
 		
 		if (renderShadowMap) {
+
 			lastShader = activeShader;
 			setActiveShader(debugDepthShader);
 
@@ -303,7 +306,9 @@ int main(int argc, char **argv)
 			RenderQuad();
 			setActiveShader(lastShader); lastShader = nullptr;
 		}
-		
+
+		particleSystem->draw(player->getViewMat(), player->getProjMat());
+
 		drawText(deltaT);
 
 		// end the current frame (swaps the front and back buffers)
@@ -384,11 +389,12 @@ void init(GLFWwindow *window)
 	// INIT TEXT RENDERER
 	textRenderer = new TextRenderer("../data/fonts/VeraMono.ttf", width, height);
 
+	// INIT PARTICLE SYSTEM
+	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png");
 
 	// INIT SSAO POST PROCESSOR AND PREPASS SHADERS
 	ssaoPostprocessor = new SSAOPostprocessor(width, height);
 	ssaoViewPosPrepassShader = new Shader("../SEGANKU/shaders/view_positions.vert", "../SEGANKU/shaders/view_positions.frag");
-
 
 	// INIT SHADERS
 	textureShader = new Shader("../SEGANKU/shaders/textured_blinnphong.vert", "../SEGANKU/shaders/textured_blinnphong.frag");
@@ -405,7 +411,7 @@ void init(GLFWwindow *window)
 	randDistribution(randGen);
 	carrotPos = glm::vec3(randDistribution(randGen), 0, randDistribution(randGen));
 	carrot = new Geometry(glm::translate(glm::mat4(1.0f), carrotPos), "../data/models/world/carrot.dae");
-	
+
 	//const glm::mat4 &modelMatrix_, glm::vec3 endPos, glm::vec3 startCol, glm::vec3 endCol, float seconds
 	sun = new Light(glm::translate(glm::mat4(1.0f), LIGHT_START), LIGHT_END, glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
 
@@ -414,10 +420,10 @@ void init(GLFWwindow *window)
 	camera = new Camera(glm::mat4(1.0f), glm::radians(80.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
 	player = new Player(playerInitTransform, camera, window, "../data/models/skunk/skunk.dae");
 
-
 	// INIT HAWK
 	hawk = new Geometry(hawkInitTransform, "../data/models/hawk/hawk.dae");
 	hawk->rotateY(glm::radians(270.0), SceneObject::RIGHT);
+
 }
 
 
@@ -435,6 +441,8 @@ void update(float timeDelta)
 	//hawk->translate(glm::vec3(0, glm::cos(glfwGetTime())/20, 0), SceneObject::RIGHT);
 	hawk->rotateZ(glm::cos(-glfwGetTime())/2000, SceneObject::RIGHT);
 	hawk->rotateX(glm::cos(-glfwGetTime())/2000, SceneObject::RIGHT);
+
+	particleSystem->update(timeDelta, camera->getLocation());
 
 	sun->update(timeDelta);
 
@@ -536,6 +544,7 @@ void cleanup()
 	activeShader = nullptr;
 
 	delete textRenderer; textRenderer = nullptr;
+	delete particleSystem; particleSystem = nullptr;
 	delete ssaoPostprocessor; ssaoPostprocessor = nullptr;
 
 	delete player; player = nullptr;
