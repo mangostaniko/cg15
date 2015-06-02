@@ -68,6 +68,8 @@ set(SRC_CLASSES
 	SEGANKU/player.h
 	SEGANKU/player.cpp
 
+	SEGANKU/effects/shadowmap.h
+	SEGANKU/effects/shadowmap.cpp
 	SEGANKU/effects/ssaopostprocessor.h
 	SEGANKU/effects/ssaopostprocessor.cpp
 	SEGANKU/effects/particlesystem.h
@@ -94,6 +96,11 @@ set(SRC_SHADERS
 		SEGANKU/shaders/ssao.frag
 		SEGANKU/shaders/ssao_blur_mixing.vert
 		SEGANKU/shaders/ssao_blur_mixing.frag
+
+		SEGANKU/shaders/depth_shader.vert
+		SEGANKU/shaders/depth_shader.frag
+		SEGANKU/shaders/quad_debug.vert
+		SEGANKU/shaders/quad_debug.frag
 
 
 		)
