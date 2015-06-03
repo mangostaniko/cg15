@@ -45,7 +45,10 @@
     <ClCompile Include="textrenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="effects\postprocessor.cpp">
+    <ClCompile Include="effects\particlesystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="effects\ssaopostprocessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,7 +80,10 @@
     <ClInclude Include="textrenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="effects\postprocessor.h">
+    <ClInclude Include="effects\particlesystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="effects\ssaopostprocessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,5 +104,7 @@
     <None Include="shaders\quad_debug.frag" />
     <None Include="shaders\depth_shader.frag" />
     <None Include="shaders\depth_shader.vert" />
+    <None Include="shaders\particles.frag" />
+    <None Include="shaders\particles.vert" />
   </ItemGroup>
 </Project>
