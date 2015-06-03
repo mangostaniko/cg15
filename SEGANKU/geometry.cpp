@@ -165,8 +165,8 @@ std::shared_ptr<Texture> Geometry::loadMaterialTexture(aiMaterial *mat, aiTextur
 
 		// otherwise load the texture from the file
 		if (!skip) {
-			loadedTextures.push_back(std::make_shared<Texture>(directoryPath + '/' + texturePath.C_Str()));
-			std::cout << "loaded texture: " << texturePath.C_Str() << std::endl;
+			loadedTextures.push_back(std::make_shared<Texture>(directoryPath + '/' + texturePath.C_Str(), false));
+			std::cout << "loaded texture: " << directoryPath + '/' + texturePath.C_Str() << std::endl;
 			texture = loadedTextures.back();
 		}
 

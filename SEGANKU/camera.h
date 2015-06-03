@@ -21,6 +21,10 @@ public:
 	Camera(const glm::mat4 &matrix_);
 	virtual ~Camera();
 
+	/**
+	 * @brief update the state of the Camera
+	 * @param timeDelta the time passed since the last frame in seconds
+	 */
 	virtual void update(float timeDelta);
 
 	/**

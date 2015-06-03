@@ -47,12 +47,6 @@ public:
 	};
 
 	/**
-	 * @brief update the state of the SceneObject
-	 * @param timeDelta the time passed since the last frame in seconds
-	 */
-	virtual void update(float timeDelta) = 0;
-
-	/**
 	 * @brief apply a transformation matrix to the current matrix
 	 * @param transform_ matrix defining a transformation
 	 * @param inverse_ the inverse matrix of transform

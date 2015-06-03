@@ -1,7 +1,7 @@
-#include "postprocessor.h"
+#include "ssaopostprocessor.h"
 
 // vertex positions and uvs defining a quad. used to render the screen texture.
-GLfloat quadVertices[] = {
+static const GLfloat quadVertices[] = {
     // positions   // uvs
     -1.0f,  1.0f,  0.0f, 1.0f,
     -1.0f, -1.0f,  0.0f, 0.0f,

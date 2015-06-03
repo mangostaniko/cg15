@@ -68,8 +68,13 @@ set(SRC_CLASSES
 	SEGANKU/player.h
 	SEGANKU/player.cpp
 
-	SEGANKU/effects/postprocessor.h
-	SEGANKU/effects/postprocessor.cpp
+	SEGANKU/effects/shadowmap.h
+	SEGANKU/effects/shadowmap.cpp
+	SEGANKU/effects/ssaopostprocessor.h
+	SEGANKU/effects/ssaopostprocessor.cpp
+	SEGANKU/effects/particlesystem.h
+	SEGANKU/effects/particlesystem.cpp
+
 
     )
 	
@@ -82,6 +87,8 @@ set(SRC_SHADERS
 
 		SEGANKU/shaders/text.vert
 		SEGANKU/shaders/text.frag
+		SEGANKU/shaders/particles.vert
+		SEGANKU/shaders/particles.frag
 
 		SEGANKU/shaders/view_positions.vert
 		SEGANKU/shaders/view_positions.frag
@@ -89,6 +96,13 @@ set(SRC_SHADERS
 		SEGANKU/shaders/ssao.frag
 		SEGANKU/shaders/ssao_blur_mixing.vert
 		SEGANKU/shaders/ssao_blur_mixing.frag
+
+		SEGANKU/shaders/depth_shader.vert
+		SEGANKU/shaders/depth_shader.frag
+		SEGANKU/shaders/quad_debug.vert
+		SEGANKU/shaders/quad_debug.frag
+
+
 		)
 		
 # adds an executable target with given name to be built from the source files listed afterwards
