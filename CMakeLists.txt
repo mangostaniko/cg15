@@ -68,8 +68,6 @@ set(SRC_CLASSES
 	SEGANKU/player.h
 	SEGANKU/player.cpp
 
-	SEGANKU/effects/shadowmap.h
-	SEGANKU/effects/shadowmap.cpp
 	SEGANKU/effects/ssaopostprocessor.h
 	SEGANKU/effects/ssaopostprocessor.cpp
 	SEGANKU/effects/particlesystem.h
