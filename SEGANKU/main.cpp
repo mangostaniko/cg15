@@ -585,7 +585,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
-		particleSystem->respawn();
+		particleSystem->respawn(player->getLocation());
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS) {

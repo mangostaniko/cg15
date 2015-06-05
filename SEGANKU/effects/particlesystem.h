@@ -66,7 +66,7 @@ public:
 	/**
 	 * @brief clear all particles and reinitiate spawning
 	 */
-	void respawn();
+	void respawn(glm::vec3 location);
 };
 
 #endif // PARTICLESYSTEM_H

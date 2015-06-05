@@ -196,8 +196,9 @@ void ParticleSystem::update(float timeDelta, const glm::mat4 &viewMat)
 
 }
 
-void ParticleSystem::respawn()
+void ParticleSystem::respawn(glm::vec3 location)
 {
+	setLocation(location);
 	particles.clear();
 	secondsSinceLastSpawn = 0;
 	spawningPaused = false;
