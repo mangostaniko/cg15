@@ -12,8 +12,22 @@ static const GLfloat quadVertices[] = {
      1.0f,  1.0f,  1.0f, 1.0f
 };
 
-ParticleSystem::ParticleSystem(const glm::mat4 &matrix_, const std::string &texturePath)
+/**
+ * used to sort vector of shared_ptr by their pointed values of type T
+ */
+template <class T>
+struct SortSharedPtr {
+    bool operator()(const std::shared_ptr<T>& a, const std::shared_ptr<T>& b) {
+        return *a < *b;
+    }
+};
+
+ParticleSystem::ParticleSystem(const glm::mat4 &matrix_, const std::string &texturePath, int maxParticleCount_, float spawnRate_, float timeToLive_, float gravity_)
     : SceneObject(matrix_)
+    , maxParticleCount(maxParticleCount_)
+    , spawnRate(spawnRate_)
+    , timeToLive(timeToLive_)
+    , gravity(gravity_)
 {
 
 	particleShader = new Shader("../SEGANKU/shaders/particles.vert", "../SEGANKU/shaders/particles.frag");
@@ -36,7 +50,7 @@ ParticleSystem::ParticleSystem(const glm::mat4 &matrix_, const std::string &text
 	// sends GL_STREAM_DRAW hint to GL implementation, since alternating write/read expected. data is assigned later.
 	glGenBuffers(1, &particleInstanceDataVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, particleInstanceDataVBO);
-	glBufferData(GL_ARRAY_BUFFER, MAX_PARTICLE_COUNT * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, maxParticleCount * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 
 	// enable shader attributes at given indices to supply buffer data to them
 	// the indices/layout of the shader attribute are defined in the particle shader source file
@@ -90,68 +104,81 @@ void ParticleSystem::draw(const glm::mat4 &viewMat, const glm::mat4 &projMat)
 	// but also advances the used buffer attributes after a given number of drawn instances,
 	// depending on the glVertexAttribDivisor value assigned for that buffer,
 	// which divides the instances into the number of different attributes to be assigned.
+	glBindVertexArray(vao);
 	glVertexAttribDivisor(0, 0); // quad vertex buffer              (always use same vertices)
 	glVertexAttribDivisor(1, 1); // particle instance data buffer   (advance for each instance)
-	glBindVertexArray(vao);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, 6, particles.size()); // mode, first index, last index, instance count
 	glBindVertexArray(0);
 
 
 }
 
-void ParticleSystem::update(float timeDelta, glm::vec3 cameraPos)
+void ParticleSystem::update(float timeDelta, const glm::mat4 &viewMat)
 {
 
 	// SPAWN PARTICLES
 
-	secondsSinceLastSpawn += timeDelta;
-	int spawnedParticleCount = int(secondsSinceLastSpawn*SPAWN_RATE + 0.5f);
-	if (spawnedParticleCount > 0) { secondsSinceLastSpawn = 0.0f; }
+	if (!spawningPaused) {
 
-	for (int i = 0; i < spawnedParticleCount; ++i) {
-		if (particles.size() < MAX_PARTICLE_COUNT) {
-			particles.push_back(std::make_shared<Particle>());
+		secondsSinceLastSpawn += timeDelta;
+		int spawnedParticleCount = int(secondsSinceLastSpawn*spawnRate + 0.5f);
+		if (spawnedParticleCount > 0) { secondsSinceLastSpawn = 0.0f; }
+
+		for (int i = 0; i < spawnedParticleCount; ++i) {
+			if (particles.size() < maxParticleCount) {
+				std::shared_ptr<Particle> particle = std::make_shared<Particle>();
+				particle->timeToLive = timeToLive;
+				particles.push_back(particle);
+			} else {
+				spawningPaused = true;
+			}
 		}
-	}
 
-	std::cout << "particle count: " << particles.size() << std::endl;
+	}
 
 	// SIMULATE PARTICLES
 
-	std::vector<float> particleInstanceData;
+	glm::mat4 modelViewMat = viewMat * getMatrix();
 
-	for (unsigned int i; i < particles.size(); ++i) {
+	for (unsigned int i = 0; i < particles.size(); ++i) {
 		std::shared_ptr<Particle> particle = particles[i];
 
+		particle->timeToLive -= timeDelta;
 		if (particle->timeToLive < 0) {
-			//particles.erase(particles.begin()+i);
-			//continue;
+			particles.erase(particles.begin()+i);
+			continue;
 		}
 
-		// simulate gravitational field at planet earth surface
-		particle->velocity += glm::vec3(0.0f, -9.81f, 0.0f) * timeDelta * -0.001f; // accelerate particle
+		// simulate gravitational acceleration
+		particle->velocity += glm::vec3(0.0f, -9.81f, 0.0f) * timeDelta * gravity;
 		particle->pos += particle->velocity * timeDelta;
-		particle->pos += glm::vec3((float)rand()/RAND_MAX, 0.0f, (float)rand()/RAND_MAX) * timeDelta * 100.0f * ((float)rand()/RAND_MAX - 0.5f); // add a bit of pseudorandom movement
 
-		glm::vec3 particleWorldPos = glm::vec3(getMatrix() * glm::vec4(particle->pos.x, particle->pos.y, particle->pos.z, 1));
-		particle->cameraDistance = glm::length2(particleWorldPos - cameraPos); // cameraDistance is used for depth sorting
+		// simulate wind by adding a bit of pseudorandom movement
+		particle->pos += glm::vec3((float)rand()/RAND_MAX, 0.0f, (float)rand()/RAND_MAX) * timeDelta * 10.0f * ((float)rand()/RAND_MAX - 0.5f);
 
-		// fill array to pass to particle instance data buffer
-		particleInstanceData.push_back(particle->pos.x);
-		particleInstanceData.push_back(particle->pos.y);
-		particleInstanceData.push_back(particle->pos.z);
-		particleInstanceData.push_back(particle->timeToLive);
-
-		particle->timeToLive -= timeDelta * 100;
+		// particle depth for sorting to draw with alpha
+		glm::vec3 particleViewPos = glm::vec3(modelViewMat * glm::vec4(particle->pos.x, particle->pos.y, particle->pos.z, 1));
+		particle->viewDepth = -particleViewPos.z;
 
 	}
 
 	// sort in back to front drawing order.
 	// this is needed for alpha blending since zbuffer test rejects fragments that lie behind,
 	// but their color data is needed for blending.
-	std::sort(particles.begin(), particles.end());
+	std::sort(particles.begin(), particles.end(), SortSharedPtr<Particle>());
 
-	// UPDATE BUFFERS
+	// fill array to pass to particle instance data buffer
+	std::vector<float> particleInstanceData;
+	for (unsigned int i = 0; i < particles.size(); ++i) {
+		std::shared_ptr<Particle> particle = particles[i];
+
+		particleInstanceData.push_back(particle->pos.x);
+		particleInstanceData.push_back(particle->pos.y);
+		particleInstanceData.push_back(particle->pos.z);
+		particleInstanceData.push_back(particle->timeToLive);
+	}
+
+	// UPDATE BUFFER
 
 	// note about buffer updates when streaming:
 	// when streaming (i.e. alternately writing and reading frequently) the GL implementation
@@ -163,8 +190,15 @@ void ParticleSystem::update(float timeDelta, glm::vec3 cameraPos)
 
 	// update particle instance data
 	glBindBuffer(GL_ARRAY_BUFFER, particleInstanceDataVBO);
-	glBufferData(GL_ARRAY_BUFFER, MAX_PARTICLE_COUNT * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, maxParticleCount * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, particleInstanceData.size() * sizeof(GLfloat), &particleInstanceData[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+}
+
+void ParticleSystem::respawn()
+{
+	particles.clear();
+	secondsSinceLastSpawn = 0;
+	spawningPaused = false;
 }

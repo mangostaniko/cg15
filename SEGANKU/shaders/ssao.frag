@@ -46,11 +46,11 @@ void main()
 		// the probability of occlusion increases.
 		// note: in the reference, if actual depth at sampled position is too far off
 		// from depth at fragment position, it doesnt add to occlusion, to avoid artifacts.
-		// however, here this check causes the sky to disappear, thus it is disabled.
+		// however, here this check causes the sky to disappear, thus it is disabled./
 //		float distance = abs(viewPos.z - sampleActualSurfaceDepth);
-//      if (distance < SAMPLE_RADIUS) {
+//		if (distance < SAMPLE_RADIUS) {
 			AO += step(sampleActualSurfaceDepth, samplePos.z);
-//      }
+//		}
     }
 
 	// normalize the ratio of sampled points lying behind the surface to a probability in [0,1]

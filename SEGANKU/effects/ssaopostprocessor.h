@@ -31,7 +31,7 @@ class SSAOPostprocessor
 	Shader *ssaoShader = nullptr;
 	Shader *blurMixingShader = nullptr;
 
-	const static GLuint RANDOM_VECTOR_ARRAY_SIZE = 128;
+	const static GLuint RANDOM_VECTOR_ARRAY_SIZE = 32;
 
 	/**
 	 * @brief draw a screen filling quad

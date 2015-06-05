@@ -390,7 +390,7 @@ void init(GLFWwindow *window)
 	textRenderer = new TextRenderer("../data/fonts/VeraMono.ttf", width, height);
 
 	// INIT PARTICLE SYSTEM
-	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png");
+	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png", 300, 50.f, 10.f, -0.1f);
 
 	// INIT SSAO POST PROCESSOR AND PREPASS SHADERS
 	ssaoPostprocessor = new SSAOPostprocessor(width, height);
@@ -442,7 +442,7 @@ void update(float timeDelta)
 	hawk->rotateZ(glm::cos(-glfwGetTime())/2000, SceneObject::RIGHT);
 	hawk->rotateX(glm::cos(-glfwGetTime())/2000, SceneObject::RIGHT);
 
-	particleSystem->update(timeDelta, camera->getLocation());
+	particleSystem->update(timeDelta, player->getViewMat());
 
 	sun->update(timeDelta);
 
@@ -582,6 +582,10 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 
 	if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS){
 		newGame();
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
+		particleSystem->respawn();
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS) {
