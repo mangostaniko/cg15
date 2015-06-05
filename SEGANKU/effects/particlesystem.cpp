@@ -15,7 +15,7 @@ static const GLfloat quadVertices[] = {
 /**
  * used to sort vector of shared_ptr by their pointed values of type T
  */
-template <class T>
+template <typename T>
 struct SortSharedPtr {
     bool operator()(const std::shared_ptr<T>& a, const std::shared_ptr<T>& b) {
         return *a < *b;
