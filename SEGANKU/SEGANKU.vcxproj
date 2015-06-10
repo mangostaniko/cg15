@@ -17,9 +17,11 @@
     <ClCompile Include="geometry.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="physics.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="sceneobject.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="simpledebugdrawer.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="textrenderer.cpp" />
     <ClCompile Include="texture.cpp" />
@@ -30,9 +32,11 @@
     <ClInclude Include="effects\ssaopostprocessor.h" />
     <ClInclude Include="geometry.h" />
     <ClInclude Include="light.h" />
+    <ClInclude Include="physics.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="sceneobject.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="simpledebugdrawer.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="textrenderer.h" />
     <ClInclude Include="texture.h" />
@@ -54,6 +58,17 @@
     <None Include="shaders\text.vert" />
     <None Include="shaders\textured_blinnphong.frag" />
     <None Include="shaders\textured_blinnphong.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\External\bullet\c_make_build\src\BulletCollision\BulletCollision.vcxproj">
+      <Project>{7183b8ff-574a-43b8-9b86-19508d387471}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\External\bullet\c_make_build\src\BulletDynamics\BulletDynamics.vcxproj">
+      <Project>{2dea1c6c-9a59-49ef-8261-beba8613f4eb}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\External\bullet\c_make_build\src\LinearMath\LinearMath.vcxproj">
+      <Project>{600a5675-c1bb-435b-b2be-961228123d85}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7B5870C7-A5A7-48D5-9E9B-342A0EEEBCAA}</ProjectGuid>
@@ -93,6 +108,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>$(SolutionDir)build-$(Configuration)\</IntDir>
+    <ReferencePath>$(VC_ReferencesPath_x86);</ReferencePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -101,7 +117,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\external\glew-1.1.0\include;$(SolutionDir)\external\glfw-3.1.1.bin.WIN32\include;$(SolutionDir)\external\glm;$(SolutionDir)\external\FreeImage\Dist\x32;$(SolutionDir)\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;$(SolutionDir)\external\assimp--3.0.1270-sdk\include;$(SolutionDir)\external\freetype-2.3.5-1-bin\include;$(SolutionDir)\external\freetype-2.3.5-1-bin\include\freetype2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\external\glew-1.1.0\include;$(SolutionDir)\external\glfw-3.1.1.bin.WIN32\include;$(SolutionDir)\external\glm;$(SolutionDir)\external\FreeImage\Dist\x32;$(SolutionDir)\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;$(SolutionDir)\external\assimp--3.0.1270-sdk\include;$(SolutionDir)\external\freetype-2.3.5-1-bin\include;$(SolutionDir)\external\freetype-2.3.5-1-bin\include\freetype2;$(SolutionDir)\external\bullet\bullet-2.82-r2704\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,7 +136,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\external\glew-1.1.0\include;$(SolutionDir)\external\glfw-3.1.1.bin.WIN32\include;$(SolutionDir)\external\glm;$(SolutionDir)\external\FreeImage\Dist\x32;$(SolutionDir)\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;$(SolutionDir)\external\assimp--3.0.1270-sdk\include;$(SolutionDir)\external\freetype-2.3.5-1-bin\include;$(SolutionDir)\external\freetype-2.3.5-1-bin\include\freetype2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\external\glew-1.1.0\include;$(SolutionDir)\external\glfw-3.1.1.bin.WIN32\include;$(SolutionDir)\external\glm;$(SolutionDir)\external\FreeImage\Dist\x32;$(SolutionDir)\external\FreeImage\Wrapper\FreeImagePlus\dist\x32;$(SolutionDir)\external\assimp--3.0.1270-sdk\include;$(SolutionDir)\external\freetype-2.3.5-1-bin\include;$(SolutionDir)\external\freetype-2.3.5-1-bin\include\freetype2;$(SolutionDir)\external\bullet\bullet-2.82-r2704\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

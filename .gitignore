@@ -248,3 +248,11 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 
+# BULLET LIBRARY
+# External/bullet/*
+!External/bullet/c_make_build/src/*
+!External/bullet/c_make_build/lib/*
+!External/bullet/bullet-2.82-r2704/src/*
+!External/bullet/bullet-2.82-r2704/Glut/*
+!External/bullet/bullet-2.82-r2704/lib/*
+!External/bullet/bullet-2.82-r2704/src/*

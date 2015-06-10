@@ -9,6 +9,8 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <btBulletDynamicsCommon.h>
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -26,6 +28,8 @@
 #include "effects/ssaopostprocessor.h"
 #include "effects/particlesystem.h"
 #include "poissondisksampler.h"
+#include "simpledebugdrawer.h"
+#include "physics.h"
 
 
 void init(GLFWwindow *window);
@@ -77,6 +81,17 @@ const int SM_WIDTH = 2048, SM_HEIGHT = 2048;
 void frameBufferResize(GLFWwindow *window, int width, int height);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
+// PHYSICS
+static SimpleDebugDrawer debugDrawerPhysics;
+btDefaultCollisionConfiguration *collisionConfiguration;
+btCollisionDispatcher *dispatcher;
+btBroadphaseInterface * overlappingPairCache;
+btSequentialImpulseConstraintSolver *solver;
+btDiscreteDynamicsWorld *dynamicsWorld;
+
+Physics *physics = new Physics();
+
+
 // ONLY FOR SEBAS DEBUGGING
 
 GLuint quadVAO = 0;
@@ -113,6 +128,8 @@ void RenderQuad()
 int main(int argc, char **argv)
 {
 	// HANDLE COMMAND LINE PARAMETERS
+
+	btCollisionShape *shape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
 
 	int windowWidth = 800;
 	int windowHeigth = 600;
@@ -208,6 +225,8 @@ int main(int argc, char **argv)
 		setActiveShader(textureShader);
 
 		if (!paused) {
+
+			physics->stepSimulation(deltaT);
 
 			//////////////////////////
 			/// UPDATE
@@ -354,6 +373,8 @@ void init(GLFWwindow *window)
 {
 	glfwSetTime(0);
 
+	physics->init();
+
 	// enable z buffer test
 	glEnable(GL_DEPTH_TEST);
 
@@ -443,6 +464,24 @@ void init(GLFWwindow *window)
 	// INIT PLAYER + CAMERA
 	camera = new Camera(glm::mat4(1.0f), glm::radians(80.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
 	player = new Player(playerInitTransform, camera, window, "../data/models/skunk/skunk.dae");
+	physics->getDynamicsWorld()->addRigidBody(player->getRigidBody());
+	
+	btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
+	btTransform groundTransform;
+	groundTransform.setIdentity();
+	groundTransform.setOrigin(btVector3(0, -51, 0));
+	
+	btScalar mass(0.);
+	btVector3 localInertia(0, 0, 0);
+	groundShape->calculateLocalInertia(mass, localInertia);
+
+	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
+	btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
+	btRigidBody* body = new btRigidBody(rbInfo);
+	body->setFriction(0);
+
+	physics->getDynamicsWorld()->addRigidBody(body);
 
 	// INIT HAWK
 	hawk = new Geometry(hawkInitTransform, "../data/models/hawk/hawk.dae");
@@ -500,6 +539,8 @@ void drawScene()
 	// pass camera position to shader
 	GLint cameraPosLocation = glGetUniformLocation(activeShader->programHandle, "cameraPos");
 	glUniform3f(cameraPosLocation, camera->getLocation().x, camera->getLocation().y, camera->getLocation().z);
+
+	physics->debugDrawWorld(true);
 
 	// DRAW GEOMETRY
 
@@ -599,6 +640,9 @@ void cleanup()
 	delete hawk; hawk = nullptr;
 	delete terrain; terrain = nullptr;
 	delete carrot; carrot = nullptr;
+
+	physics->cleanUp();
+	delete physics;
 }
 
 
@@ -685,6 +729,16 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 
 	if (glfwGetKey(window, GLFW_KEY_F9) == GLFW_PRESS) {
 		renderShadowMap = !renderShadowMap;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_F10) == GLFW_PRESS) {
+		if (debugDrawerPhysics.getDebugMode() != 0) {
+			debugDrawerPhysics.setDebugMode(0);
+		}
+		else {
+			debugDrawerPhysics.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+		}
+		
 	}
 }
 

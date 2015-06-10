@@ -3,6 +3,7 @@
 
 #define GLM_SWIZZLE
 
+#include <btBulletDynamicsCommon.h>
 #include "geometry.h"
 #include "camera.h"
 
@@ -22,6 +23,10 @@ class Player : public Geometry
 	glm::vec3 camUp;
 	glm::mat4 viewMat;
 	glm::mat4 projMat;
+
+	btCollisionShape *playerShape;
+	btRigidBody *playerBody;
+	btDefaultMotionState *motionState;
 
 	enum CameraNavigationMode
 	{
@@ -88,6 +93,8 @@ public:
 	 * @return the current projection matrix
 	 */
 	glm::mat4 getProjMat();
+
+	btRigidBody *getRigidBody();
 
 };
 

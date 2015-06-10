@@ -17,6 +17,19 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	camUp = glm::vec3(0, 1, 0);
 	camRight = glm::normalize(glm::cross(camUp, camDirection));
 
+	playerShape = new btSphereShape(1);
+	btTransform playerTransform;
+	playerTransform.setIdentity();
+	playerTransform.setOrigin(btVector3(getLocation().x, getLocation().y, getLocation().z));
+
+	btScalar mass(1.0); btVector3 inertia(0, 0, 0);
+	playerShape->calculateLocalInertia(mass, inertia);
+
+	motionState = new btDefaultMotionState(playerTransform);
+	btRigidBody::btRigidBodyConstructionInfo info(mass, motionState, playerShape, inertia);
+	playerBody = new btRigidBody(info);
+	playerBody->setActivationState(DISABLE_DEACTIVATION);
+
 }
 
 Player::~Player()
@@ -57,18 +70,36 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 
 	float moveSpeed = 15.0f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
-		moveSpeed = 30.0f;
+		moveSpeed = 150.0f;
 	}
 
+	glm::vec3 dirWorld = glm::normalize(glm::vec3(glm::column(getMatrix(), 2)));
 
 	// player movement
 	// note: we apply rotation before translation since we dont want the distance from the origin
 	// to affect how we rotate
     if (glfwGetKey(window, 'W')) {
-		translate(glm::vec3(0.0f, 0.0f, 1.0f) * timeDelta * moveSpeed, SceneObject::RIGHT);
+		playerBody->setLinearVelocity(btVector3(dirWorld.x, dirWorld.y, dirWorld.z) * timeDelta * moveSpeed * 2);
+		btTransform trans; 
+		playerBody->getMotionState()->getWorldTransform(trans);//->getWorldTransform(trans);
+
+		setLocation(glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
     }
 	else if (glfwGetKey(window, 'S')) {
-		translate(glm::vec3(0.0f, 0.0f, -1.0f) * timeDelta * moveSpeed, SceneObject::RIGHT);
+		playerBody->setLinearVelocity(btVector3(-dirWorld.x, -dirWorld.y, -dirWorld.z) * timeDelta * moveSpeed * 2);
+		//btTransform trans = playerBody->getWorldTransform();//->getWorldTransform(trans);
+		btTransform trans;
+		playerBody->getMotionState()->getWorldTransform(trans);//->getWorldTransform(trans);
+
+		setLocation(glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+	}
+	else {
+		playerBody->setLinearVelocity(btVector3(0, 0, 0) * timeDelta * moveSpeed * 2);
+
+		btTransform trans;
+		playerBody->getMotionState()->getWorldTransform(trans);//->getWorldTransform(trans);
+
+		setLocation(glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
 	}
 
 	if (glfwGetKey(window, 'A')) {
@@ -77,15 +108,6 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	else if (glfwGetKey(window, 'D')) {
 		rotateY(timeDelta * glm::radians(-200.f), SceneObject::RIGHT);
     }
-
-	/*
-	if (glfwGetKey(window, 'Q')) {
-	    translate(glm::vec3(0,1,0) * timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-	else if (glfwGetKey(window, 'E')) {
-	    translate(glm::vec3(0,1,0) * -timeDelta * moveSpeed, SceneObject::LEFT);
-	}
-	*/
 
 	
 	//// rotate camera based on mouse movement
@@ -212,3 +234,7 @@ glm::mat4 Player::getProjMat()
 	return projMat;
 }
 
+btRigidBody *Player::getRigidBody()
+{
+	return playerBody;
+}
