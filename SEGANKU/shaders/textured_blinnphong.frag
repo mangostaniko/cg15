@@ -1,16 +1,12 @@
 #version 330 core
 
 layout(location = 0) out vec4 outColor;
+layout(location = 1) out vec4 outViewSpacePos;
 
 struct Material {
-	
-	sampler2D diffuse;
+	sampler2D diffuse; // texture unit 0
 	vec3 specular;
 	float shininess;
-
-	// specular and normal maps currently not used
-	// sampler2D specular;
-	// sampler2D normal;
 };
 
 struct Light {
@@ -20,16 +16,20 @@ struct Light {
 	vec3 specular;
 };
 
-in vec3 P;			
-in vec3 N;			
+in vec3 P;
+in vec3 N;
 in vec2 texCoord;
 in vec4 PLightSpace;
+in vec4 PViewSpace;
 
 uniform vec3 cameraPos;
 uniform Material material;
 uniform Light light;
-uniform sampler2D shadowMap;
+
+uniform sampler2D shadowMap; // texture unit 1
+uniform sampler2D ssaoTexture; // texture unit 2
 uniform bool useShadows;
+uniform bool useSSAO;
 
 float calcShadow(vec4 lightSpacePos)
 {
@@ -68,33 +68,35 @@ void main()
 {
 	// Normalize normal, light and view vectors
 	vec3 normal = normalize(N);
-	vec3 lightDir = normalize(light.position - P); 
+	vec3 lightDir = normalize(light.position - P);
 	vec3 viewDir = normalize(cameraPos - P);
-	
+
 	// Ambient
 	vec3 ambient = light.ambient * texture(material.diffuse, texCoord).rgb;
 
 	// Diffuse
-	vec3 diffuseColor = texture(material.diffuse, texCoord).rgb;	
+	vec3 diffuseColor = texture(material.diffuse, texCoord).rgb;
 	vec3 diffuse = max(dot(normal, lightDir), 0.0f) * diffuseColor * light.diffuse;
-	
+
 	// Specular
 	vec3 halfVec = normalize(lightDir + viewDir); // half vector of light and view vectors
-	vec3 specularColor = vec3(1.0f); //texture(specularTexture, texCoord).rgb;	
+	vec3 specularColor = vec3(1.0f); //texture(specularTexture, texCoord).rgb;
 	vec3 specular = pow(max(dot(halfVec, normal), 0.0f), material.shininess) * light.specular * material.specular;
+
+	float AO = 1;
+	if (useSSAO) { AO = texture(ssaoTexture, gl_FragCoord.xy / textureSize(ssaoTexture, 0)).r; }
 
 	if (useShadows) {
 		float shadow = calcShadow(PLightSpace);
-		
-		vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular));
-
-		outColor = vec4(lighting, 1);
+		vec3 color = ambient + (1.0 - shadow) * (diffuse + specular);
+		outColor = vec4(AO*AO * color, 1);
 	} else {
-		vec3 lighting = (ambient + diffuse + specular);
-
-		outColor = vec4(lighting, 1);
+		vec3 color = ambient + diffuse + specular;
+		outColor = vec4(AO*AO * color, 1);
 	}
-}
 
+	outViewSpacePos = PViewSpace;
+
+}
 
 

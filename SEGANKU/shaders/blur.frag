@@ -10,14 +10,14 @@ uniform float blurEnabled; // whether to use blurring (glsl has no bool type so 
 
 float offsets[5] = float[](-1.5f, -0.5f, 0.25f, 1.5f, 2.5f); // shifted a bit, somehow looks nicer
 float kernel5[25] = float[](.003f, .013f, .022f, .013f, .003f,
-                           .013f, .059f, .097f, .059f, .013f,
-                           .022f, .097f, .159f, .097f, .022f,
-                           .013f, .059f, .097f, .059f, .013f,
-                           .003f, .013f, .022f, .013f, .003f);
+                            .013f, .059f, .097f, .059f, .013f,
+                            .022f, .097f, .159f, .097f, .022f,
+                            .013f, .059f, .097f, .059f, .013f,
+                            .003f, .013f, .022f, .013f, .003f);
 
 float kernel3[9] = float[](.125f, .250f, .125f,
-                            .250f, .500f, .250f,
-                            .125f, .250f, .125f);
+                           .250f, .500f, .250f,
+                           .125f, .250f, .125f);
 
 void main()
 {
@@ -42,12 +42,6 @@ void main()
 		AO = texture(ssaoTexture, texCoord).r;
 	}
 
-
-	AO = AO*AO + 0.4f;
-
-	// mix screen color with black color depending on occlusion factor
-	vec3 mixedColor = (1.0f-AO) * vec3(0.0f) + AO * screenColor;
-
-	outColor = vec4(mixedColor, 1.0);
+	outColor = vec4(AO * screenColor, 1);
 
 }

@@ -91,8 +91,6 @@ public:
 
 	/**
 	 * @brief rotate camera to look at a given point
-	 * note: implemented here to learn a bit, but basically just like glm::lookAt
-	 * TODO: DOESNT WORK YET, also didnt manage to get it to work with glm::lookAt
 	 * @param target the target point to look at. this should not be the camera location.
 	 */
 	void lookAt(const glm::vec3 &target);

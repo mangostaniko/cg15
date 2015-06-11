@@ -31,6 +31,7 @@ void init(GLFWwindow *window);
 void update(float timeDelta);
 void setActiveShader(Shader *shader);
 void drawScene();
+void drawSceneSSAO();
 void drawText(double deltaT);
 void cleanup();
 void newGame();
@@ -41,10 +42,10 @@ bool paused				= false;
 bool foundCarrot		= false;
 bool debugInfoEnabled   = true;
 bool wireframeEnabled   = false;
-bool ssaoEnabled		= false;
+bool ssaoEnabled		= true;
 bool renderShadowMap	= false;
 
-Shader *textureShader, *ssaoViewPosPrepassShader, *depthMapShader, *debugDepthShader;
+Shader *textureShader, *depthMapShader, *debugDepthShader;
 Shader *activeShader;
 TextRenderer *textRenderer;
 ParticleSystem *particleSystem;
@@ -66,7 +67,7 @@ const float timeToStarvation = 60;
 // Shadow Map FBO and depth texture
 GLuint depthMapFBO;
 GLuint depthMap;
-const int SM_WIDTH = 4096, SM_HEIGHT = 4096;
+const int SM_WIDTH = 2048, SM_HEIGHT = 2048;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -222,9 +223,8 @@ int main(int argc, char **argv)
 		/// DRAW 
 		//////////////////////////
 
-		/* 
-		 * SHADOW MAPPING first pass -> render depth to texture
-		 */
+		//// SHADOW MAP PASS
+		//// depths from light position for shading mapping
 
 		// set viewport and bind framebuffer
 		glViewport(0, 0, SM_WIDTH, SM_HEIGHT);
@@ -241,7 +241,6 @@ int main(int argc, char **argv)
 		// prepare shader
 		Shader *lastShader = activeShader;
 		setActiveShader(depthMapShader);
-
 		GLint lightVPLocation = glGetUniformLocation(activeShader->programHandle, "lightVP");
 		glUniformMatrix4fv(lightVPLocation, 1, GL_FALSE, glm::value_ptr(lightVP));
 
@@ -251,49 +250,53 @@ int main(int argc, char **argv)
 		// bind default FB and reset viewport
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, windowWidth, windowHeigth);
-		setActiveShader(lastShader); lastShader = nullptr;
+
+
+		setActiveShader(textureShader);
+
+		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "viewMat"), 1, GL_FALSE, glm::value_ptr(player->getViewMat()));
+		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightVP));
+
+		GLint shadowMapLocation = glGetUniformLocation(activeShader->programHandle, "shadowMap");
+		glUniform1i(shadowMapLocation, 1);
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
 
 		if (ssaoEnabled) {
 
-			ssaoPostprocessor->bindFramebufferColor();
+			//// SSAO PREPASS
+			//// draw ssao input data (screen colors and view space positions) to framebuffer textures
+
+			ssaoPostprocessor->bindScreenDataFramebuffer();
+			glUniform1i(glGetUniformLocation(activeShader->programHandle, "useShadows"), 0);
+			glUniform1i(glGetUniformLocation(activeShader->programHandle, "useSSAO"), 0);
 			glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
-			GLint booleanSMLocation = glGetUniformLocation(activeShader->programHandle, "useShadows");
-			glUniform1i(booleanSMLocation, 0);
 			drawScene();
 
-			ssaoPostprocessor->bindFramebufferViewPos();
-			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			lastShader = activeShader;
-			setActiveShader(ssaoViewPosPrepassShader);
-			glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "viewMat"), 1, GL_FALSE, glm::value_ptr(player->getViewMat()));
-			drawScene();
+			//// SSAO PASS
+			//// draw ssao output data to framebuffer texture
 
-			glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
-			ssaoPostprocessor->renderPostprocessedSSAO(player->getProjMat(), true); // bool toggles blur
+			ssaoPostprocessor->calulateSSAOValues(player->getProjMat());
+			setActiveShader(textureShader);
 
-			setActiveShader(lastShader); lastShader = nullptr;
 		}
-		else { // no postprocessing but shadow mapping
-			glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
-			GLint booleanSMLocation = glGetUniformLocation(activeShader->programHandle, "useShadows");
-			glUniform1i(booleanSMLocation, 1);
 
-			lightVPLocation = glGetUniformLocation(activeShader->programHandle, "lightVP");
-			glUniformMatrix4fv(lightVPLocation, 1, GL_FALSE, glm::value_ptr(lightVP));
-			
-			GLint shadowMapLocation = glGetUniformLocation(activeShader->programHandle, "shadowMap");
-			glUniform1i(shadowMapLocation, 1);
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, depthMap);
-	
-			drawScene();
-		}
-		
+		//// FINAL PASS
+		//// draw with shadow mapping and ssao
+
+		glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useShadows"), 1);
+		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useSSAO"), ssaoEnabled);
+
+		GLint ssaoTexLocation = glGetUniformLocation(activeShader->programHandle, "ssaoTexture");
+		ssaoPostprocessor->bindSSAOResultTexture(ssaoTexLocation, 2);
+
+		drawScene();
+
+		// draw shadow map for debugging
 		if (renderShadowMap) {
 
 			lastShader = activeShader;
@@ -385,21 +388,19 @@ void init(GLFWwindow *window)
 	depthMapShader = new Shader("../SEGANKU/shaders/depth_shader.vert", "../SEGANKU/shaders/depth_shader.frag");
 	debugDepthShader = new Shader("../SEGANKU/shaders/quad_debug.vert", "../SEGANKU/shaders/quad_debug.frag");
 
-
 	// INIT TEXT RENDERER
 	textRenderer = new TextRenderer("../data/fonts/VeraMono.ttf", width, height);
 
 	// INIT PARTICLE SYSTEM
 	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png", 300, 50.f, 10.f, -0.1f);
 
-	// INIT SSAO POST PROCESSOR AND PREPASS SHADERS
-	ssaoPostprocessor = new SSAOPostprocessor(width, height);
-	ssaoViewPosPrepassShader = new Shader("../SEGANKU/shaders/view_positions.vert", "../SEGANKU/shaders/view_positions.frag");
+	// INIT SSAO POST PROCESSOR
+	ssaoPostprocessor = new SSAOPostprocessor(width, height, 64);
 
 	// INIT SHADERS
 	textureShader = new Shader("../SEGANKU/shaders/textured_blinnphong.vert", "../SEGANKU/shaders/textured_blinnphong.frag");
 	setActiveShader(textureShader); // non-trivial cost
-	// note that the following initializations depend are intended to communicate with this shader
+	// note that the following initializations are intended to be used with a shader of the structure like textureShader
 	// so dont activate any shader of different structure before those initializations are done
 
 
@@ -446,7 +447,8 @@ void update(float timeDelta)
 
 	sun->update(timeDelta);
 
-	// SET POSITION AND COLOR IN SHADER
+	// SET POSITION AND COLOR IN SHADERS
+
 	GLint lightPosLocation = glGetUniformLocation(activeShader->programHandle, "light.position");
 	GLint lightAmbientLocation = glGetUniformLocation(activeShader->programHandle, "light.ambient");
 	GLint lightDiffuseLocation = glGetUniformLocation(activeShader->programHandle, "light.diffuse");
@@ -459,6 +461,8 @@ void update(float timeDelta)
 	glUniform3f(lightAmbientLocation, sun->getColor().x * 0.3f, sun->getColor().y * 0.3f, sun->getColor().z * 0.3f);
 	glUniform3f(lightDiffuseLocation, sun->getColor().x, sun->getColor().y, sun->getColor().z);
 	glUniform3f(lightSpecularLocation, sun->getColor().x * 0.8f, sun->getColor().y * 0.8f, sun->getColor().z * 0.8f);
+
+
 }
 
 
@@ -467,6 +471,14 @@ void drawScene()
 	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // enable wireframe
 
 	// DRAW GEOMETRY
+
+	// pass viewProjection matrix to shader
+	GLint viewProjMatLocation = glGetUniformLocation(activeShader->programHandle, "viewProjMat"); // get uniform location in shader
+	glUniformMatrix4fv(viewProjMatLocation, 1, GL_FALSE, glm::value_ptr(player->getProjMat() * player->getViewMat())); // shader location, count, transpose?, value pointer
+
+	// pass camera position to shader
+	GLint cameraPosLocation = glGetUniformLocation(activeShader->programHandle, "cameraPos");
+	glUniform3f(cameraPosLocation, camera->getLocation().x, camera->getLocation().y, camera->getLocation().z);
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
 	player->draw(activeShader);
@@ -482,7 +494,6 @@ void drawScene()
 
 	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); // disable wireframe
 }
-
 
 void drawText(double deltaT)
 {
@@ -540,7 +551,8 @@ void newGame()
 void cleanup()
 {
 	delete textureShader; textureShader = nullptr;
-	delete ssaoViewPosPrepassShader; ssaoViewPosPrepassShader = nullptr;
+	delete depthMapShader; depthMapShader = nullptr;
+	delete debugDepthShader; debugDepthShader = nullptr;
 	activeShader = nullptr;
 
 	delete textRenderer; textRenderer = nullptr;

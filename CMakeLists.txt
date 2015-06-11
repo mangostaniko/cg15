@@ -88,18 +88,15 @@ set(SRC_SHADERS
 		SEGANKU/shaders/particles.vert
 		SEGANKU/shaders/particles.frag
 
-		SEGANKU/shaders/view_positions.vert
-		SEGANKU/shaders/view_positions.frag
-		SEGANKU/shaders/ssao.vert
-		SEGANKU/shaders/ssao.frag
-		SEGANKU/shaders/ssao_blur_mixing.vert
-		SEGANKU/shaders/ssao_blur_mixing.frag
-
 		SEGANKU/shaders/depth_shader.vert
 		SEGANKU/shaders/depth_shader.frag
 		SEGANKU/shaders/quad_debug.vert
 		SEGANKU/shaders/quad_debug.frag
 
+		SEGANKU/shaders/ssao.vert
+		SEGANKU/shaders/ssao.frag
+		SEGANKU/shaders/blur.vert
+		SEGANKU/shaders/blur.frag
 
 		)
 		

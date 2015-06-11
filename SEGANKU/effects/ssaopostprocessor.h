@@ -22,16 +22,14 @@
 class SSAOPostprocessor
 {
 
-	GLuint fboColor, screenColorTexture, screenDepthBuffer;
-	GLuint fboViewPos, viewPosTexture;
+	GLuint fboScreenData, screenColorTexture, viewPosTexture, screenDepthBuffer;
 	GLuint fboSSAO, ssaoTexture;
 
 	GLuint screenQuadVAO, screenQuadVBO;
 
 	Shader *ssaoShader = nullptr;
-	Shader *blurMixingShader = nullptr;
 
-	const static GLuint RANDOM_VECTOR_ARRAY_SIZE = 32;
+	const static GLuint RANDOM_VECTOR_ARRAY_SIZE = 64; // reference uses 64 [increase for better quality]
 
 	/**
 	 * @brief draw a screen filling quad
@@ -39,28 +37,30 @@ class SSAOPostprocessor
 	void drawQuad();
 
 public:
-	SSAOPostprocessor(int windowWidth, int windowHeight);
+	SSAOPostprocessor(int windowWidth, int windowHeight, int samples);
 	~SSAOPostprocessor();
 
 	/**
-	 * @brief bind framebuffer in which screen colors should be stored for ssao postprocessing.
+	 * @brief bind framebuffer in which screen colors and view space vertex positions should be stored for ssao postprocessing.
 	 * after binding this, execute the required draw calls using appropriate shaders.
 	 */
-	void bindFramebufferColor();
+	void bindScreenDataFramebuffer();
 
 	/**
-	 * @brief bind framebuffer in which view space vertex positions should be stored for ssao postprocessing.
-	 * after binding this, execute the required draw calls using appropriate shaders.
+	 * @brief calulate the resulting ssao factors for each fragment
+	 * and store it in a texture attached to the fboSSAO
+	 * @param projMat the projection matrix to use in the render pipeline
+	 * this needs certain information rendered to textures after binding via the bindScreenDataFramebuffer.
 	 */
-	void bindFramebufferViewPos();
+	void calulateSSAOValues(const glm::mat4 &projMat);
 
 	/**
-	 * @brief apply ssao postprocessing to the prerendered color texture,
-	 * switch back to default framebuffer and render the result to a screen filling quad.
-	 * this needs certain information rendered to textures via the bindFramebuffer methods.
+	 * @brief bind the texture which stores the ssao results after calulateSSAOValues
+	 * to given shader locaton and texture unit
+	 * @param ssaoTexShaderLocation the shader location
+	 * @param textureUnit the texture unit
 	 */
-	void renderPostprocessedSSAO(const glm::mat4 &projMat, bool blurEnabled);
-
+	void bindSSAOResultTexture(GLint ssaoTexShaderLocation, GLuint textureUnit);
 };
 
 #endif // SSAOPOSTPROCESSOR_H

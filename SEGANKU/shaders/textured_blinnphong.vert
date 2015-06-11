@@ -10,11 +10,13 @@ out vec3 P;
 out vec3 N;
 out vec2 texCoord;
 out vec4 PLightSpace;
+out vec4 PViewSpace;
 
 // uniforms use the same value for all vertices
 uniform mat4 modelMat;
 uniform mat3 normalMat;
 uniform mat4 viewProjMat;
+uniform mat4 viewMat;
 uniform mat4 lightVP;
 
 void main()
@@ -24,6 +26,8 @@ void main()
 	P = (modelMat * vec4(position, 1)).xyz;
 	N = normalMat * normal;
 	texCoord = uv;
-	PLightSpace = lightVP * vec4(P, 1.0);
-}
 
+	PLightSpace = lightVP * vec4(P, 1.0);
+	PViewSpace = viewMat * vec4(P, 1.0);
+
+}
