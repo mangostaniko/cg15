@@ -42,7 +42,8 @@ bool paused				= false;
 bool foundCarrot		= false;
 bool debugInfoEnabled   = true;
 bool wireframeEnabled   = false;
-bool ssaoEnabled		= true;
+bool ssaoEnabled		= false;
+bool shadowsEnabled		= true;
 bool renderShadowMap	= false;
 
 Shader *textureShader, *depthMapShader, *debugDepthShader;
@@ -288,7 +289,7 @@ int main(int argc, char **argv)
 		glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useShadows"), 1);
+		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useShadows"), shadowsEnabled);
 		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useSSAO"), ssaoEnabled);
 
 		GLint ssaoTexLocation = glGetUniformLocation(activeShader->programHandle, "ssaoTexture");
@@ -608,8 +609,12 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	    wireframeEnabled = !wireframeEnabled;
 	}	
 
-	if (glfwGetKey(window, GLFW_KEY_F7) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_F6) == GLFW_PRESS) {
 		ssaoEnabled = !ssaoEnabled;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_F7) == GLFW_PRESS) {
+		shadowsEnabled = !shadowsEnabled;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F8) == GLFW_PRESS) {
