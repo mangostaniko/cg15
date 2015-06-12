@@ -55,7 +55,7 @@ void Physics::cleanUp()
 
 void Physics::stepSimulation(float deltaT)
 {
-	dynamicsWorld->stepSimulation(deltaT);
+	dynamicsWorld->stepSimulation(btScalar(deltaT));
 
 	for (int j = dynamicsWorld->getNumCollisionObjects() - 1; j >= 0; j--)
 	{

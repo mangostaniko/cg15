@@ -68,9 +68,9 @@ void Player::draw(Shader *shader, bool useFrustumCulling, Texture::FilterType fi
 void Player::handleInput(GLFWwindow *window, float timeDelta)
 {
 
-	float moveSpeed = 15.0f;
+	float moveSpeed = 150.0f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
-		moveSpeed = 150.0f;
+		moveSpeed = 300.0f;
 	}
 
 	glm::vec3 dirWorld = glm::normalize(glm::vec3(glm::column(getMatrix(), 2)));

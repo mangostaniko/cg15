@@ -459,29 +459,67 @@ void init(GLFWwindow *window)
 			shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::mat4(1.0f), glm::vec3(p.x, 0, p.y)), "../data/models/world/shrub2.dae"));
 		}
 	}
-
+	
 
 	// INIT PLAYER + CAMERA
 	camera = new Camera(glm::mat4(1.0f), glm::radians(80.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
 	player = new Player(playerInitTransform, camera, window, "../data/models/skunk/skunk.dae");
 	physics->getDynamicsWorld()->addRigidBody(player->getRigidBody());
 	
-	btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
+	btScalar mass(0.);
+	btVector3 localInertia(0, 0, 0);
+
+	btCollisionShape *carrotShape = new btSphereShape(0.2);
+	btTransform carrotTransform;
+	carrotTransform.setIdentity();
+	carrotTransform.setOrigin(btVector3(carrot->getLocation().x, carrot->getLocation().y, carrot->getLocation().z));
+
+	carrotShape->calculateLocalInertia(mass, localInertia);
+	btDefaultMotionState *carrotState = new btDefaultMotionState(carrotTransform);
+	btRigidBody::btRigidBodyConstructionInfo carrotInfo(mass, carrotState, carrotShape, localInertia);
+	btRigidBody *carrotBody = new btRigidBody(carrotInfo);
+	carrotBody->setUserPointer(player->getRigidBody());
+
+	btCollisionShape *groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
 	btTransform groundTransform;
 	groundTransform.setIdentity();
 	groundTransform.setOrigin(btVector3(0, -51, 0));
 	
-	btScalar mass(0.);
-	btVector3 localInertia(0, 0, 0);
 	groundShape->calculateLocalInertia(mass, localInertia);
 
 	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
+	btDefaultMotionState *myMotionState = new btDefaultMotionState(groundTransform);
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
-	btRigidBody* body = new btRigidBody(rbInfo);
+	btRigidBody *body = new btRigidBody(rbInfo);
 	body->setFriction(0);
 
+	btCollisionShape *tree1Shape = new btSphereShape(btScalar(0.5));
+	btCollisionShape *tree2Shape = new btSphereShape(btScalar(0.5));
+
+	btTransform tree1Trans;
+	btTransform tree2Trans;
+
+	tree1Trans.setIdentity();
+	tree2Trans.setIdentity();
+	
+	tree1Trans.setOrigin(btVector3(1.8, 0.5, 14.9));
+	tree2Trans.setOrigin(btVector3(-14.1, 0.5, 14.0));
+
+	tree1Shape->calculateLocalInertia(mass, localInertia);
+	tree2Shape->calculateLocalInertia(mass, localInertia);
+
+	btDefaultMotionState* tree1State = new btDefaultMotionState(tree1Trans);
+	btRigidBody::btRigidBodyConstructionInfo tree1Info(mass, tree1State, tree1Shape, localInertia);
+	btRigidBody* tree1Body = new btRigidBody(tree1Info);
+
+	btDefaultMotionState* tree2State = new btDefaultMotionState(tree2Trans);
+	btRigidBody::btRigidBodyConstructionInfo tree2Info(mass, tree2State, tree2Shape, localInertia);
+	btRigidBody* tree2Body = new btRigidBody(tree2Info);
+
 	physics->getDynamicsWorld()->addRigidBody(body);
+	physics->getDynamicsWorld()->addRigidBody(tree1Body);
+	physics->getDynamicsWorld()->addRigidBody(tree2Body);
+	physics->getDynamicsWorld()->addRigidBody(carrotBody);
 
 	// INIT HAWK
 	hawk = new Geometry(hawkInitTransform, "../data/models/hawk/hawk.dae");
