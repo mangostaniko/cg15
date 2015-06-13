@@ -1,5 +1,7 @@
 #include "geometry.h"
 
+int Geometry::drawnSurfaceCount = 0;
+
 Geometry::Geometry(const glm::mat4 &matrix_, const std::string &filePath)
     : SceneObject(matrix_)
 {
@@ -21,7 +23,7 @@ void Geometry::update(float timeDelta)
 
 }
 
-void Geometry::draw(Shader *shader)
+void Geometry::draw(Shader *shader, Camera *camera)
 {
 	// pass model matrix to shader
 	GLint modelMatLocation = glGetUniformLocation(shader->programHandle, "modelMat"); // get uniform location in shader
@@ -31,9 +33,17 @@ void Geometry::draw(Shader *shader)
 	GLint normalMatLocation = glGetUniformLocation(shader->programHandle, "normalMat");
 	glUniformMatrix3fv(normalMatLocation, 1, GL_FALSE, glm::value_ptr(getNormalMatrix()));
 
-
+	// draw surfaces
 	for (GLuint i = 0; i < surfaces.size(); ++i) {
-		surfaces[i]->draw(shader);
+
+		// view frustum culling using bounding spheres
+		glm::vec3 boundingSphereCenter = (getMatrix() * glm::vec4(surfaces[i]->getBoundingSphereCenter(), 1)).xyz();
+		glm::vec3 boundingSphereFarthestPoint = (getMatrix() * glm::vec4(surfaces[i]->getBoundingSphereFarthestPoint(), 1)).xyz();
+
+		if (camera->checkSphereInFrustum(boundingSphereCenter, boundingSphereFarthestPoint)) {
+			drawnSurfaceCount += 1;
+			surfaces[i]->draw(shader);
+		}
 	}
 
 }
@@ -62,6 +72,9 @@ void Geometry::loadSurfaces(const std::string &filePath)
 
     // recursively process Assimp root node
 	processNode(scene->mRootNode, scene);
+
+//	std::cout << "surfaces: " << surfaces.size() << std::endl;
+//	std::cout << "textures: " << loadedTextures.size() << std::endl;
 }
 
 void Geometry::processNode(aiNode *node, const aiScene *scene)
@@ -143,6 +156,7 @@ void Geometry::processMesh(aiMesh *mesh, const aiScene *scene)
 
 	// return a Surface object created from the extracted aiMesh data
 	surfaces.push_back(std::make_shared<Surface>(vertices, indices, surfaceTextureDiffuse, surfaceTextureSpecular, surfaceTextureNormal));
+
 }
 
 std::shared_ptr<Texture> Geometry::loadMaterialTexture(aiMaterial *mat, aiTextureType type)
@@ -156,7 +170,7 @@ std::shared_ptr<Texture> Geometry::loadMaterialTexture(aiMaterial *mat, aiTextur
 		bool skip = false;
 		for (auto existingTexture : loadedTextures) {
 
-	        if (existingTexture->getFilePath() == texturePath.C_Str()) {
+	        if (existingTexture->getFilePath() == (directoryPath + '/' + texturePath.C_Str())) {
 				skip = true;
 	            texture = existingTexture; // use pointer to existing texture
 				break;

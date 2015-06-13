@@ -49,7 +49,7 @@ void Player::update(float timeDelta)
 
 void Player::draw(Shader *shader)
 {
-	Geometry::draw(shader);
+	Geometry::draw(shader, camera);
 }
 
 void Player::handleInput(GLFWwindow *window, float timeDelta)

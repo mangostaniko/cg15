@@ -2,6 +2,7 @@
 #define GEOMETRY_H
 
 #define GLM_FORCE_RADIANS
+#define GLM_SWIZZLE
 #include <glm/gtc/type_ptr.hpp>
 
 #include <vector>
@@ -11,6 +12,7 @@
 #include "surface.h"
 #include "shader.h"
 #include "texture.h"
+#include "camera.h"
 
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
@@ -80,7 +82,7 @@ public:
 	/**
 	 * @brief draw the SceneObject using given shader
 	 */
-	virtual void draw(Shader *shader);
+	virtual void draw(Shader *shader, Camera *camera);
 
 	/**
 	 * @brief return a the transposed inverse of the modelMatrix.
@@ -92,6 +94,9 @@ public:
 	 * @return the matrix to transform normals into world space.
 	 */
 	glm::mat3 getNormalMatrix() const;
+
+	// the number of surfaces being drawn
+	static int drawnSurfaceCount;
 
 };
 

@@ -31,6 +31,11 @@ class Surface
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices; // indices associate vertices to define mesh topology
 
+	// Bounding Sphere
+	// for view frustum culling
+	glm::vec3 boundingSphereCenter;
+	glm::vec3 boundingSphereFarthestPoint;
+
 	// Textures
 	std::shared_ptr<Texture> texDiffuse, texSpecular, texNormal;
 
@@ -44,7 +49,7 @@ class Surface
 	/**
 	 * @brief initialize vba, copy vertex data to vram buffers and associate with shader attributes
 	 */
-	void init();
+	void initBuffers();
 
 public:
 	Surface(const std::vector<Vertex> &vertices_, const std::vector<GLuint> &indices_, const std::shared_ptr<Texture> &texDiffuse_, const std::shared_ptr<Texture> &texSpecular_, const std::shared_ptr<Texture> &texNormal_);
@@ -56,6 +61,30 @@ public:
 	 * @param shader the compiled shader program to use for drawing
 	 */
 	void draw(Shader *shader);
+
+	/**
+	 * @brief get the center of the bounding sphere
+	 * for this surface to be used in view frustum culling
+	 * @return the bounding sphere center
+	 */
+	glm::vec3 getBoundingSphereCenter();
+
+	/**
+	 * @brief get the farthest point on the bounding sphere
+	 * whose length defines the bounding sphere radius.
+	 * used for view frustum culling
+	 * @return the farthest point on the bounding sphere
+	 */
+	glm::vec3 getBoundingSphereFarthestPoint();
+
+private:
+
+	/**
+	 * @brief calculate parameters defining a bounding sphere
+	 * for this surface to be used in view frustum culling
+	 */
+	void calculateBoundingSphere();
+
 };
 
 #endif // SURFACE_H

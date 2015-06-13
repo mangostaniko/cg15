@@ -5,6 +5,8 @@
 
 #include "sceneobject.h"
 
+#include <iostream>
+
 /**
  * @brief A Camera is a SceneObject that maintains a view matrix, as well as
  * parameters defining the projection matrix, i.e. the viewing frustum.
@@ -67,25 +69,25 @@ public:
 
 	/**
 	 * @brief get distance from camera to near plane of the viewing frustum
-	 * @return the distance form camera to near plane
+	 * @return the distance from camera to near plane
 	 */
 	float getNearPlane() const;
 
 	/**
 	 * @brief set distance from camera to near plane of the viewing frustum
-	 * @param nearPlane_ the new distance form camera to near plane
+	 * @param nearPlane_ the new distance from camera to near plane
 	 */
 	void setNearPlane(float nearPlane_);
 
 	/**
 	 * @brief get distance from camera to near plane of the viewing frustum
-	 * @return the distance form camera to near plane
+	 * @return the distance from camera to near plane
 	 */
 	float getFarPlane() const;
 
 	/**
 	 * @brief set distance from camera to far plane of the viewing frustum
-	 * @return farPlane_ the new distance form camera to far plane
+	 * @return farPlane_ the new distance from camera to far plane
 	 */
 	void setFarPlane(float farPlane_);
 
@@ -95,6 +97,16 @@ public:
 	 */
 	void lookAt(const glm::vec3 &target);
 
+	/**
+	 * @brief determine whether a sphere with given center and farthest point in world space
+	 * lies completely within the view frustum.
+	 * note that the farthest point is passed instead of the radius to apply matrices
+	 * to do the checks in clip space.
+	 * @param sphereCenter the center of the sphere in world space
+	 * @param sphereFarthestPoint the farthest point from sphere center in world space
+	 * @return whether the sphere lies completely within the view frustum
+	 */
+	bool checkSphereInFrustum(const glm::vec3 &sphereCenter, const glm::vec3 &sphereFarthestPoint);
 
 };
 
