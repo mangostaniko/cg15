@@ -88,12 +88,25 @@ void Camera::lookAt(const glm::vec3 &target)
 
 bool Camera::checkSphereInFrustum(const glm::vec3 &sphereCenter, const glm::vec3 &sphereFarthestPoint)
 {
-	// TODO
+	glm::vec4 sphereCenterClipSpace = getProjectionMatrix() * getViewMatrix() * glm::vec4(sphereCenter, 1);
+	glm::vec4 sphereFarthestPointClipSpace = getProjectionMatrix() * getViewMatrix() * glm::vec4(sphereFarthestPoint, 1);
+	sphereCenterClipSpace /= sphereCenterClipSpace.w;
+	sphereFarthestPointClipSpace /= sphereFarthestPointClipSpace.w;
+
+	float sphereRadiusClipSpace = glm::length(sphereFarthestPointClipSpace - sphereCenterClipSpace);
+
 
 	for (int i = 0; i < 6; ++i) {
-
+		// TODO check clip space view frustum planes
 	}
 
-	return true; //glm::length(sphereFarthestPoint - sphereCenter) > 3;
+	if (sphereCenterClipSpace.x - sphereRadiusClipSpace > 1 || sphereCenterClipSpace.x + sphereRadiusClipSpace < -1) {
+		return false;
+	}
+	if (sphereCenterClipSpace.y - sphereRadiusClipSpace > 1 || sphereCenterClipSpace.y + sphereRadiusClipSpace < -1) {
+		return false;
+	}
+
+	return true;
 }
 

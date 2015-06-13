@@ -5,6 +5,8 @@
 
 #include "sceneobject.h"
 
+#include <iostream>
+
 /**
  * @brief A Camera is a SceneObject that maintains a view matrix, as well as
  * parameters defining the projection matrix, i.e. the viewing frustum.
