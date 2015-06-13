@@ -88,23 +88,21 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\blur.vert" />
+    <None Include="shaders\depth_shader.frag" />
+    <None Include="shaders\depth_shader.vert" />
     <None Include="shaders\normal_mapping.frag" />
     <None Include="shaders\normal_mapping.vert" />
+    <None Include="shaders\particles.frag" />
+    <None Include="shaders\particles.vert" />
+    <None Include="shaders\quad_debug.frag" />
+    <None Include="shaders\quad_debug.vert" />
     <None Include="shaders\ssao.frag" />
     <None Include="shaders\ssao.vert" />
-    <None Include="shaders\ssao_blur_mixing.frag" />
-    <None Include="shaders\ssao_blur_mixing.vert" />
     <None Include="shaders\text.frag" />
     <None Include="shaders\text.vert" />
     <None Include="shaders\textured_blinnphong.frag" />
     <None Include="shaders\textured_blinnphong.vert" />
-    <None Include="shaders\view_positions.frag" />
-    <None Include="shaders\view_positions.vert" />
-    <None Include="shaders\quad_debug.vert" />
-    <None Include="shaders\quad_debug.frag" />
-    <None Include="shaders\depth_shader.frag" />
-    <None Include="shaders\depth_shader.vert" />
-    <None Include="shaders\particles.frag" />
-    <None Include="shaders\particles.vert" />
+    <None Include="shaders\blur.frag" />
   </ItemGroup>
 </Project>
