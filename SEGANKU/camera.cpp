@@ -88,6 +88,9 @@ void Camera::lookAt(const glm::vec3 &target)
 
 bool Camera::checkSphereInFrustum(const glm::vec3 &sphereCenter, const glm::vec3 &sphereFarthestPoint)
 {
+	// get sphere into clip space and then into normalized device coordinates through perspective division,
+	// i.e. division by w which after the perspective projection stores the depth component z,
+	// such that all 6 view frustum planes are simply at distance 1 or -1 from the origin
 	glm::vec4 sphereCenterClipSpace = getProjectionMatrix() * getViewMatrix() * glm::vec4(sphereCenter, 1);
 	glm::vec4 sphereFarthestPointClipSpace = getProjectionMatrix() * getViewMatrix() * glm::vec4(sphereFarthestPoint, 1);
 	sphereCenterClipSpace /= sphereCenterClipSpace.w;
@@ -95,15 +98,14 @@ bool Camera::checkSphereInFrustum(const glm::vec3 &sphereCenter, const glm::vec3
 
 	float sphereRadiusClipSpace = glm::length(sphereFarthestPointClipSpace - sphereCenterClipSpace);
 
-
-	for (int i = 0; i < 6; ++i) {
-		// TODO check clip space view frustum planes
-	}
-
-	if (sphereCenterClipSpace.x - sphereRadiusClipSpace > 1 || sphereCenterClipSpace.x + sphereRadiusClipSpace < -1) {
+	// TODO
+	// check if the sphere lies beyond any of the 6 view frustum planes
+	// note that we use a greater margin than 1, to compensate for the very rough bounding sphere approximation
+	float planesDistance = 1.f;
+	if ((sphereCenterClipSpace.x > planesDistance && sphereCenterClipSpace.x - sphereRadiusClipSpace > planesDistance) || (sphereCenterClipSpace.x < -planesDistance && sphereCenterClipSpace.x + sphereRadiusClipSpace < -planesDistance)) {
 		return false;
 	}
-	if (sphereCenterClipSpace.y - sphereRadiusClipSpace > 1 || sphereCenterClipSpace.y + sphereRadiusClipSpace < -1) {
+	if ((sphereCenterClipSpace.y > planesDistance && sphereCenterClipSpace.y - sphereRadiusClipSpace > planesDistance) || (sphereCenterClipSpace.y < -planesDistance && sphereCenterClipSpace.y + sphereRadiusClipSpace < -planesDistance)) {
 		return false;
 	}
 

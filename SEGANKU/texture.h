@@ -15,6 +15,7 @@
  */
 class Texture
 {
+
 	GLuint handle;
 	const std::string filePath;
 
@@ -22,12 +23,30 @@ public:
 	Texture(const std::string &filePath, bool alpha);
 	~Texture();
 
+	enum FilterType {
+		NEAREST_NEIGHBOUR = 0,
+		FILTER_BILINEAR   = 1,
+		FILTER_TRILINEAR  = 2
+	};
+
 	/**
 	 * @brief binds this texture to the given opengl texture unit
 	 * @param unit the opengl texture unit to bind to
 	 */
 	void bind(int unit);
 
+	/**
+	 * @brief set texture minification and magnification filters
+	 * minification:  how to filter downsampled texture when there's not enough space
+	 * magnification: how to interpolate texture to fill remaining space
+	 * @param filterType
+	 */
+	void setFilterMode(FilterType filterType);
+
+	/**
+	 * @brief get the texture file path
+	 * @return the texture file path
+	 */
 	std::string getFilePath() const;
 };
 

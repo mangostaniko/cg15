@@ -47,9 +47,9 @@ void Player::update(float timeDelta)
 
 }
 
-void Player::draw(Shader *shader)
+void Player::draw(Shader *shader, bool useFrustumCulling, Texture::FilterType filterType)
 {
-	Geometry::draw(shader, camera);
+	Geometry::draw(shader, camera, useFrustumCulling, filterType);
 }
 
 void Player::handleInput(GLFWwindow *window, float timeDelta)

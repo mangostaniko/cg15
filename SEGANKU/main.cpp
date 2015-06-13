@@ -37,14 +37,16 @@ void cleanup();
 void newGame();
 
 GLFWwindow *window;
-bool running			= true;
-bool paused				= false;
-bool foundCarrot		= false;
-bool debugInfoEnabled   = true;
-bool wireframeEnabled   = false;
-bool ssaoEnabled		= false;
-bool shadowsEnabled		= true;
-bool renderShadowMap	= false;
+bool running			       = true;
+bool paused				       = false;
+bool foundCarrot		       = false;
+bool debugInfoEnabled          = true;
+bool wireframeEnabled          = false;
+bool ssaoEnabled		       = false;
+bool shadowsEnabled		       = true;
+bool renderShadowMap	       = false;
+bool frustumCullingEnabled     = true;
+Texture::FilterType filterType = Texture::FILTER_TRILINEAR;
 
 Shader *textureShader, *depthMapShader, *debugDepthShader;
 Shader *activeShader;
@@ -484,16 +486,16 @@ void drawScene()
 	glUniform3f(cameraPosLocation, camera->getLocation().x, camera->getLocation().y, camera->getLocation().z);
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
-	player->draw(activeShader);
+	player->draw(activeShader, frustumCullingEnabled, filterType);
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
-	hawk->draw(activeShader, camera);
+	hawk->draw(activeShader, camera, frustumCullingEnabled, filterType);
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
-	world->draw(activeShader, camera);
+	world->draw(activeShader, camera, frustumCullingEnabled, filterType);
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
-	carrot->draw(activeShader, camera);
+	carrot->draw(activeShader, camera, frustumCullingEnabled, filterType);
 
 	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); // disable wireframe
 
@@ -613,7 +615,17 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 
 	if (glfwGetKey(window, GLFW_KEY_F3) == GLFW_PRESS) {
 	    wireframeEnabled = !wireframeEnabled;
-	}	
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_F4) == GLFW_PRESS) {
+	    filterType = static_cast<Texture::FilterType>((static_cast<int>(filterType)+1) % 3);
+
+		switch (filterType) {
+			case Texture::NEAREST_NEIGHBOUR: std::cout << "TEXTURE FILTER NEAREST NEIGHBOUR" << std::endl; break;
+			case Texture::FILTER_BILINEAR: std::cout << "TEXTURE FILTER FILTER BILINEAR" << std::endl; break;
+			case Texture::FILTER_TRILINEAR: std::cout << "TEXTURE FILTER FILTER TRILINEAR" << std::endl; break;
+		}
+	}
 
 	if (glfwGetKey(window, GLFW_KEY_F6) == GLFW_PRESS) {
 		ssaoEnabled = !ssaoEnabled;
@@ -624,6 +636,10 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F8) == GLFW_PRESS) {
+		frustumCullingEnabled = !frustumCullingEnabled;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_F9) == GLFW_PRESS) {
 		renderShadowMap = !renderShadowMap;
 	}
 }

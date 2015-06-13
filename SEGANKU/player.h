@@ -70,7 +70,7 @@ public:
 	virtual ~Player();
 
 	virtual void update(float timeDelta);
-	virtual void draw(Shader *shader);
+	virtual void draw(Shader *shader, bool useFrustumCulling, Texture::FilterType filterType);
 
 	/**
 	 * @brief toggle the camera navigation mode

@@ -30,11 +30,7 @@ Texture::Texture(const std::string &filePath_, bool alpha)
 	// e.g. for far away surfaces. by taking a filtered average it doesnt matter where the sample hits.
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	// set texture minification and magnification filters
-	// minification:  how to filter downsampled texture when there's not enough space
-	// magnification: how to interpolate texture to fill remaining space
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	setFilterMode(FILTER_TRILINEAR);
 
 }
 
@@ -47,6 +43,24 @@ void Texture::bind(int unit)
 {
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, handle);
+}
+
+void Texture::setFilterMode(FilterType filterType)
+{
+	switch (filterType) {
+		case NEAREST_NEIGHBOUR:
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			break;
+		case FILTER_BILINEAR:
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			break;
+		case FILTER_TRILINEAR:
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			break;
+	}
 }
 
 std::string Texture::getFilePath() const

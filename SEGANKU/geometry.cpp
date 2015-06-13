@@ -23,7 +23,7 @@ void Geometry::update(float timeDelta)
 
 }
 
-void Geometry::draw(Shader *shader, Camera *camera)
+void Geometry::draw(Shader *shader, Camera *camera, bool useFrustumCulling, Texture::FilterType filterType)
 {
 	// pass model matrix to shader
 	GLint modelMatLocation = glGetUniformLocation(shader->programHandle, "modelMat"); // get uniform location in shader
@@ -37,13 +37,16 @@ void Geometry::draw(Shader *shader, Camera *camera)
 	for (GLuint i = 0; i < surfaces.size(); ++i) {
 
 		// view frustum culling using bounding spheres
-		glm::vec3 boundingSphereCenter = (getMatrix() * glm::vec4(surfaces[i]->getBoundingSphereCenter(), 1)).xyz();
-		glm::vec3 boundingSphereFarthestPoint = (getMatrix() * glm::vec4(surfaces[i]->getBoundingSphereFarthestPoint(), 1)).xyz();
+		if (useFrustumCulling) {
+			glm::vec3 boundingSphereCenter = (getMatrix() * glm::vec4(surfaces[i]->getBoundingSphereCenter(), 1)).xyz();
+			glm::vec3 boundingSphereFarthestPoint = (getMatrix() * glm::vec4(surfaces[i]->getBoundingSphereFarthestPoint(), 1)).xyz();
 
-		if (camera->checkSphereInFrustum(boundingSphereCenter, boundingSphereFarthestPoint)) {
-			drawnSurfaceCount += 1;
-			surfaces[i]->draw(shader);
+			if (!camera->checkSphereInFrustum(boundingSphereCenter, boundingSphereFarthestPoint))
+				continue;
 		}
+
+		drawnSurfaceCount += 1;
+		surfaces[i]->draw(shader, filterType);
 	}
 
 }

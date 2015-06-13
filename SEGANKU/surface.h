@@ -60,7 +60,7 @@ public:
 	 * note: the transformation matrices must be set already in shader program!
 	 * @param shader the compiled shader program to use for drawing
 	 */
-	void draw(Shader *shader);
+	void draw(Shader *shader, Texture::FilterType filterType);
 
 	/**
 	 * @brief get the center of the bounding sphere
