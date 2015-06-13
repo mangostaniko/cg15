@@ -527,6 +527,8 @@ void drawText(double deltaT)
 
 void newGame()
 {
+	// TODO
+
 	delete sun;
 
 	glfwSetTime(0);
