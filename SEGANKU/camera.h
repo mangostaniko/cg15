@@ -106,7 +106,7 @@ public:
 	 * @param sphereFarthestPoint the farthest point from sphere center in world space
 	 * @return whether the sphere lies completely within the view frustum
 	 */
-	bool checkSphereInFrustum(const glm::vec3 &sphereCenter, const glm::vec3 &sphereFarthestPoint);
+	bool checkSphereInFrustum(const glm::vec3 &sphereCenterWorldSpace, const glm::vec3 &sphereFarthestPointWorldSpace);
 
 };
 

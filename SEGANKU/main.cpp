@@ -45,7 +45,7 @@ bool wireframeEnabled          = false;
 bool ssaoEnabled		       = false;
 bool shadowsEnabled		       = true;
 bool renderShadowMap	       = false;
-bool frustumCullingEnabled     = true;
+bool frustumCullingEnabled     = false;
 Texture::FilterType filterType = Texture::LINEAR_MIPMAP_LINEAR;
 
 Shader *textureShader, *depthMapShader, *debugDepthShader;
@@ -471,11 +471,7 @@ void update(float timeDelta)
 
 void drawScene()
 {
-	Geometry::drawnSurfaceCount = 0;
-
 	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // enable wireframe
-
-	// DRAW GEOMETRY
 
 	// pass viewProjection matrix to shader
 	GLint viewProjMatLocation = glGetUniformLocation(activeShader->programHandle, "viewProjMat"); // get uniform location in shader
@@ -484,6 +480,10 @@ void drawScene()
 	// pass camera position to shader
 	GLint cameraPosLocation = glGetUniformLocation(activeShader->programHandle, "cameraPos");
 	glUniform3f(cameraPosLocation, camera->getLocation().x, camera->getLocation().y, camera->getLocation().z);
+
+	// DRAW GEOMETRY
+
+	Geometry::drawnSurfaceCount = 0;
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
 	player->draw(activeShader, frustumCullingEnabled, filterType);

@@ -23,7 +23,6 @@ Texture::Texture(const std::string &filePath_, bool alpha)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.getWidth(), img.getHeight(), 0, GL_BGR, GL_UNSIGNED_BYTE, img.accessPixels());
 	}
 
-
 	// automatically generate mipmaps (mip = multum in parvo, i.e. 'much in little')
 	// mipmaps are filtered and downsampled copies of the texture stored compactly in a single file,
 	// used to avoid aliasing effects when the sampling rate is too low for the texture frequency

@@ -86,28 +86,26 @@ void Camera::lookAt(const glm::vec3 &target)
 	setTransform(glm::lookAt(getLocation(), target, glm::vec3(0, 1, 0)));
 }
 
-bool Camera::checkSphereInFrustum(const glm::vec3 &sphereCenter, const glm::vec3 &sphereFarthestPoint)
+bool Camera::checkSphereInFrustum(const glm::vec3 &sphereCenterWorldSpace, const glm::vec3 &sphereFarthestPointWorldSpace)
 {
 	// get sphere into clip space and then into normalized device coordinates through perspective division,
 	// i.e. division by w which after the perspective projection stores the depth component z,
 	// such that all 6 view frustum planes are simply at distance 1 or -1 from the origin
-	glm::vec4 sphereCenterClipSpace = getProjectionMatrix() * getViewMatrix() * glm::vec4(sphereCenter, 1);
-	glm::vec4 sphereFarthestPointClipSpace = getProjectionMatrix() * getViewMatrix() * glm::vec4(sphereFarthestPoint, 1);
-	sphereCenterClipSpace /= sphereCenterClipSpace.w;
-	sphereFarthestPointClipSpace /= sphereFarthestPointClipSpace.w;
+	glm::vec4 center = getProjectionMatrix() * getViewMatrix() * glm::vec4(sphereCenterWorldSpace, 1);
+	glm::vec4 sphereFarthestPoint = getProjectionMatrix() * getViewMatrix() * glm::vec4(sphereFarthestPointWorldSpace, 1);
+	center /= center.w;
+	sphereFarthestPoint /= sphereFarthestPoint.w;
 
-	float sphereRadiusClipSpace = glm::length(sphereFarthestPointClipSpace - sphereCenterClipSpace);
+	// note: if needed, use a greater radius to avoid that objects disappear
+	// whose shadows are still in view, as well as to compensate the rough bounding sphere approximation
+	float radius = glm::length(sphereFarthestPoint.xy() - center.xy());
+	float distanceZ = abs(sphereFarthestPoint.z - center.z);
 
-	// TODO
 	// check if the sphere lies beyond any of the 6 view frustum planes
-	// note that we use a greater margin than 1, to compensate for the very rough bounding sphere approximation
-	float planesDistance = 1.f;
-	if ((sphereCenterClipSpace.x > planesDistance && sphereCenterClipSpace.x - sphereRadiusClipSpace > planesDistance) || (sphereCenterClipSpace.x < -planesDistance && sphereCenterClipSpace.x + sphereRadiusClipSpace < -planesDistance)) {
-		return false;
-	}
-	if ((sphereCenterClipSpace.y > planesDistance && sphereCenterClipSpace.y - sphereRadiusClipSpace > planesDistance) || (sphereCenterClipSpace.y < -planesDistance && sphereCenterClipSpace.y + sphereRadiusClipSpace < -planesDistance)) {
-		return false;
-	}
+	float plane = 1.0f;
+	if (center.x - radius > plane || center.x + radius < -plane) return false;
+	if (center.y - radius > plane || center.y + radius < -plane) return false;
+	if (center.z - distanceZ > plane || center.z + distanceZ < -plane) return false;
 
 	return true;
 }
