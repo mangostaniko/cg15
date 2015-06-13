@@ -46,7 +46,7 @@ bool ssaoEnabled		       = false;
 bool shadowsEnabled		       = true;
 bool renderShadowMap	       = false;
 bool frustumCullingEnabled     = true;
-Texture::FilterType filterType = Texture::FILTER_TRILINEAR;
+Texture::FilterType filterType = Texture::LINEAR_MIPMAP_LINEAR;
 
 Shader *textureShader, *depthMapShader, *debugDepthShader;
 Shader *activeShader;
@@ -618,12 +618,29 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F4) == GLFW_PRESS) {
-	    filterType = static_cast<Texture::FilterType>((static_cast<int>(filterType)+1) % 3);
+	    filterType = static_cast<Texture::FilterType>((static_cast<int>(filterType)+3) % 6);
 
 		switch (filterType) {
-			case Texture::NEAREST_NEIGHBOUR: std::cout << "TEXTURE FILTER NEAREST NEIGHBOUR" << std::endl; break;
-			case Texture::FILTER_BILINEAR: std::cout << "TEXTURE FILTER FILTER BILINEAR" << std::endl; break;
-			case Texture::FILTER_TRILINEAR: std::cout << "TEXTURE FILTER FILTER TRILINEAR" << std::endl; break;
+			case Texture::NEAREST_MIPMAP_OFF:     std::cout << "TEXTURE FILTER NEAREST" << std::endl; break;
+			case Texture::NEAREST_MIPMAP_NEAREST: std::cout << "TEXTURE FILTER NEAREST" << std::endl; break;
+			case Texture::NEAREST_MIPMAP_LINEAR:  std::cout << "TEXTURE FILTER NEAREST" << std::endl; break;
+			case Texture::LINEAR_MIPMAP_OFF:      std::cout << "TEXTURE FILTER LINEAR" << std::endl; break;
+			case Texture::LINEAR_MIPMAP_NEAREST:  std::cout << "TEXTURE FILTER LINEAR" << std::endl; break;
+			case Texture::LINEAR_MIPMAP_LINEAR:   std::cout << "TEXTURE FILTER LINEAR" << std::endl; break;
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS) {
+		int filterTypeInt = static_cast<int>(filterType);
+	    filterType = static_cast<Texture::FilterType>((static_cast<int>(filterType)+1) % 3 + (filterTypeInt/3)*3);
+
+		switch (filterType) {
+			case Texture::NEAREST_MIPMAP_OFF:     std::cout << "MIPMAP OFF" << std::endl; break;
+			case Texture::NEAREST_MIPMAP_NEAREST: std::cout << "MIPMAP FILTER NEAREST" << std::endl; break;
+			case Texture::NEAREST_MIPMAP_LINEAR:  std::cout << "MIPMAP FILTER LINEAR" << std::endl; break;
+			case Texture::LINEAR_MIPMAP_OFF:      std::cout << "MIPMAP OFF" << std::endl; break;
+			case Texture::LINEAR_MIPMAP_NEAREST:  std::cout << "MIPMAP FILTER NEAREST" << std::endl; break;
+			case Texture::LINEAR_MIPMAP_LINEAR:   std::cout << "MIPMAP FILTER LINEAR" << std::endl; break;
 		}
 	}
 

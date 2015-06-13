@@ -30,7 +30,7 @@ Texture::Texture(const std::string &filePath_, bool alpha)
 	// e.g. for far away surfaces. by taking a filtered average it doesnt matter where the sample hits.
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	setFilterMode(FILTER_TRILINEAR);
+	setFilterMode(LINEAR_MIPMAP_LINEAR);
 
 }
 
@@ -48,15 +48,27 @@ void Texture::bind(int unit)
 void Texture::setFilterMode(FilterType filterType)
 {
 	switch (filterType) {
-		case NEAREST_NEIGHBOUR:
+		case NEAREST_MIPMAP_OFF:
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			break;
-		case FILTER_BILINEAR:
+		case NEAREST_MIPMAP_NEAREST:
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			break;
+		case NEAREST_MIPMAP_LINEAR:
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			break;
+		case LINEAR_MIPMAP_OFF:
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			break;
-		case FILTER_TRILINEAR:
+		case LINEAR_MIPMAP_NEAREST:
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			break;
+		case LINEAR_MIPMAP_LINEAR:
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			break;
