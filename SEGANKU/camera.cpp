@@ -86,3 +86,14 @@ void Camera::lookAt(const glm::vec3 &target)
 	setTransform(glm::lookAt(getLocation(), target, glm::vec3(0, 1, 0)));
 }
 
+bool Camera::checkSphereInFrustum(const glm::vec3 &sphereCenter, const glm::vec3 &sphereFarthestPoint)
+{
+	// TODO
+
+	for (int i = 0; i < 6; ++i) {
+
+	}
+
+	return true; //glm::length(sphereFarthestPoint - sphereCenter) > 3;
+}
+

@@ -469,6 +469,8 @@ void update(float timeDelta)
 
 void drawScene()
 {
+	Geometry::drawnSurfaceCount = 0;
+
 	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // enable wireframe
 
 	// DRAW GEOMETRY
@@ -485,15 +487,16 @@ void drawScene()
 	player->draw(activeShader);
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
-	hawk->draw(activeShader);
+	hawk->draw(activeShader, camera);
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
-	world->draw(activeShader);
+	world->draw(activeShader, camera);
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
-	carrot->draw(activeShader);
+	carrot->draw(activeShader, camera);
 
 	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); // disable wireframe
+
 }
 
 void drawText(double deltaT)
@@ -502,19 +505,20 @@ void drawText(double deltaT)
 
 	if (debugInfoEnabled) {
 
-		textRenderer->renderText("delta time: " + std::to_string(int(deltaT*1000 + 0.5)) + " ms", 25.0f, 25.0f, 0.4f, glm::vec3(1));
-		textRenderer->renderText("fps: " + std::to_string(int(1/deltaT + 0.5)), 25.0f, 50.0f, 0.4f, glm::vec3(1));
+		textRenderer->renderText("delta time: " + std::to_string(int(deltaT*1000 + 0.5)) + " ms", 25.0f, 50.0f, 0.4f, glm::vec3(1));
+		textRenderer->renderText("fps: " + std::to_string(int(1/deltaT + 0.5)), 25.0f, 75.0f, 0.4f, glm::vec3(1));
+		textRenderer->renderText("drawn surface count: " + std::to_string(Geometry::drawnSurfaceCount), 25.0f, 25.0f, 0.4f, glm::vec3(1));
 
 		if (!paused) {
 			// draw time until starvation
-			textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, 100.0f, 0.4f, glm::vec3(1));
+			textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, 125.0f, 0.4f, glm::vec3(1));
 		}
 	}
 	if (paused && !foundCarrot) {
-		textRenderer->renderText("YOU STARVED :( TRY LOOKING HARDER NEXT TIME.", 25.0f, 100.0f, 0.5f, glm::vec3(1));
+		textRenderer->renderText("YOU STARVED :( TRY LOOKING HARDER NEXT TIME.", 25.0f, 125.0f, 0.5f, glm::vec3(1));
 	}
 	else if (paused && foundCarrot) {
-		textRenderer->renderText("CONGRATULATIONS!!! YOU FOUND THE CARROT!!", 25.0f, 100.0f, 0.5f, glm::vec3(1));
+		textRenderer->renderText("CONGRATULATIONS!!! YOU FOUND THE CARROT!!", 25.0f, 125.0f, 0.5f, glm::vec3(1));
 	}
 
 	glEnable(GL_DEPTH_TEST);

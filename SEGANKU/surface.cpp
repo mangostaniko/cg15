@@ -7,10 +7,11 @@ Surface::Surface(const std::vector<Vertex> &vertices_, const std::vector<GLuint>
 	, texSpecular(texSpecular_)
 	, texNormal(texNormal_)
 {
-	init();
+	calculateBoundingSphere();
+	initBuffers();
 }
 
-void Surface::init()
+void Surface::initBuffers()
 {
 	// generate vertex array object (vao) bindings. the vao simply stores the state of the subsequent bindings
 	// so that they can be reactived quickly later, instead of doing it all over again
@@ -51,6 +52,37 @@ void Surface::init()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+}
+
+void Surface::calculateBoundingSphere()
+{
+	// approximate bounding sphere center using arithmetic mean
+	glm::vec3 arithmeticMeanPosition;
+	for (Vertex v : vertices) {
+		arithmeticMeanPosition += v.position;
+	}
+	arithmeticMeanPosition /= vertices.size();
+
+	boundingSphereCenter = arithmeticMeanPosition;
+
+	// determine bounding sphere radius as distance to farthest vertex from center
+	float maxRadius = 0;
+	for (Vertex v : vertices) {
+		float currentRadius = glm::length(v.position - boundingSphereCenter);
+		if (currentRadius > maxRadius) {
+			boundingSphereFarthestPoint = v.position;
+		}
+	}
+}
+
+glm::vec3 Surface::getBoundingSphereCenter()
+{
+	return boundingSphereCenter;
+}
+
+glm::vec3 Surface::getBoundingSphereFarthestPoint()
+{
+	return boundingSphereFarthestPoint;
 }
 
 Surface::~Surface()
