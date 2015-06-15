@@ -87,7 +87,7 @@ void Physics::addSphereShapeToPhysics(const Geometry &geometry, btScalar radius)
 	btCollisionShape *shape = new btSphereShape(radius);
 	btTransform transform;
 	transform.setIdentity();
-	transform.setOrigin(btVector3(geometry.getLocation().x, radius, geometry.getLocation().z+2.5));
+	transform.setOrigin(btVector3(geometry.getLocation().x, radius, geometry.getLocation().z));
 
 	shape->calculateLocalInertia(mass, localInertia);
 	btDefaultMotionState *motionState = new btDefaultMotionState(transform);

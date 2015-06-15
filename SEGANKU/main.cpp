@@ -432,7 +432,7 @@ void init(GLFWwindow *window)
 	for (glm::vec2 p : positions) {
 		p = (p - glm::vec2(0.5, 0.5)) * 150.0f;
 		// IMPORTANT -> DO NOT APPLY ROTATION TO TREES, otherwise collision object will end up in wrong place
-		trees.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.75+rand()/2)), 0.0f, glm::vec3(0,1,0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/tree1.dae"));
+		trees.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.75 + rand() / 2)), rand() * 2 * glm::pi<float>(), glm::vec3(0, 1, 0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/tree.dae"));
 	}
 
 	// procedurally placed shrubs
