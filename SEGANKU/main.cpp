@@ -71,6 +71,7 @@ const glm::vec3 LIGHT_END(glm::vec3(40, 200, 0));
 
 Geometry *carrot;
 glm::vec3 carrotPos;
+std::vector<std::shared_ptr<Geometry>> carrots;
 std::vector<std::shared_ptr<Geometry>> trees;
 std::vector<std::shared_ptr<Geometry>> shrubs;
 const float timeToStarvation = 60;
@@ -413,26 +414,35 @@ void init(GLFWwindow *window)
 	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(2, 1, 2)), "../data/models/world/terrain.dae");
 
 	std::default_random_engine randGen(time(nullptr));
-	std::uniform_int_distribution<int> randDistribution(-49,49);
-	randDistribution(randGen);
-	carrotPos = glm::vec3(randDistribution(randGen), 0, randDistribution(randGen));
-	carrot = new Geometry(glm::translate(glm::mat4(1.0f), carrotPos), "../data/models/world/carrot.dae");
+	std::uniform_real_distribution<float> randDistribution(0.0f, 1.0f);
+	auto rand = std::bind(randDistribution, std::ref(randGen));
+	carrotPos = glm::vec3((rand()-0.5)*50, 0, (rand()-0.5)*50);
+	carrot = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(5)), "../data/models/world/carrot.dae");
+	carrot->translate(carrotPos, SceneObject::LEFT);
+
+	// procedurally placed carrots
+	std::vector<glm::vec2> positions = PoissonDiskSampler::generatePoissonSample(100, 0.4f); // positions in range [0, 1]
+	for (glm::vec2 p : positions) {
+		p = (p - glm::vec2(0.5, 0.5)) * 150.0f;
+		carrots.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::mat4(1.0f), rand()*2*glm::pi<float>(), glm::vec3(0,1,0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/carrot.dae"));
+	}
 
 	// procedurally placed trees
-	std::vector<glm::vec2> positions = PoissonDiskSampler::generatePoissonSample(200, 0.4f); // in range [0, 1]
+	positions = PoissonDiskSampler::generatePoissonSample(150, 0.4f); // positions in range [0, 1]
 	for (glm::vec2 p : positions) {
-		p = (p - glm::vec2(0.5, 0.5)) * 200.0f;
-		trees.push_back(std::make_shared<Geometry>(glm::translate(glm::mat4(1.0f), glm::vec3(p.x, 0, p.y)), "../data/models/world/tree1.dae"));
+		p = (p - glm::vec2(0.5, 0.5)) * 150.0f;
+		trees.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.75+rand()/2)), rand()*2*glm::pi<float>(), glm::vec3(0,1,0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/tree1.dae"));
 	}
+
 	// procedurally placed shrubs
-	positions = PoissonDiskSampler::generatePoissonSample(160, 0.4f); // in range [0, 1]
+	positions = PoissonDiskSampler::generatePoissonSample(60, 0.1f); // positions in range [0, 1]
 	for (unsigned int i = 0; i < positions.size(); ++i) {
 		glm::vec2 p = positions[i];
-		p = (p - glm::vec2(0.5, 0.5)) * 200.0f;
+		p = (p - glm::vec2(0.5, 0.5)) * 150.0f;
 		if (i % 2 == 0) {
-			shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::mat4(1.0f), glm::vec3(p.x, 0, p.y)), "../data/models/world/shrub1.dae"));
+			shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(1+rand()/2)), rand()*2*glm::pi<float>(), glm::vec3(0,1,0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/shrub1.dae"));
 		} else {
-			shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::mat4(1.0f), glm::vec3(p.x, 0, p.y)), "../data/models/world/shrub2.dae"));
+			shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(1+rand()/2)), rand()*2*glm::pi<float>(), glm::vec3(0,1,0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/shrub2.dae"));
 		}
 	}
 	
@@ -559,6 +569,9 @@ void drawScene()
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
 	carrot->draw(activeShader, camera, frustumCullingEnabled, filterType);
+	for (std::shared_ptr<Geometry> carr : carrots) {
+		carr->draw(activeShader, camera, frustumCullingEnabled, filterType);
+	}
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
 	terrain->draw(activeShader, camera, frustumCullingEnabled, filterType);

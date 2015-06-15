@@ -1,6 +1,7 @@
 #include "geometry.h"
 
 int Geometry::drawnSurfaceCount = 0;
+std::vector<std::shared_ptr<Texture>> Geometry::loadedTextures = {};
 
 Geometry::Geometry(const glm::mat4 &matrix_, const std::string &filePath)
     : SceneObject(matrix_)

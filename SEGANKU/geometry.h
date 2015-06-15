@@ -31,7 +31,7 @@ class Geometry : public SceneObject
 	std::string directoryPath;
 
 	// pointers to all textures loaded by the surfaces of this geometry, to avoid loading twice
-	std::vector<std::shared_ptr<Texture>> loadedTextures;
+	static std::vector<std::shared_ptr<Texture>> loadedTextures;
 
 	/**
 	 * @brief load surfaces from file
