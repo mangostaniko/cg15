@@ -73,6 +73,9 @@ set(SRC_CLASSES
 	SEGANKU/effects/particlesystem.h
 	SEGANKU/effects/particlesystem.cpp
 
+	SEGANKU/poissondisksampler.h
+	SEGANKU/poissondisksampler.cpp
+
 
     )
 	

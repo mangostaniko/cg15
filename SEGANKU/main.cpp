@@ -25,6 +25,7 @@
 #include "textrenderer.h"
 #include "effects/ssaopostprocessor.h"
 #include "effects/particlesystem.h"
+#include "poissondisksampler.h"
 
 
 void init(GLFWwindow *window);
@@ -56,7 +57,7 @@ SSAOPostprocessor *ssaoPostprocessor;
 
 Player *player; glm::mat4 playerInitTransform(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
 Geometry *hawk; glm::mat4 hawkInitTransform(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)));
-Geometry *world;
+Geometry *terrain;
 Camera *camera;
 Light *sun;
 const glm::vec3 LIGHT_START(glm::vec3(-120, 200, 0));
@@ -64,7 +65,8 @@ const glm::vec3 LIGHT_END(glm::vec3(40, 200, 0));
 
 Geometry *carrot;
 glm::vec3 carrotPos;
-//std::vector<std::shared_ptr<Geometry>> carrots;
+std::vector<std::shared_ptr<Geometry>> trees;
+std::vector<std::shared_ptr<Geometry>> shrubs;
 const float timeToStarvation = 60;
 
 // Shadow Map FBO and depth texture
@@ -408,7 +410,10 @@ void init(GLFWwindow *window)
 
 
 	// INIT WORLD + OBJECTS
-	world = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/world.dae");
+
+	sun = new Light(glm::translate(glm::mat4(1.0f), LIGHT_START), LIGHT_END, glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
+
+	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(2, 1, 2)), "../data/models/world/terrain.dae");
 
 	std::default_random_engine randGen(time(nullptr));
 	std::uniform_int_distribution<int> randDistribution(-49,49);
@@ -416,8 +421,23 @@ void init(GLFWwindow *window)
 	carrotPos = glm::vec3(randDistribution(randGen), 0, randDistribution(randGen));
 	carrot = new Geometry(glm::translate(glm::mat4(1.0f), carrotPos), "../data/models/world/carrot.dae");
 
-	//const glm::mat4 &modelMatrix_, glm::vec3 endPos, glm::vec3 startCol, glm::vec3 endCol, float seconds
-	sun = new Light(glm::translate(glm::mat4(1.0f), LIGHT_START), LIGHT_END, glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
+	// procedurally placed trees
+	std::vector<glm::vec2> positions = PoissonDiskSampler::generatePoissonSample(200, 0.4f); // in range [0, 1]
+	for (glm::vec2 p : positions) {
+		p = (p - glm::vec2(0.5, 0.5)) * 200.0f;
+		trees.push_back(std::make_shared<Geometry>(glm::translate(glm::mat4(1.0f), glm::vec3(p.x, 0, p.y)), "../data/models/world/tree1.dae"));
+	}
+	// procedurally placed shrubs
+	positions = PoissonDiskSampler::generatePoissonSample(160, 0.4f); // in range [0, 1]
+	for (unsigned int i = 0; i < positions.size(); ++i) {
+		glm::vec2 p = positions[i];
+		p = (p - glm::vec2(0.5, 0.5)) * 200.0f;
+		if (i % 2 == 0) {
+			shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::mat4(1.0f), glm::vec3(p.x, 0, p.y)), "../data/models/world/shrub1.dae"));
+		} else {
+			shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::mat4(1.0f), glm::vec3(p.x, 0, p.y)), "../data/models/world/shrub2.dae"));
+		}
+	}
 
 
 	// INIT PLAYER + CAMERA
@@ -491,11 +511,18 @@ void drawScene()
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
 	hawk->draw(activeShader, camera, frustumCullingEnabled, filterType);
 
-	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
-	world->draw(activeShader, camera, frustumCullingEnabled, filterType);
-
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
 	carrot->draw(activeShader, camera, frustumCullingEnabled, filterType);
+
+	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
+	terrain->draw(activeShader, camera, frustumCullingEnabled, filterType);
+
+	for (std::shared_ptr<Geometry> tree : trees) {
+		tree->draw(activeShader, camera, frustumCullingEnabled, filterType);
+	}
+	for (std::shared_ptr<Geometry> shrub : shrubs) {
+		shrub->draw(activeShader, camera, frustumCullingEnabled, filterType);
+	}
 
 	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); // disable wireframe
 
@@ -570,7 +597,7 @@ void cleanup()
 
 	delete player; player = nullptr;
 	delete hawk; hawk = nullptr;
-	delete world; world = nullptr;
+	delete terrain; terrain = nullptr;
 	delete carrot; carrot = nullptr;
 }
 
