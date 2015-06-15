@@ -16,6 +16,9 @@
  */
 class Player : public Geometry
 {
+
+
+	// CAMERA SPECS 
 	Camera *camera;
 	GLFWwindow *window;
 	glm::vec3 camDirection;
@@ -23,10 +26,6 @@ class Player : public Geometry
 	glm::vec3 camUp;
 	glm::mat4 viewMat;
 	glm::mat4 projMat;
-
-	btCollisionShape *playerShape;
-	btRigidBody *playerBody;
-	btDefaultMotionState *motionState;
 
 	enum CameraNavigationMode
 	{
@@ -37,6 +36,22 @@ class Player : public Geometry
 	static CameraNavigationMode cameraNavMode;
 	CameraNavigationMode lastNavMode;
 	glm::mat4 lastCamTransform; // safe transformation matrix when changing modes
+
+
+	// PHYSICS SPECS
+	btCollisionShape *playerShape;
+	btRigidBody *playerBody;
+	btDefaultMotionState *motionState;
+
+
+	// GAMEPLAY SPECS
+	Geometry *currentFood;
+	float animDur;
+	const int NEEDED_FOOD = 30;
+	int eatenCarrots;
+	bool fullStomach;
+	bool inBush;
+
 
 	static double scrollY; // amount scrolled since last frame
 
@@ -95,6 +110,16 @@ public:
 	glm::mat4 getProjMat();
 
 	btRigidBody *getRigidBody();
+
+	void eatCarrot(Geometry *carrot);
+
+	bool isFull();
+
+	bool isInBush();
+
+	int getFoodEaten();
+
+	void setInBush(bool inB);
 
 };
 

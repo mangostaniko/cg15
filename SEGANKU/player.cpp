@@ -7,6 +7,11 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
     : Geometry(matrix_, filePath)
     , camera(camera_)
     , window(window_)
+	, eatenCarrots(0)
+	, fullStomach(false)
+	, inBush(false)
+	, currentFood(nullptr)
+	, animDur(0)
 {
 	// set glfw callbacks
 	glfwSetScrollCallback(window, onScroll);
@@ -29,6 +34,8 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	btRigidBody::btRigidBodyConstructionInfo info(mass, motionState, playerShape, inertia);
 	playerBody = new btRigidBody(info);
 	playerBody->setActivationState(DISABLE_DEACTIVATION);
+	playerBody->setCollisionFlags(playerBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+	playerBody->setUserPointer(this);
 
 }
 
@@ -40,6 +47,24 @@ Player::~Player()
 
 void Player::update(float timeDelta)
 {
+	if (eatenCarrots == NEEDED_FOOD) {
+		fullStomach = true;
+		return;
+	}
+
+	if (currentFood != nullptr) {
+		if (animDur < 3.5f) {
+			animDur += timeDelta;
+			currentFood->setLocation(getLocation() + glm::vec3(0, 2, 0));
+			currentFood->rotateY(glm::radians(10.0), SceneObject::RIGHT);
+		}
+		else {
+			animDur = 0;
+			currentFood->setLocation(glm::vec3(300, -300, 300));
+			currentFood = nullptr;
+		}
+	}
+
 	// note: camera navigation mode is toggled on tab key press, look for keyCallback
 	handleNavModeChange();
 
@@ -223,6 +248,34 @@ void Player::handleNavModeChange()
 	lastCamTransform = temp;
 
 	lastNavMode = cameraNavMode;
+}
+
+void Player::eatCarrot(Geometry *carrot)
+{
+	if (!(currentFood != nullptr)) {
+		++eatenCarrots;
+		currentFood = carrot;
+	}
+}
+
+bool Player::isFull()
+{
+	return fullStomach;
+}
+
+bool Player::isInBush()
+{
+	return inBush;
+}
+
+void Player::setInBush(bool inB)
+{
+	inBush = inB;
+}
+
+int Player::getFoodEaten()
+{
+	return eatenCarrots;
 }
 
 glm::mat4 Player::getViewMat()

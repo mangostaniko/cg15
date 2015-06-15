@@ -2,13 +2,15 @@
 #define PHYSICS_H
 
 #include <btBulletDynamicsCommon.h>
+#include <BulletCollision\CollisionDispatch\btCollisionWorld.h>
 #include "simpledebugdrawer.h"
 #include "geometry.h"
+#include "player.h"
 
 class Physics
 {
 public:
-	Physics();
+	Physics(Player *player);
 	~Physics();
 
 	void init();
@@ -16,13 +18,19 @@ public:
 
 	void stepSimulation(float deltaT);
 	void debugDrawWorld(bool draw);
-	void addSphereShapeToPhysics(const Geometry &geometry, btScalar radius);
+	void addFoodSphereToPhysics(Geometry *geometry, btScalar radius);
+	void addBushSphereToPhysics(Geometry *geometry, btScalar radius);
+	void addTreeSphereToPhysics(Geometry *geometry, btScalar radius);
 	void addTerrainShapeToPhysics();
 
 	SimpleDebugDrawer *getPhysicsDebugDrawer();
 	btDiscreteDynamicsWorld *getDynamicsWorld();
 
 private:
+
+	Player *player;
+
+	btRigidBody *floor;
 
 	bool drawDebug;
 	btDefaultCollisionConfiguration *collisionConfiguration;
@@ -35,6 +43,9 @@ private:
 	btAlignedObjectArray<btCollisionShape*> collisionShapes;
 	
 	SimpleDebugDrawer *debugDrawerPhysics;
+
+	std::vector<btRigidBody*> carrotsGeo;
+	std::vector<btRigidBody*> bushesGeo;
 };
 
 #endif// PHYSICS_H

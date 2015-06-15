@@ -79,7 +79,7 @@ const float timeToStarvation = 60;
 // Shadow Map FBO and depth texture
 GLuint depthMapFBO;
 GLuint depthMap;
-const int SM_WIDTH = 2048, SM_HEIGHT = 2048;
+const int SM_WIDTH = 4096, SM_HEIGHT = 4096;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -92,7 +92,7 @@ btBroadphaseInterface * overlappingPairCache;
 btSequentialImpulseConstraintSolver *solver;
 btDiscreteDynamicsWorld *dynamicsWorld;
 
-Physics *physics = new Physics();
+Physics *physics;
 
 
 // ONLY FOR SEBAS DEBUGGING
@@ -374,8 +374,6 @@ int main(int argc, char **argv)
 
 void init(GLFWwindow *window)
 {
-	physics->init();
-
 	// enable z buffer test
 	glEnable(GL_DEPTH_TEST);
 
@@ -495,15 +493,24 @@ void initSM()
 
 void initPhysicsObjects()
 {
+	physics = new Physics(player);
+	physics->init();
+
 	physics->getDynamicsWorld()->addRigidBody(player->getRigidBody());
 	physics->addTerrainShapeToPhysics();
 
-	//std::vector<std::shared_ptr<Geometry>> trees;
-
 	for (std::vector<std::shared_ptr<Geometry>>::iterator it = trees.begin(); it != trees.end(); ++it) {
-		physics->addSphereShapeToPhysics(*it->get(), btScalar(0.6));
+		physics->addTreeSphereToPhysics(it->get(), btScalar(0.6));
 	}
 
+	for (std::vector<std::shared_ptr<Geometry>>::iterator it = carrots.begin(); it != carrots.end(); ++it) {
+		physics->addFoodSphereToPhysics(it->get(), btScalar(0.3));
+	}
+
+	for (std::vector<std::shared_ptr<Geometry>>::iterator it = shrubs.begin(); it != shrubs.end(); ++it) {
+		physics->addBushSphereToPhysics(it->get(), btScalar(2));
+	}
+	
 }
 
 void update(float timeDelta)
@@ -609,6 +616,13 @@ void drawText(double deltaT)
 	else if (paused && foundCarrot) {
 		textRenderer->renderText("CONGRATULATIONS!!! YOU FOUND THE CARROT!!", 25.0f, 125.0f, 0.5f, glm::vec3(1));
 	}
+
+	std::string carrotText = "Carrots Segi already ate: ";
+	carrotText += std::to_string(player->getFoodEaten());
+
+	textRenderer->renderText(carrotText, 25.0f, 5.0f, 0.5f, glm::vec3(1, 0.7f, 0));
+
+
 
 	glEnable(GL_DEPTH_TEST);
 }
