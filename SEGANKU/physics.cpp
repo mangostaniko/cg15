@@ -63,10 +63,10 @@ void Physics::addTerrainShapeToPhysics()
 	btScalar mass(0.);
 	btVector3 localInertia(0, 0, 0);
 
-	btCollisionShape *groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
+	btCollisionShape *groundShape = new btBoxShape(btVector3(btScalar(100.), btScalar(100.), btScalar(100.)));
 	btTransform groundTransform;
 	groundTransform.setIdentity();
-	groundTransform.setOrigin(btVector3(0, -51, 0));
+	groundTransform.setOrigin(btVector3(0, -101, 0));
 
 	groundShape->calculateLocalInertia(mass, localInertia);
 
@@ -87,7 +87,7 @@ void Physics::addSphereShapeToPhysics(const Geometry &geometry, btScalar radius)
 	btCollisionShape *shape = new btSphereShape(radius);
 	btTransform transform;
 	transform.setIdentity();
-	transform.setOrigin(btVector3(geometry.getLocation().x, radius, geometry.getLocation().z+2));
+	transform.setOrigin(btVector3(geometry.getLocation().x, radius, geometry.getLocation().z+2.5));
 
 	shape->calculateLocalInertia(mass, localInertia);
 	btDefaultMotionState *motionState = new btDefaultMotionState(transform);

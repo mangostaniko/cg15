@@ -431,11 +431,12 @@ void init(GLFWwindow *window)
 	positions = PoissonDiskSampler::generatePoissonSample(150, 0.4f); // positions in range [0, 1]
 	for (glm::vec2 p : positions) {
 		p = (p - glm::vec2(0.5, 0.5)) * 150.0f;
-		trees.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.75+rand()/2)), rand()*2*glm::pi<float>(), glm::vec3(0,1,0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/tree1.dae"));
+		// IMPORTANT -> DO NOT APPLY ROTATION TO TREES, otherwise collision object will end up in wrong place
+		trees.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.75+rand()/2)), 0.0f, glm::vec3(0,1,0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/tree1.dae"));
 	}
 
 	// procedurally placed shrubs
-	positions = PoissonDiskSampler::generatePoissonSample(60, 0.1f); // positions in range [0, 1]
+	positions = PoissonDiskSampler::generatePoissonSample(60, 0.4f); // positions in range [0, 1]
 	for (unsigned int i = 0; i < positions.size(); ++i) {
 		glm::vec2 p = positions[i];
 		p = (p - glm::vec2(0.5, 0.5)) * 150.0f;
@@ -500,7 +501,7 @@ void initPhysicsObjects()
 	//std::vector<std::shared_ptr<Geometry>> trees;
 
 	for (std::vector<std::shared_ptr<Geometry>>::iterator it = trees.begin(); it != trees.end(); ++it) {
-		physics->addSphereShapeToPhysics(*it->get(), btScalar(0.5));
+		physics->addSphereShapeToPhysics(*it->get(), btScalar(0.6));
 	}
 
 }
