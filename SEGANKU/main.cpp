@@ -374,8 +374,6 @@ int main(int argc, char **argv)
 
 void init(GLFWwindow *window)
 {
-	glfwSetTime(0);
-
 	physics->init();
 
 	// enable z buffer test
@@ -460,6 +458,8 @@ void init(GLFWwindow *window)
 
 	// INIT PHYSICS OBJECTS (add objects to dynamic World)
 	initPhysicsObjects();
+
+	glfwSetTime(0);
 }
 
 void initSM()

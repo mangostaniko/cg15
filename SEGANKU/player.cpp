@@ -47,7 +47,7 @@ void Player::update(float timeDelta)
 
 		handleInput(window, timeDelta);
 		glm::vec3 v = glm::normalize(getLocation() - camera->getLocation()) * 5.0f;
-		viewMat = glm::lookAt(getLocation()-v, getLocation(), camUp);
+		viewMat = glm::lookAt(getLocation()-v, getLocation() + glm::vec3(0, 1, 0), camUp);
 	}
 	else {
 
