@@ -56,17 +56,45 @@ void Physics::cleanUp()
 void Physics::stepSimulation(float deltaT)
 {
 	dynamicsWorld->stepSimulation(btScalar(deltaT));
+}
 
-	for (int j = dynamicsWorld->getNumCollisionObjects() - 1; j >= 0; j--)
-	{
-		btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[j];
-		btRigidBody* body = btRigidBody::upcast(obj);
-		if (body && body->getMotionState())
-		{
-			btTransform trans = body->getWorldTransform();//->getWorldTransform(trans);
-			printf("world pos = ( %f, %f, %f)\n", float(trans.getOrigin().getX()), float(trans.getOrigin().getY()), float(trans.getOrigin().getZ()));
-		}
-	}
+void Physics::addTerrainShapeToPhysics()
+{
+	btScalar mass(0.);
+	btVector3 localInertia(0, 0, 0);
+
+	btCollisionShape *groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
+	btTransform groundTransform;
+	groundTransform.setIdentity();
+	groundTransform.setOrigin(btVector3(0, -51, 0));
+
+	groundShape->calculateLocalInertia(mass, localInertia);
+
+	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
+	btDefaultMotionState *myMotionState = new btDefaultMotionState(groundTransform);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
+	btRigidBody *body = new btRigidBody(rbInfo);
+	body->setFriction(0);
+
+	dynamicsWorld->addRigidBody(body);
+}
+
+void Physics::addSphereShapeToPhysics(const Geometry &geometry, btScalar radius)
+{
+	btScalar mass(0.);
+	btVector3 localInertia(0, 0, 0);
+
+	btCollisionShape *shape = new btSphereShape(radius);
+	btTransform transform;
+	transform.setIdentity();
+	transform.setOrigin(btVector3(geometry.getLocation().x, radius, geometry.getLocation().z+2));
+
+	shape->calculateLocalInertia(mass, localInertia);
+	btDefaultMotionState *motionState = new btDefaultMotionState(transform);
+	btRigidBody::btRigidBodyConstructionInfo info(mass, motionState, shape, localInertia);
+	btRigidBody *body = new btRigidBody(info);
+	body->setActivationState(DISABLE_DEACTIVATION);
+	dynamicsWorld->addRigidBody(body);
 }
 
 void Physics::debugDrawWorld(bool draw)

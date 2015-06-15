@@ -68,9 +68,10 @@ void Player::draw(Shader *shader, bool useFrustumCulling, Texture::FilterType fi
 void Player::handleInput(GLFWwindow *window, float timeDelta)
 {
 
-	float moveSpeed = 150.0f;
+	// because we use bullet for motion, moveSpeed has to be quiet high for realistic feel
+	float moveSpeed = 400.0f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
-		moveSpeed = 300.0f;
+		moveSpeed = 800.0f;
 	}
 
 	glm::vec3 dirWorld = glm::normalize(glm::vec3(glm::column(getMatrix(), 2)));
@@ -79,14 +80,14 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	// note: we apply rotation before translation since we dont want the distance from the origin
 	// to affect how we rotate
     if (glfwGetKey(window, 'W')) {
-		playerBody->setLinearVelocity(btVector3(dirWorld.x, dirWorld.y, dirWorld.z) * timeDelta * moveSpeed * 2);
+		playerBody->setLinearVelocity(btVector3(dirWorld.x, dirWorld.y, dirWorld.z) * timeDelta * moveSpeed);
 		btTransform trans; 
 		playerBody->getMotionState()->getWorldTransform(trans);//->getWorldTransform(trans);
 
 		setLocation(glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
     }
 	else if (glfwGetKey(window, 'S')) {
-		playerBody->setLinearVelocity(btVector3(-dirWorld.x, -dirWorld.y, -dirWorld.z) * timeDelta * moveSpeed * 2);
+		playerBody->setLinearVelocity(btVector3(-dirWorld.x, -dirWorld.y, -dirWorld.z) * timeDelta * moveSpeed);
 		//btTransform trans = playerBody->getWorldTransform();//->getWorldTransform(trans);
 		btTransform trans;
 		playerBody->getMotionState()->getWorldTransform(trans);//->getWorldTransform(trans);

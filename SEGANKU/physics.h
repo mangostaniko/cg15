@@ -3,6 +3,7 @@
 
 #include <btBulletDynamicsCommon.h>
 #include "simpledebugdrawer.h"
+#include "geometry.h"
 
 class Physics
 {
@@ -15,11 +16,14 @@ public:
 
 	void stepSimulation(float deltaT);
 	void debugDrawWorld(bool draw);
+	void addSphereShapeToPhysics(const Geometry &geometry, btScalar radius);
+	void addTerrainShapeToPhysics();
 
 	SimpleDebugDrawer *getPhysicsDebugDrawer();
 	btDiscreteDynamicsWorld *getDynamicsWorld();
 
 private:
+
 	bool drawDebug;
 	btDefaultCollisionConfiguration *collisionConfiguration;
 	btCollisionDispatcher *dispatcher;

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="us-ascii"?>
+﻿<?xml version="1.0" encoding="Windows-1252"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -56,28 +56,28 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup>
-    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\external\bullet\c_make_build\lib\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BulletDynamics.dir\Debug\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BulletDynamics_Debug</TargetName>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\external\bullet\c_make_build\lib\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">BulletDynamics.dir\Release\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">BulletDynamics</TargetName>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\c_make_build\lib\MinSizeRel\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">BulletDynamics.dir\MinSizeRel\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">BulletDynamics_MinsizeRel</TargetName>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.lib</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\c_make_build\lib\RelWithDebInfo\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">BulletDynamics.dir\RelWithDebInfo\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">BulletDynamics_RelWithDebugInfo</TargetName>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
-  </PropertyGroup>
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\c_make_build\lib\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BulletDynamics.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BulletDynamics_Debug</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\c_make_build\lib\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">BulletDynamics.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">BulletDynamics</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\c_make_build\lib\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">BulletDynamics.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">BulletDynamics_MinsizeRel</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\c_make_build\lib\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">BulletDynamics.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">BulletDynamics_RelWithDebugInfo</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
+    </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\external\bullet\bullet-2.82-r2704\Glut;$(SolutionDir)\external\bullet\bullet-2.82-r2704\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\Glut;C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -106,13 +106,10 @@
       <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
-    <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\external\bullet\bullet-2.82-r2704\Glut;$(SolutionDir)\external\bullet\bullet-2.82-r2704\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\Glut;C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
@@ -126,8 +123,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;_IRR_STATIC_LIB_;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
+      <DebugInformationFormat></DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_IRR_STATIC_LIB_;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -141,13 +137,10 @@
       <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
-    <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\external\bullet\bullet-2.82-r2704\Glut;$(SolutionDir)\external\bullet\bullet-2.82-r2704\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\Glut;C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
@@ -161,8 +154,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;_IRR_STATIC_LIB_;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
+      <DebugInformationFormat></DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_IRR_STATIC_LIB_;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -176,13 +168,10 @@
       <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
-    <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\external\bullet\bullet-2.82-r2704\Glut;$(SolutionDir)\external\bullet\bullet-2.82-r2704\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\Glut;C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -210,9 +199,6 @@
       <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
-    <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\CMakeLists.txt">
@@ -318,36 +304,41 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\MLCPSolvers\btMLCPSolverInterface.h" />
     <ClInclude Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\MLCPSolvers\btPATHSolver.h" />
     <ClInclude Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\MLCPSolvers\btSolveProjectedGaussSeidel.h" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Character\btKinematicCharacterController.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btConeTwistConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btContactConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btFixedConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btGearConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btGeneric6DofConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btGeneric6DofSpringConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btHinge2Constraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btHingeConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btPoint2PointConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btSequentialImpulseConstraintSolver.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btSliderConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btSolve2LinearConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btTypedConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btUniversalConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Dynamics\btRigidBody.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Dynamics\btSimpleDynamicsWorld.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Dynamics\Bullet-C-API.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Vehicle\btRaycastVehicle.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Vehicle\btWheelInfo.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBody.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBodyConstraintSolver.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBodyDynamicsWorld.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBodyJointLimitConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBodyConstraint.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBodyPoint2Point.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBodyJointMotor.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\MLCPSolvers\btDantzigLCP.cpp" />
-    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\MLCPSolvers\btMLCPSolver.cpp" />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Character\btKinematicCharacterController.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btConeTwistConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btContactConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btFixedConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btGearConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btGeneric6DofConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btGeneric6DofSpringConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btHinge2Constraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btHingeConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btPoint2PointConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btSequentialImpulseConstraintSolver.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btSliderConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btSolve2LinearConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btTypedConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\ConstraintSolver\btUniversalConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Dynamics\btRigidBody.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Dynamics\btSimpleDynamicsWorld.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Dynamics\Bullet-C-API.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Vehicle\btRaycastVehicle.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Vehicle\btWheelInfo.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBody.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBodyConstraintSolver.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBodyDynamicsWorld.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBodyJointLimitConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBodyConstraint.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBodyPoint2Point.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\Featherstone\btMultiBodyJointMotor.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\MLCPSolvers\btDantzigLCP.cpp"  />
+    <ClCompile Include="C:\Users\Sebastian\Documents\Visual Studio 2013\Projects\SEGANKU\External\bullet\bullet-2.82-r2704\src\BulletDynamics\MLCPSolvers\btMLCPSolver.cpp"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:/Users/Sebastian/Documents/Visual Studio 2013/Projects/SEGANKU/External/bullet/c_make_build/ZERO_CHECK.vcxproj">
+      <Project>8EBA7D1F-3ECA-45E1-83A4-40BC1ED9EEBD</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

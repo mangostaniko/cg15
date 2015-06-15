@@ -33,6 +33,8 @@
 
 
 void init(GLFWwindow *window);
+void initSM();
+void initPhysicsObjects();
 void update(float timeDelta);
 void setActiveShader(Shader *shader);
 void drawScene();
@@ -378,41 +380,15 @@ void init(GLFWwindow *window)
 	// enable z buffer test
 	glEnable(GL_DEPTH_TEST);
 
+	// INIT SHADOW MAPPING (FBO, Texture, Shader)
+	initSM();
+
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
 
 	paused = false;
 	foundCarrot = false;
 
-
-	// INIT SHADOW MAPPING (Framebuffer + ShadowMap + Shaders)
-
-	glGenFramebuffers(1, &depthMapFBO);
-	glGenTextures(1, &depthMap);
-
-	// ShadowMap
-	glBindTexture(GL_TEXTURE_2D, depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, SM_WIDTH, SM_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-	// SM Framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// SM Shaders
-	depthMapShader = new Shader("../SEGANKU/shaders/depth_shader.vert", "../SEGANKU/shaders/depth_shader.frag");
-	debugDepthShader = new Shader("../SEGANKU/shaders/quad_debug.vert", "../SEGANKU/shaders/quad_debug.frag");
 
 	// INIT TEXT RENDERER
 	textRenderer = new TextRenderer("../data/fonts/VeraMono.ttf", width, height);
@@ -464,69 +440,60 @@ void init(GLFWwindow *window)
 	// INIT PLAYER + CAMERA
 	camera = new Camera(glm::mat4(1.0f), glm::radians(80.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
 	player = new Player(playerInitTransform, camera, window, "../data/models/skunk/skunk.dae");
-	physics->getDynamicsWorld()->addRigidBody(player->getRigidBody());
-	
-	btScalar mass(0.);
-	btVector3 localInertia(0, 0, 0);
 
-	btCollisionShape *carrotShape = new btSphereShape(0.2);
-	btTransform carrotTransform;
-	carrotTransform.setIdentity();
-	carrotTransform.setOrigin(btVector3(carrot->getLocation().x, carrot->getLocation().y, carrot->getLocation().z));
-
-	carrotShape->calculateLocalInertia(mass, localInertia);
-	btDefaultMotionState *carrotState = new btDefaultMotionState(carrotTransform);
-	btRigidBody::btRigidBodyConstructionInfo carrotInfo(mass, carrotState, carrotShape, localInertia);
-	btRigidBody *carrotBody = new btRigidBody(carrotInfo);
-	carrotBody->setUserPointer(player->getRigidBody());
-
-	btCollisionShape *groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
-	btTransform groundTransform;
-	groundTransform.setIdentity();
-	groundTransform.setOrigin(btVector3(0, -51, 0));
-	
-	groundShape->calculateLocalInertia(mass, localInertia);
-
-	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-	btDefaultMotionState *myMotionState = new btDefaultMotionState(groundTransform);
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
-	btRigidBody *body = new btRigidBody(rbInfo);
-	body->setFriction(0);
-
-	btCollisionShape *tree1Shape = new btSphereShape(btScalar(0.5));
-	btCollisionShape *tree2Shape = new btSphereShape(btScalar(0.5));
-
-	btTransform tree1Trans;
-	btTransform tree2Trans;
-
-	tree1Trans.setIdentity();
-	tree2Trans.setIdentity();
-	
-	tree1Trans.setOrigin(btVector3(1.8, 0.5, 14.9));
-	tree2Trans.setOrigin(btVector3(-14.1, 0.5, 14.0));
-
-	tree1Shape->calculateLocalInertia(mass, localInertia);
-	tree2Shape->calculateLocalInertia(mass, localInertia);
-
-	btDefaultMotionState* tree1State = new btDefaultMotionState(tree1Trans);
-	btRigidBody::btRigidBodyConstructionInfo tree1Info(mass, tree1State, tree1Shape, localInertia);
-	btRigidBody* tree1Body = new btRigidBody(tree1Info);
-
-	btDefaultMotionState* tree2State = new btDefaultMotionState(tree2Trans);
-	btRigidBody::btRigidBodyConstructionInfo tree2Info(mass, tree2State, tree2Shape, localInertia);
-	btRigidBody* tree2Body = new btRigidBody(tree2Info);
-
-	physics->getDynamicsWorld()->addRigidBody(body);
-	physics->getDynamicsWorld()->addRigidBody(tree1Body);
-	physics->getDynamicsWorld()->addRigidBody(tree2Body);
-	physics->getDynamicsWorld()->addRigidBody(carrotBody);
 
 	// INIT HAWK
 	hawk = new Geometry(hawkInitTransform, "../data/models/hawk/hawk.dae");
 	hawk->rotateY(glm::radians(270.0), SceneObject::RIGHT);
 
+
+	// INIT PHYSICS OBJECTS (add objects to dynamic World)
+	initPhysicsObjects();
 }
 
+void initSM()
+{
+	// INIT SHADOW MAPPING (Framebuffer + ShadowMap + Shaders)
+	glGenFramebuffers(1, &depthMapFBO);
+	glGenTextures(1, &depthMap);
+
+	// ShadowMap
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, SM_WIDTH, SM_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+	// SM Framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// SM Shaders
+	depthMapShader = new Shader("../SEGANKU/shaders/depth_shader.vert", "../SEGANKU/shaders/depth_shader.frag");
+	debugDepthShader = new Shader("../SEGANKU/shaders/quad_debug.vert", "../SEGANKU/shaders/quad_debug.frag");
+}
+
+void initPhysicsObjects()
+{
+	physics->getDynamicsWorld()->addRigidBody(player->getRigidBody());
+	physics->addTerrainShapeToPhysics();
+
+	//std::vector<std::shared_ptr<Geometry>> trees;
+
+	for (std::vector<std::shared_ptr<Geometry>>::iterator it = trees.begin(); it != trees.end(); ++it) {
+		physics->addSphereShapeToPhysics(*it->get(), btScalar(0.5));
+	}
+
+}
 
 void update(float timeDelta)
 {
