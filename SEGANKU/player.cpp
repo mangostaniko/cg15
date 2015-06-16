@@ -231,9 +231,11 @@ void Player::toggleNavMode()
 {
 	if (cameraNavMode == FOLLOW_PLAYER) {
 		cameraNavMode = FREE_FLY;
+		std::cout << "CAMERA FREE FLY" << std::endl;
 	}
 	else if (cameraNavMode == FREE_FLY) {
 		cameraNavMode = FOLLOW_PLAYER;
+		std::cout << "CAMERA FOLLOW PLAYER" << std::endl;
 	}
 }
 

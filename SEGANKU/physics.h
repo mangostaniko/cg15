@@ -2,7 +2,7 @@
 #define PHYSICS_H
 
 #include <btBulletDynamicsCommon.h>
-#include <BulletCollision\CollisionDispatch\btCollisionWorld.h>
+#include <BulletCollision/CollisionDispatch/btCollisionWorld.h>
 #include "simpledebugdrawer.h"
 #include "geometry.h"
 #include "player.h"
@@ -35,7 +35,7 @@ private:
 	bool drawDebug;
 	btDefaultCollisionConfiguration *collisionConfiguration;
 	btCollisionDispatcher *dispatcher;
-	btBroadphaseInterface * overlappingPairCache;
+	btBroadphaseInterface *overlappingPairCache;
 	btSequentialImpulseConstraintSolver *solver;
 	
 	btDiscreteDynamicsWorld *dynamicsWorld;

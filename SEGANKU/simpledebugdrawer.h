@@ -4,7 +4,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <LinearMath\btIDebugDraw.h>
+#include <LinearMath/btIDebugDraw.h>
 #include <stdio.h>
 
 class SimpleDebugDrawer : public btIDebugDraw

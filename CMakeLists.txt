@@ -37,6 +37,7 @@ else(MSVC)
 	find_package(FreeImage REQUIRED)
 	find_package(Assimp REQUIRED)
 	find_package(Freetype REQUIRED)
+	find_package(Bullet REQUIRED)
 endif(MSVC)
 
 
@@ -75,6 +76,12 @@ set(SRC_CLASSES
 
 	SEGANKU/poissondisksampler.h
 	SEGANKU/poissondisksampler.cpp
+
+	SEGANKU/physics.h
+	SEGANKU/physics.cpp
+	SEGANKU/simpledebugdrawer.h
+	SEGANKU/simpledebugdrawer.cpp
+
 
 
     )
@@ -135,6 +142,7 @@ else(MSVC)
 						${FreeImage_INCLUDE_DIR}
 						${ASSIMP_INCLUDE_DIRS}
                         ${FREETYPE_INCLUDE_DIRS}
+                        ${BULLET_INCLUDE_DIRS}
 				        )
 
 	### LINK LIBRARIES ###
@@ -145,5 +153,6 @@ else(MSVC)
 						  ${FreeImage_LIBRARY}
 						  ${ASSIMP_LIBRARIES}
 						  ${FREETYPE_LIBRARIES}
+						  ${BULLET_LIBRARIES}
 						  )
 endif(MSVC)

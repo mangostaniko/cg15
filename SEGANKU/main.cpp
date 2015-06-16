@@ -39,7 +39,7 @@ void update(float timeDelta);
 void setActiveShader(Shader *shader);
 void drawScene();
 void drawSceneSSAO();
-void drawText(double deltaT);
+void drawText(double deltaT, int windowWidth, int windowHeight);
 void cleanup();
 void newGame();
 
@@ -79,7 +79,7 @@ const float timeToStarvation = 60;
 // Shadow Map FBO and depth texture
 GLuint depthMapFBO;
 GLuint depthMap;
-const int SM_WIDTH = 4096, SM_HEIGHT = 4096;
+const int SM_WIDTH = 2048, SM_HEIGHT = 2048;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -339,7 +339,7 @@ int main(int argc, char **argv)
 
 		particleSystem->draw(player->getViewMat(), player->getProjMat());
 
-		drawText(deltaT);
+		drawText(deltaT, windowWidth, windowHeigth);
 
 		// end the current frame (swaps the front and back buffers)
 		glfwSwapBuffers(window);		
@@ -595,32 +595,32 @@ void drawScene()
 
 }
 
-void drawText(double deltaT)
+void drawText(double deltaT, int windowWidth, int windowHeight)
 {
 	glDisable(GL_DEPTH_TEST);
 
 	if (debugInfoEnabled) {
 
-		textRenderer->renderText("delta time: " + std::to_string(int(deltaT*1000 + 0.5)) + " ms", 25.0f, 50.0f, 0.4f, glm::vec3(1));
-		textRenderer->renderText("fps: " + std::to_string(int(1/deltaT + 0.5)), 25.0f, 75.0f, 0.4f, glm::vec3(1));
-		textRenderer->renderText("drawn surface count: " + std::to_string(Geometry::drawnSurfaceCount), 25.0f, 25.0f, 0.4f, glm::vec3(1));
+		int startY = windowHeight;
+		int deltaY = -20;
+		float fontSize = 0.35f;
+		textRenderer->renderText("drawn surface count: " + std::to_string(Geometry::drawnSurfaceCount), 25, startY+2*deltaY, fontSize, glm::vec3(1));
+		textRenderer->renderText("delta time: " + std::to_string(int(deltaT*1000 + 0.5)) + " ms", 25, startY+3*deltaY, fontSize, glm::vec3(1));
+		textRenderer->renderText("fps: " + std::to_string(int(1/deltaT + 0.5)), 25, startY+4*deltaY, fontSize, glm::vec3(1));
 
 		if (!paused) {
-			// draw time until starvation
-			textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, 125.0f, 0.4f, glm::vec3(1));
+			textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, startY+6*deltaY, fontSize, glm::vec3(1));
 		}
 	}
 	if (paused && !foundCarrot) {
-		textRenderer->renderText("YOU STARVED :( TRY LOOKING HARDER NEXT TIME.", 25.0f, 125.0f, 0.5f, glm::vec3(1));
+		textRenderer->renderText("YOU STARVED :(", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.35f, 0.5f));
 	}
 	else if (paused && foundCarrot) {
-		textRenderer->renderText("CONGRATULATIONS!!! YOU FOUND THE CARROT!!", 25.0f, 125.0f, 0.5f, glm::vec3(1));
+		textRenderer->renderText("CONGRATULATIONS!!! YOU MADE IT!", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.35f, 0.7f));
 	}
 
-	std::string carrotText = "Carrots Segi already ate: ";
-	carrotText += std::to_string(player->getFoodEaten());
-
-	textRenderer->renderText(carrotText, 25.0f, 5.0f, 0.5f, glm::vec3(1, 0.7f, 0));
+	std::string carrotText = "carrots: " + std::to_string(player->getFoodEaten());
+	textRenderer->renderText(carrotText, 25.0f, 30.0f, 0.7f, glm::vec3(1, 0.7f, 0.0f));
 
 
 
@@ -707,18 +707,24 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 
 	if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS){
 		newGame();
+		std::cout << "GAME RESTARTED" << std::endl;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
 		particleSystem->respawn(player->getLocation());
+		std::cout << "PARTICLE SYSTEM RESPAWNED" << std::endl;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS) {
 	    debugInfoEnabled = !debugInfoEnabled;
+		if (debugInfoEnabled) std::cout << "DEBUG INFO ENABLED" << std::endl;
+		else std::cout << "DEBUG INFO DISABLED" << std::endl;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F3) == GLFW_PRESS) {
 	    wireframeEnabled = !wireframeEnabled;
+		if (wireframeEnabled) std::cout << "DRAW WIREFRAME ENABLED" << std::endl;
+		else std::cout << "DRAW WIREFRAME DISABLED" << std::endl;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F4) == GLFW_PRESS) {
@@ -750,26 +756,36 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 
 	if (glfwGetKey(window, GLFW_KEY_F6) == GLFW_PRESS) {
 		ssaoEnabled = !ssaoEnabled;
+		if (ssaoEnabled) std::cout << "SSAO ENABLED" << std::endl;
+		else std::cout << "SSAO DISABLED" << std::endl;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F7) == GLFW_PRESS) {
 		shadowsEnabled = !shadowsEnabled;
+		if (shadowsEnabled) std::cout << "SHADOWS ENABLED" << std::endl;
+		else std::cout << "SHADOWS DISABLED" << std::endl;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F8) == GLFW_PRESS) {
 		frustumCullingEnabled = !frustumCullingEnabled;
+		if (frustumCullingEnabled) std::cout << "VIEW FRUSTUM CULLING ENABLED" << std::endl;
+		else std::cout << "VIEW FRUSTUM CULLING DISABLED" << std::endl;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F9) == GLFW_PRESS) {
 		renderShadowMap = !renderShadowMap;
+		if (renderShadowMap) std::cout << "DEBUG DRAW SHADOW MAP ENABLED" << std::endl;
+		else std::cout << "DEBUG DRAW SHADOW MAP DISABLED" << std::endl;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F10) == GLFW_PRESS) {
 		if (debugDrawerPhysics.getDebugMode() != 0) {
 			debugDrawerPhysics.setDebugMode(0);
+			std::cout << "DEBUG DRAW BULLET PHYSICS DISABLED" << std::endl;
 		}
 		else {
 			debugDrawerPhysics.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+			std::cout << "DEBUG DRAW BULLET PHYSICS NOT IMPLEMENTED" << std::endl;
 		}
 		
 	}
