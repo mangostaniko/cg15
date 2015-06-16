@@ -30,6 +30,7 @@ uniform sampler2D shadowMap; // texture unit 1
 uniform sampler2D ssaoTexture; // texture unit 2
 uniform bool useShadows;
 uniform bool useSSAO;
+uniform bool useAlpha;
 
 float calcShadow(vec4 lightSpacePos)
 {
@@ -86,14 +87,20 @@ void main()
 	float AO = 1;
 	if (useSSAO) { AO = texture(ssaoTexture, gl_FragCoord.xy / textureSize(ssaoTexture, 0)).r; }
 
+	vec3 color;
 	if (useShadows) {
 		float shadow = calcShadow(PLightSpace);
-		vec3 color = ambient + (1.0 - shadow) * (diffuse + specular);
-		outColor = vec4(AO*AO * color, 1);
+		color = ambient + (1.0 - shadow) * (diffuse + specular);
 	} else {
-		vec3 color = ambient + diffuse + specular;
+		color = ambient + diffuse + specular;
+	}
+
+	if (useAlpha) {
+		outColor = vec4(AO*AO * color, 0.5);
+	} else {
 		outColor = vec4(AO*AO * color, 1);
 	}
+	
 
 	outViewSpacePos = PViewSpace;
 

@@ -12,6 +12,11 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	, inBush(false)
 	, currentFood(nullptr)
 	, animDur(0)
+	, overWeight(false)
+	, runDur(0)
+	, breakDur(0)
+	, digestDur(0)
+	, canRun(true)
 {
 	// set glfw callbacks
 	glfwSetScrollCallback(window, onScroll);
@@ -47,9 +52,8 @@ Player::~Player()
 
 void Player::update(float timeDelta)
 {
-	if (eatenCarrots == NEEDED_FOOD) {
+	if (eatenCarrots >= NEEDED_FOOD) {
 		fullStomach = true;
-		return;
 	}
 
 	if (currentFood != nullptr) {
@@ -93,11 +97,37 @@ void Player::draw(Shader *shader, bool useFrustumCulling, Texture::FilterType fi
 void Player::handleInput(GLFWwindow *window, float timeDelta)
 {
 
+	bool speeding = false;
+
 	// because we use bullet for motion, moveSpeed has to be quiet high for realistic feel
 	float moveSpeed = 400.0f;
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
+
+	/*
+	Speeding is only allowed if player is not overweight and he has not run for longer than MAX_RUN_TIME
+	 */
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) && !overWeight && canRun) {
 		moveSpeed = 800.0f;
+		speeding = true;
+
+		if (runDur <= MAX_RUN_TIME) {
+			runDur += timeDelta;
+		}
 	}
+
+	// player ran too long
+	if (runDur > MAX_RUN_TIME) {
+		canRun = false;
+		breakDur += timeDelta;   // start cool off timer
+
+		// cool off period over?
+		if (breakDur >= BREAK_TIME) {
+			breakDur = 0;
+			runDur = 0;
+			canRun = true;
+		}
+	}
+
+	bool moving = false;
 
 	glm::vec3 dirWorld = glm::normalize(glm::vec3(glm::column(getMatrix(), 2)));
 
@@ -110,6 +140,8 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 		playerBody->getMotionState()->getWorldTransform(trans);//->getWorldTransform(trans);
 
 		setLocation(glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+		
+		moving = true;
     }
 	else if (glfwGetKey(window, 'S')) {
 		playerBody->setLinearVelocity(btVector3(-dirWorld.x, -dirWorld.y, -dirWorld.z) * timeDelta * moveSpeed);
@@ -118,6 +150,8 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 		playerBody->getMotionState()->getWorldTransform(trans);//->getWorldTransform(trans);
 
 		setLocation(glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+
+		moving = true;
 	}
 	else {
 		playerBody->setLinearVelocity(btVector3(0, 0, 0) * timeDelta * moveSpeed * 2);
@@ -162,6 +196,30 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	if (fieldOfView > glm::radians(ZOOM_MAX)) fieldOfView = glm::radians(ZOOM_MAX);
 	camera->setFieldOfView(fieldOfView);
 	scrollY = 0.0;	
+
+
+	// Handle Carrot Consumption
+	
+	// digestion happens faster when moving
+	if (speeding && moving) {
+		digestDur += 2 * timeDelta;		// speeding while moving, fast digestion
+	}
+	else if (moving) {
+		digestDur += 1.5 * timeDelta;	// only moving
+	}
+	else {
+		digestDur += 1 * timeDelta;		// no movement at all, slow digestion
+	}
+	
+	// Digestion Period reached
+	if (digestDur > DIGEST_TIME) {
+		eatenCarrots--; // one carrot less
+		digestDur = 0;
+		if (eatenCarrots < NEEDED_FOOD) {
+			overWeight = false; // if I was overweight, not anymore
+		}
+	}
+
 }
 
 void Player::handleInputFreeCamera(GLFWwindow *window, float timeDelta)
@@ -254,7 +312,12 @@ void Player::eatCarrot(Geometry *carrot)
 {
 	if (!(currentFood != nullptr)) {
 		++eatenCarrots;
+		if (eatenCarrots > NEEDED_FOOD) {
+			overWeight = true;
+		}
 		currentFood = carrot;
+
+
 	}
 }
 
@@ -302,4 +365,32 @@ void Player::resetPlayer()
 		currentFood->setLocation(glm::vec3(300, -300, 300));
 		currentFood = nullptr;
 	}
+}
+
+bool Player::isEating()
+{
+	return animDur > 0;
+}
+
+std::string Player::getFoodReaction()
+{
+	if (eatenCarrots < NEEDED_FOOD * 0.25) {
+		return "sooo hungry!";
+	}
+	else if (eatenCarrots < NEEDED_FOOD * 0.5) {
+		return "need more carrots";
+	}
+	else if (eatenCarrots < NEEDED_FOOD * 0.8) {
+		return "just a little bit more";
+	}
+	else if (eatenCarrots <= NEEDED_FOOD) {
+		return "Winter is coming! But I am prepared";
+	}
+	else if (eatenCarrots > NEEDED_FOOD) {
+		return "augh, sooo full!";
+	}
+	else {
+		return " ";
+	}
+
 }

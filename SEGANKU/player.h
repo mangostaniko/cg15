@@ -45,9 +45,18 @@ class Player : public Geometry
 	// GAMEPLAY SPECS
 	Geometry *currentFood;	// pointer to the currently eaten carrot
 	const float MAX_ANIM = 2.5;	// max length of animation
-	const int NEEDED_FOOD = 3;	// how much food is needed
+	const int NEEDED_FOOD = 10;	// how much food is needed
+	const float MAX_RUN_TIME = 4.0;	// max speed time
+	const float BREAK_TIME = 5.0;	// speed cool off time
+	const float DIGEST_TIME = 20.0;	// digestion time for 1 carrot
+
+	bool overWeight;	// ate too much?
+	bool canRun;		// can use Speed?
 
 	float animDur;			// timer for animation duration
+	float runDur;			// timer for speed duration
+	float breakDur;			// timer for speed cooloff duration
+	float digestDur;		// timer for digestion duration
 
 	int eatenCarrots;		// how much food was already eaten
 	bool fullStomach;		// true if we ate enough
@@ -150,6 +159,18 @@ public:
 	* @brief resets the Player for the start of a new game (reset number of carrots eaten)
 	*/
 	void resetPlayer();
+
+	/**
+	* @brief resets the Player for the start of a new game (reset number of carrots eaten)
+	* @return whether or not the Player is currently eating
+	*/
+	bool isEating();
+
+	/**
+	* @brief Returns a String depending on the current food level (eg. "Still hungry", "Need more", "I'm so full")
+	* @return whether or not the Player is currently eating
+	*/
+	std::string getFoodReaction();
 
 };
 

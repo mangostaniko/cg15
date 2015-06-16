@@ -68,18 +68,6 @@ public:
 	SimpleDebugDrawer *getPhysicsDebugDrawer();
 
 	/**
-	* @brief add a new CollisionBody to the Physics World, set Collision Handling for static object
-	* @param geometry the geometry object that is to be a collision object (-> use for Tree and other static objects)
-	* @param radius radius for the Sphere Collision Object
-	*/
-	void addTreeSphereToPhysics(Geometry *geometry, btScalar radius);
-
-	/**
-	* @brief add the TerrainShape to the physics world, for now btCollisionBox is made, later should be made with mesh
-	*/
-	void addTerrainShapeToPhysics();
-
-	/**
 	* @brief 
 	* @return the physics world
 	*/

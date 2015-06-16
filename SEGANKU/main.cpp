@@ -53,6 +53,8 @@ bool ssaoEnabled		       = false;
 bool shadowsEnabled		       = true;
 bool renderShadowMap	       = false;
 bool frustumCullingEnabled     = false;
+bool useAlpha				   = false;
+
 Texture::FilterType filterType = Texture::LINEAR_MIPMAP_LINEAR;
 
 Shader *textureShader, *depthMapShader, *debugDepthShader;
@@ -207,6 +209,7 @@ int main(int argc, char **argv)
 
 	init(window);
 
+	// enable Blending for transparency
 
 	//////////////////////////
 	/// MAIN LOOP
@@ -275,12 +278,12 @@ int main(int argc, char **argv)
 		glUniformMatrix4fv(lightVPLocation, 1, GL_FALSE, glm::value_ptr(lightVP));
 
 		// render
+
 		drawScene();
 
 		// bind default FB and reset viewport
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, windowWidth, windowHeigth);
-
 
 		setActiveShader(textureShader);
 
@@ -519,10 +522,6 @@ void initPhysicsObjects()
 void update(float timeDelta)
 {
 	player->update(timeDelta);
-	if (player->isFull()) {
-		foundCarrot = true;
-		paused = true;
-	}
 
 	//hawk->update(timeDelta);
 	hawk->rotate(0.5f * timeDelta, SceneObject::LEFT, glm::vec3(0.f, 1.f, 0.f));
@@ -558,6 +557,13 @@ void drawScene()
 {
 	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // enable wireframe
 
+	if (useAlpha) {
+		glUniform1f(glGetUniformLocation(activeShader->programHandle, "useAlpha"), true);
+	}
+	else {
+		glUniform1f(glGetUniformLocation(activeShader->programHandle, "useAlpha"), false);
+	}
+
 	// pass viewProjection matrix to shader
 	GLint viewProjMatLocation = glGetUniformLocation(activeShader->programHandle, "viewProjMat"); // get uniform location in shader
 	glUniformMatrix4fv(viewProjMatLocation, 1, GL_FALSE, glm::value_ptr(player->getProjMat() * player->getViewMat())); // shader location, count, transpose?, value pointer
@@ -579,7 +585,6 @@ void drawScene()
 	hawk->draw(activeShader, camera, frustumCullingEnabled, filterType);
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
-	carrot->draw(activeShader, camera, frustumCullingEnabled, filterType);
 	for (std::shared_ptr<Geometry> carr : carrots) {
 		carr->draw(activeShader, camera, frustumCullingEnabled, filterType);
 	}
@@ -593,7 +598,7 @@ void drawScene()
 	for (std::shared_ptr<Geometry> shrub : shrubs) {
 		shrub->draw(activeShader, camera, frustumCullingEnabled, filterType);
 	}
-
+	
 	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); // disable wireframe
 
 }
@@ -615,17 +620,19 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 			textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, startY+6*deltaY, fontSize, glm::vec3(1));
 		}
 	}
-	if (paused && !foundCarrot) {
+	if (paused && !player->isFull()) {
 		textRenderer->renderText("YOU STARVED :(", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.35f, 0.5f));
 	}
-	else if (paused && foundCarrot) {
+	else if (paused && player->isFull()) {
 		textRenderer->renderText("CONGRATULATIONS!!! YOU MADE IT!", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.35f, 0.7f));
 	}
 
 	std::string carrotText = "carrots: " + std::to_string(player->getFoodEaten());
-	textRenderer->renderText(carrotText, 25.0f, 30.0f, 0.7f, glm::vec3(1, 0.7f, 0.0f));
+	//textRenderer->renderText(carrotText, 25.0f, 30.0f, 0.7f, glm::vec3(1, 0.7f, 0.0f));
 
-
+	if (player->isEating()) {
+		textRenderer->renderText(player->getFoodReaction(), 512.0f, 350.0f, 0.4f, glm::vec3(0.5f, 0.7f, 0.5f));
+	}
 
 	glEnable(GL_DEPTH_TEST);
 }
@@ -768,9 +775,9 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F9) == GLFW_PRESS) {
-		renderShadowMap = !renderShadowMap;
-		if (renderShadowMap) std::cout << "DEBUG DRAW SHADOW MAP ENABLED" << std::endl;
-		else std::cout << "DEBUG DRAW SHADOW MAP DISABLED" << std::endl;
+		useAlpha = !useAlpha;
+		if (useAlpha) std::cout << "TRANSPARENCY ENABLED" << std::endl;
+		else std::cout << "TRANSPARENCY DISABLED" << std::endl;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F10) == GLFW_PRESS) {
@@ -782,7 +789,12 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 			debugDrawerPhysics.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
 			std::cout << "DEBUG DRAW BULLET PHYSICS NOT IMPLEMENTED" << std::endl;
 		}
-		
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS) {
+		renderShadowMap = !renderShadowMap;
+		if (renderShadowMap) std::cout << "DEBUG DRAW SHADOW MAP ENABLED" << std::endl;
+		else std::cout << "DEBUG DRAW SHADOW MAP DISABLED" << std::endl;
 	}
 }
 
