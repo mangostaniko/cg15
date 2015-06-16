@@ -74,12 +74,15 @@ glm::vec3 carrotPos;
 std::vector<std::shared_ptr<Geometry>> carrots;
 std::vector<std::shared_ptr<Geometry>> trees;
 std::vector<std::shared_ptr<Geometry>> shrubs;
-const float timeToStarvation = 60;
+const float timeToStarvation = 120;
 
 // Shadow Map FBO and depth texture
 GLuint depthMapFBO;
 GLuint depthMap;
+
+
 const int SM_WIDTH = 2048, SM_HEIGHT = 2048;
+
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -516,7 +519,7 @@ void initPhysicsObjects()
 void update(float timeDelta)
 {
 	player->update(timeDelta);
-	if (glm::length(glm::abs(player->getLocation() - carrotPos)) < 1.0f) {
+	if (player->isFull()) {
 		foundCarrot = true;
 		paused = true;
 	}
@@ -630,8 +633,6 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 
 void newGame()
 {
-	// TODO
-
 	delete sun;
 
 	glfwSetTime(0);
@@ -639,17 +640,11 @@ void newGame()
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
 
-	// RESET WORLD + OBJECTS
-	std::default_random_engine randGen(time(nullptr));
-	std::uniform_int_distribution<int> randDistribution(-49, 49);
-	randDistribution(randGen);
-	carrotPos = glm::vec3(randDistribution(randGen), 0, randDistribution(randGen));
-	carrot->setTransform(glm::translate(glm::mat4(1.0f), carrotPos));
-
 	sun = new Light(glm::translate(glm::mat4(1.0f), LIGHT_START), LIGHT_END, glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
 
 	// RESET PLAYER + CAMERA
 	player->setTransform(playerInitTransform);
+	player->resetPlayer();
 	hawk->setTransform(hawkInitTransform);
 	hawk->rotateY(glm::radians(270.0), SceneObject::RIGHT);
 

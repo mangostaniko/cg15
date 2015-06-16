@@ -16,8 +16,6 @@
  */
 class Player : public Geometry
 {
-
-
 	// CAMERA SPECS 
 	Camera *camera;
 	GLFWwindow *window;
@@ -45,12 +43,15 @@ class Player : public Geometry
 
 
 	// GAMEPLAY SPECS
-	Geometry *currentFood;
-	float animDur;
-	const int NEEDED_FOOD = 30;
-	int eatenCarrots;
-	bool fullStomach;
-	bool inBush;
+	Geometry *currentFood;	// pointer to the currently eaten carrot
+	const float MAX_ANIM = 2.5;	// max length of animation
+	const int NEEDED_FOOD = 3;	// how much food is needed
+
+	float animDur;			// timer for animation duration
+
+	int eatenCarrots;		// how much food was already eaten
+	bool fullStomach;		// true if we ate enough
+	bool inBush;			// true if currently in bush
 
 
 	static double scrollY; // amount scrolled since last frame
@@ -109,17 +110,46 @@ public:
 	 */
 	glm::mat4 getProjMat();
 
+	/**
+	* @brief get the RigidBody of the Player for Bullet Collision
+	* @return the btRigidBody 
+	*/
 	btRigidBody *getRigidBody();
 
+	/**
+	* @brief handle the event in which the Player collides with a food Geometry Object
+	* @param the Geometry Object that is currently being eaten
+	*/
 	void eatCarrot(Geometry *carrot);
 
+	/**
+	* @brief Get the information if the Player has already eaten enough carrots
+	* @return true if the player is already full
+	*/
 	bool isFull();
 
+	/**
+	* @brief get the information if the Player is currently hidden in a Bush Geometry Object
+	* @return true if player is currently in a Bush, else false
+	*/
 	bool isInBush();
 
+	/**
+	* @brief get the number of currently eaten food objects
+	* @return the number of currently eaten carrots
+	*/
 	int getFoodEaten();
 
+	/**
+	* @brief set the information whether or not Player is currently in a Bush (called and set by Physics Class)
+	* @param inB the information whether or not in bush
+	*/
 	void setInBush(bool inB);
+
+	/**
+	* @brief resets the Player for the start of a new game (reset number of carrots eaten)
+	*/
+	void resetPlayer();
 
 };
 

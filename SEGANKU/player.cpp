@@ -53,7 +53,7 @@ void Player::update(float timeDelta)
 	}
 
 	if (currentFood != nullptr) {
-		if (animDur < 3.5f) {
+		if (animDur < MAX_ANIM) {
 			animDur += timeDelta;
 			currentFood->setLocation(getLocation() + glm::vec3(0, 2, 0));
 			currentFood->rotateY(glm::radians(10.0), SceneObject::RIGHT);
@@ -231,11 +231,9 @@ void Player::toggleNavMode()
 {
 	if (cameraNavMode == FOLLOW_PLAYER) {
 		cameraNavMode = FREE_FLY;
-		std::cout << "CAMERA FREE FLY" << std::endl;
 	}
 	else if (cameraNavMode == FREE_FLY) {
 		cameraNavMode = FOLLOW_PLAYER;
-		std::cout << "CAMERA FOLLOW PLAYER" << std::endl;
 	}
 }
 
@@ -293,4 +291,15 @@ glm::mat4 Player::getProjMat()
 btRigidBody *Player::getRigidBody()
 {
 	return playerBody;
+}
+
+void Player::resetPlayer()
+{
+	eatenCarrots = 0;
+	fullStomach = false;
+	
+	if (currentFood != nullptr) {
+		currentFood->setLocation(glm::vec3(300, -300, 300));
+		currentFood = nullptr;
+	}
 }

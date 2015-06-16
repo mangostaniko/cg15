@@ -88,6 +88,8 @@ void Physics::stepSimulation(float deltaT)
 		dynamicsWorld->contactPairTest(*it, player->getRigidBody(), bushCallback);
 	}
 
+
+
 	// TODO DELETE THE CARROT WE ALREADY ATE
 
 	player->setInBush(inBush);
