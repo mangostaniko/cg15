@@ -17,6 +17,7 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	, breakDur(0)
 	, digestDur(0)
 	, canRun(true)
+	, timePassed(0)
 {
 	// set glfw callbacks
 	glfwSetScrollCallback(window, onScroll);
@@ -30,9 +31,9 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	playerShape = new btSphereShape(1);
 	btTransform playerTransform;
 	playerTransform.setIdentity();
-	playerTransform.setOrigin(btVector3(getLocation().x, getLocation().y, getLocation().z));
+	playerTransform.setOrigin(btVector3(getLocation().x, getLocation().y+3, getLocation().z));
 
-	btScalar mass(1.0); btVector3 inertia(0, 0, 0);
+	btScalar mass(3.0); btVector3 inertia(0, 0, 0);
 	playerShape->calculateLocalInertia(mass, inertia);
 
 	motionState = new btDefaultMotionState(playerTransform);
@@ -41,6 +42,8 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	playerBody->setActivationState(DISABLE_DEACTIVATION);
 	playerBody->setCollisionFlags(playerBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
 	playerBody->setUserPointer(this);
+	playerBody->setFriction(10);
+	//playerBody->setDamping(3, 3);
 
 }
 
@@ -98,7 +101,10 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 {
 
 	bool speeding = false;
-
+	//timePassed += timeDelta;
+	//if (timePassed > 0.15) {
+	//	timePassed = 0;
+	//}
 	// because we use bullet for motion, moveSpeed has to be quiet high for realistic feel
 	float moveSpeed = 400.0f;
 
@@ -134,8 +140,8 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	// player movement
 	// note: we apply rotation before translation since we dont want the distance from the origin
 	// to affect how we rotate
-    if (glfwGetKey(window, 'W')) {
-		playerBody->setLinearVelocity(btVector3(dirWorld.x, dirWorld.y, dirWorld.z) * timeDelta * moveSpeed);
+    if (glfwGetKey(window, 'W')) { //  && timePassed == 0
+		playerBody->setLinearVelocity(btVector3(dirWorld.x, -1, dirWorld.z) * timeDelta * moveSpeed);
 		btTransform trans; 
 		playerBody->getMotionState()->getWorldTransform(trans);//->getWorldTransform(trans);
 
@@ -143,8 +149,8 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 		
 		moving = true;
     }
-	else if (glfwGetKey(window, 'S')) {
-		playerBody->setLinearVelocity(btVector3(-dirWorld.x, -dirWorld.y, -dirWorld.z) * timeDelta * moveSpeed);
+	else if (glfwGetKey(window, 'S')) { // && timePassed == 0
+		playerBody->setLinearVelocity(btVector3(-dirWorld.x, -1, -dirWorld.z) * timeDelta * moveSpeed);
 		//btTransform trans = playerBody->getWorldTransform();//->getWorldTransform(trans);
 		btTransform trans;
 		playerBody->getMotionState()->getWorldTransform(trans);//->getWorldTransform(trans);

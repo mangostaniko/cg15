@@ -40,6 +40,7 @@ class Player : public Geometry
 	btCollisionShape *playerShape;
 	btRigidBody *playerBody;
 	btDefaultMotionState *motionState;
+	float timePassed;
 
 
 	// GAMEPLAY SPECS

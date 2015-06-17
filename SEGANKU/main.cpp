@@ -413,7 +413,7 @@ void init(GLFWwindow *window)
 
 	sun = new Light(glm::translate(glm::mat4(1.0f), LIGHT_START), LIGHT_END, glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
 
-	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(2, 1, 2)), "../data/models/world/terrain.dae");
+	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/terrain_2.dae");
 
 	std::default_random_engine randGen(time(nullptr));
 	std::uniform_real_distribution<float> randDistribution(0.0f, 1.0f);
@@ -503,7 +503,6 @@ void initPhysicsObjects()
 	physics->init();
 
 	physics->getDynamicsWorld()->addRigidBody(player->getRigidBody());
-	physics->addTerrainShapeToPhysics();
 
 	for (std::vector<std::shared_ptr<Geometry>>::iterator it = trees.begin(); it != trees.end(); ++it) {
 		physics->addTreeSphereToPhysics(it->get(), btScalar(0.6));
@@ -516,6 +515,8 @@ void initPhysicsObjects()
 	for (std::vector<std::shared_ptr<Geometry>>::iterator it = shrubs.begin(); it != shrubs.end(); ++it) {
 		physics->addBushSphereToPhysics(it->get(), btScalar(2));
 	}
+
+	physics->addTerrainShapeToPhysics(terrain);
 	
 }
 

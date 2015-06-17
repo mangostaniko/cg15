@@ -98,6 +98,8 @@ public:
 	// the number of surfaces being drawn
 	static int drawnSurfaceCount;
 
+	Surface *getSurface();
+
 };
 
 #endif // GEOMETRY_H

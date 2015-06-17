@@ -55,6 +55,9 @@ public:
 	Surface(const std::vector<Vertex> &vertices_, const std::vector<GLuint> &indices_, const std::shared_ptr<Texture> &texDiffuse_, const std::shared_ptr<Texture> &texSpecular_, const std::shared_ptr<Texture> &texNormal_);
 	~Surface();
 
+	std::vector<Vertex> getVertices();
+	std::vector<GLuint> getIndices();
+
 	/**
 	 * @brief draw triangles from vertex data from buffers bound as specified by the vba.
 	 * note: the transformation matrices must be set already in shader program!

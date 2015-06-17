@@ -95,24 +95,65 @@ void Physics::stepSimulation(float deltaT)
 	player->setInBush(inBush);
 }
 
-void Physics::addTerrainShapeToPhysics()
+void Physics::addTerrainShapeToPhysics(Geometry *geometry)
 {
+	
+	int vertStride = sizeof(btVector3);
+	int indexStride = 3 * sizeof(int);
+	
+	std::vector<Vertex> vertices = geometry->getSurface()->getVertices();
+	std::vector<GLuint> indices = geometry->getSurface()->getIndices();
+	
+	const int triangles = vertices.size() / 3;
+
+	/*
+	btVector3 *gVertices = new btVector3[vertices.size()];
+	int *gIndices = new int[triangles * 3];
+
+	for (int i = 0; i < vertices.size(); ++i) {
+		gVertices[i] = btVector3(vertices.at(i).position.x, vertices.at(i).position.y, vertices.at(i).position.z);
+	}
+
+	for (int i = 0; i < indices.size(); ++i) {
+		gIndices[i] = indices.at(i);
+	}
+
+	btTriangleIndexVertexArray *vertArray = new btTriangleIndexVertexArray(triangles, gIndices, indexStride, 
+		vertices.size(), (btScalar*) &gVertices[0].x(), vertStride);
+
+	*/
+
+	btTriangleMesh *mTriMesh = new btTriangleMesh();
+	for (int i = 0; i < vertices.size(); ++i) {
+		btVector3 v1(vertices.at(i).position.x, vertices.at(i).position.y, vertices.at(i).position.z);
+		btVector3 v2(vertices.at(i+1).position.x, vertices.at(i+1).position.y, vertices.at(i+1).position.z);
+		btVector3 v3(vertices.at(i+2).position.x, vertices.at(i+2).position.y, vertices.at(i+2).position.z);
+		mTriMesh->addTriangle(v1, v2, v3);
+		i += 2;
+	}
+
+	btTriangleMeshShape *terrain = new btBvhTriangleMeshShape(mTriMesh, false);
+
+	
 	btScalar mass(0.);
 	btVector3 localInertia(0, 0, 0);
 
-	btCollisionShape *groundShape = new btBoxShape(btVector3(btScalar(100.), btScalar(100.), btScalar(100.)));
 	btTransform groundTransform;
 	groundTransform.setIdentity();
-	groundTransform.setOrigin(btVector3(0, -101, 0));
-
-	groundShape->calculateLocalInertia(mass, localInertia);
-
+	groundTransform.setOrigin(btVector3(0, geometry->getLocation().y-1, 0));
+	//groundTransform.setFromOpenGLMatrix(glm::value_ptr(geometry->getMatrix()));
+	//terrain->calculateLocalInertia(mass, localInertia);
+	
 	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
 	btDefaultMotionState *myMotionState = new btDefaultMotionState(groundTransform);
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, terrain, localInertia);
 	floor = new btRigidBody(rbInfo);
-	floor->setFriction(0);
-	floor->setCollisionFlags(floor->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+	floor->setActivationState(DISABLE_DEACTIVATION);
+	floor->setCollisionFlags(floor->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
+	floor->setFriction(10);
+
+	
+	//collisionShapes.push_back(terrain);
 
 	dynamicsWorld->addRigidBody(floor);
 
@@ -134,6 +175,9 @@ void Physics::addTreeSphereToPhysics(Geometry *geometry, btScalar radius)
 	btRigidBody *body = new btRigidBody(info);
 	body->setActivationState(DISABLE_DEACTIVATION);
 	body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
+
+	//collisionShapes.push_back(shape);
+
 	dynamicsWorld->addRigidBody(body);
 }
 
@@ -156,6 +200,7 @@ void Physics::addFoodSphereToPhysics(Geometry *geometry, btScalar radius)
 	body->setUserPointer(geometry);
 
 	carrotsGeo.push_back(body);
+	//collisionShapes.push_back(shape);
 
 	dynamicsWorld->addRigidBody(body);
 }
@@ -166,6 +211,7 @@ void Physics::addBushSphereToPhysics(Geometry *geometry, btScalar radius)
 	btVector3 localInertia(0, 0, 0);
 
 	btCollisionShape *shape = new btSphereShape(radius);
+	
 	btTransform transform;
 	transform.setIdentity();
 	transform.setOrigin(btVector3(geometry->getLocation().x, geometry->getLocation().y, geometry->getLocation().z));
@@ -179,6 +225,7 @@ void Physics::addBushSphereToPhysics(Geometry *geometry, btScalar radius)
 	body->setUserPointer(geometry);
 
 	bushesGeo.push_back(body);
+	//collisionShapes.push_back(shape);
 
 	dynamicsWorld->addRigidBody(body);
 }

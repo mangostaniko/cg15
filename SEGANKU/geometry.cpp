@@ -192,3 +192,11 @@ std::shared_ptr<Texture> Geometry::loadMaterialTexture(aiMaterial *mat, aiTextur
 
 	return texture;
 }
+
+Surface *Geometry::getSurface()
+{
+	if (surfaces.size() == 1) {
+		std::shared_ptr<Surface> surf = surfaces.at(0);
+		return surf.get();
+	}
+}

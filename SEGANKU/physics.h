@@ -59,7 +59,7 @@ public:
 	/**
 	* @brief add the TerrainShape to the physics world, for now btCollisionBox is made, later should be made with mesh
 	*/
-	void addTerrainShapeToPhysics();
+	void addTerrainShapeToPhysics(Geometry *geometry);
 
 	/**
 	* @brief add a new CollisionBody to the Physics World, no Collision Handling set

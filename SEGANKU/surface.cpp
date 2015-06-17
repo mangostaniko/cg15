@@ -134,3 +134,13 @@ void Surface::draw(Shader *shader, Texture::FilterType filterType)
 	//*/
 
 }
+
+std::vector<Vertex> Surface::getVertices()
+{
+	return vertices;
+}
+
+std::vector<GLuint> Surface::getIndices()
+{
+	return indices;
+}
