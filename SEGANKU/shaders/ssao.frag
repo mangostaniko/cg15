@@ -48,7 +48,7 @@ void main()
 		// however, here this check causes artifacts
 		float distance = abs(viewPos.z - sampleActualSurfaceDepth);
 		if (distance < SAMPLE_RADIUS) {
-			AO += step(sampleActualSurfaceDepth, samplePos.z) * 1.7f;
+			AO += step(sampleActualSurfaceDepth, samplePos.z) * 1.8f;
 		}
     }
 

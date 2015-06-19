@@ -31,7 +31,7 @@ class SSAOPostprocessor
 	Shader *ssaoShader = nullptr;
 	Shader *blurShader = nullptr;
 
-	const static GLuint RANDOM_VECTOR_ARRAY_SIZE = 64; // reference uses 64 [increase for better quality]
+	GLuint samples; // reference uses 64 [increase for better quality]
 
 	/**
 	 * @brief draw a screen filling quad
@@ -39,7 +39,7 @@ class SSAOPostprocessor
 	void drawQuad();
 
 public:
-	SSAOPostprocessor(int windowWidth, int windowHeight, int samples);
+	SSAOPostprocessor(int windowWidth, int windowHeight, int samples_);
 	~SSAOPostprocessor();
 
 	/**

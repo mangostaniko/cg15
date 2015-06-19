@@ -12,7 +12,8 @@ static const GLfloat quadVertices[] = {
      1.0f,  1.0f,  1.0f, 1.0f
 };
 
-SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samples)
+SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samples_)
+	: samples(samples_)
 {
 	////////////////////////////////////
 	/// SETUP SCREEN FILLING QUAD
@@ -53,8 +54,8 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samp
 	blurShader = new Shader("../SEGANKU/shaders/blur.vert", "../SEGANKU/shaders/blur.frag");
 
 	// create array of random vectors for depth sampling in ssao shader
-	glm::vec3 randomVectors[RANDOM_VECTOR_ARRAY_SIZE];
-    for (GLuint i = 0; i < RANDOM_VECTOR_ARRAY_SIZE; ++i) {
+	glm::vec3 randomVectors[samples];
+    for (GLuint i = 0; i < samples; ++i) {
 
         glm::vec3 randomVector;
         randomVector.x = 2.0f * (float)rand()/RAND_MAX - 1.0f;
@@ -63,7 +64,7 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samp
 
         // scale vectors depending on array index
 		// quadratic falloff so that more points lie closer to the origin
-		float scale = i / (float)(RANDOM_VECTOR_ARRAY_SIZE);
+		float scale = i / (float)(samples);
         randomVector *= (0.5f + 0.5f * scale * scale);
 
         randomVectors[i] = randomVector;
@@ -75,11 +76,9 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samp
 	GLuint uboRandomVectors;
 	glGenBuffers(1, &uboRandomVectors);
 	glBindBuffer(GL_UNIFORM_BUFFER, uboRandomVectors);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec3) * RANDOM_VECTOR_ARRAY_SIZE, &randomVectors[0], GL_STATIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec3) * samples, &randomVectors[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboRandomVectors, 0, sizeof(glm::vec3) * RANDOM_VECTOR_ARRAY_SIZE);
-	//alternative using simple uniform array:
-    //glUniform3fv(glGetUniformLocation(postprocessShader->programHandle, "randomVectors"), RANDOM_VECTOR_ARRAY_SIZE, (const GLfloat*)&randomVectors[0]);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboRandomVectors, 0, sizeof(glm::vec3) * samples);
 
 }
 
@@ -213,7 +212,7 @@ void SSAOPostprocessor::calulateSSAOValues(const glm::mat4 &projMat)
 	glUniformMatrix4fv(glGetUniformLocation(ssaoShader->programHandle, "projMat"), 1, GL_FALSE, glm::value_ptr(projMat));
 
 	GLint sampleCountLocation = glGetUniformLocation(ssaoShader->programHandle, "random_vector_array_size");
-	glUniform1i(sampleCountLocation, RANDOM_VECTOR_ARRAY_SIZE);
+	glUniform1i(sampleCountLocation, samples);
 
 	GLint viewPosTexLocation = glGetUniformLocation(ssaoShader->programHandle, "viewPosTexture");
 	glBindFramebuffer(GL_FRAMEBUFFER, fboScreenData);
