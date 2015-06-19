@@ -12,7 +12,7 @@ uniform int random_vector_array_size; // reference uses 64 [increase for higher 
 // we use a uniform buffer object for better performance
 layout (std140) uniform RandomVectors
 {
-    vec3 randomVectors[256]; // array size must be static, so we just allocate as much as we might need
+    vec3 randomVectors[128]; // array size must be static, so we just allocate as much as we might need
 };
 
 void main()

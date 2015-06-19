@@ -15,6 +15,7 @@ static const GLfloat quadVertices[] = {
 SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samples_)
 	: samples(samples_)
 {
+
 	////////////////////////////////////
 	/// SETUP SCREEN FILLING QUAD
     /// setup vao for the screen quad onto which the screen texture will be mapped.
@@ -54,7 +55,7 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samp
 	blurShader = new Shader("../SEGANKU/shaders/blur.vert", "../SEGANKU/shaders/blur.frag");
 
 	// create array of random vectors for depth sampling in ssao shader
-	glm::vec3 randomVectors[samples];
+	std::vector<glm::vec3> randomVectors;
     for (GLuint i = 0; i < samples; ++i) {
 
         glm::vec3 randomVector;
@@ -67,7 +68,7 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samp
 		float scale = i / (float)(samples);
         randomVector *= (0.5f + 0.5f * scale * scale);
 
-        randomVectors[i] = randomVector;
+        randomVectors.push_back(randomVector);
 		//std::cout << "x: " << randomVector.x << ", y: " << randomVector.y << ", z: " << randomVector.z << std::endl;
     }
 
@@ -76,9 +77,9 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samp
 	GLuint uboRandomVectors;
 	glGenBuffers(1, &uboRandomVectors);
 	glBindBuffer(GL_UNIFORM_BUFFER, uboRandomVectors);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec3) * samples, &randomVectors[0], GL_STATIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec3) * randomVectors.size(), &randomVectors[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboRandomVectors, 0, sizeof(glm::vec3) * samples);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboRandomVectors, 0, sizeof(glm::vec3) * randomVectors.size());
 
 }
 
