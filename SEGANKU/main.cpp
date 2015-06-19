@@ -343,7 +343,7 @@ int main(int argc, char **argv)
 			setActiveShader(lastShader); lastShader = nullptr;
 		}
 
-		particleSystem->draw(player->getViewMat(), player->getProjMat());
+		particleSystem->draw(player->getViewMat(), player->getProjMat(), glm::vec3(1, 0.55, 0.5));
 
 		drawText(deltaT, windowWidth, windowHeigth);
 
@@ -397,7 +397,7 @@ void init(GLFWwindow *window)
 	textRenderer = new TextRenderer("../data/fonts/VeraMono.ttf", width, height);
 
 	// INIT PARTICLE SYSTEM
-	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png", 300, 50.f, 10.f, -0.1f);
+	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png", 30, 100.f, 10.f, -0.05f);
 
 	// INIT SSAO POST PROCESSOR
 	ssaoPostprocessor = new SSAOPostprocessor(width, height, 64);
@@ -582,7 +582,7 @@ void drawScene()
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
 	player->draw(activeShader, frustumCullingEnabled, filterType);
 
-	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
+	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
 	hawk->draw(activeShader, camera, frustumCullingEnabled, filterType);
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
@@ -590,7 +590,7 @@ void drawScene()
 		carr->draw(activeShader, camera, frustumCullingEnabled, filterType);
 	}
 
-	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
+	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 64.f);
 	terrain->draw(activeShader, camera, frustumCullingEnabled, filterType);
 
 	for (std::shared_ptr<Geometry> tree : trees) {

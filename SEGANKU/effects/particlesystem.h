@@ -61,12 +61,19 @@ public:
 	/**
 	 * @brief draw the particles in the particle system
 	 */
-	void draw(const glm::mat4 &viewMat, const glm::mat4 &projMat);
+	void draw(const glm::mat4 &viewMat, const glm::mat4 &projMat, const glm::vec3 &color);
 
 	/**
 	 * @brief clear all particles and reinitiate spawning
 	 */
 	void respawn(glm::vec3 location);
+private:
+
+	/**
+	 * @brief return a pseudorandom float in range [0, 1]
+	 * @return pseudorandom float in range [0, 1]
+	 */
+	float randomFloat();
 };
 
 #endif // PARTICLESYSTEM_H

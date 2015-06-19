@@ -9,5 +9,5 @@ uniform vec3 color;
 
 void main()
 {
-    outColor = vec4(texture(particleTexture, texCoord).rgba);
+    outColor = texture(particleTexture, texCoord).rgba * vec4(color, timeToLive-0.7);
 }

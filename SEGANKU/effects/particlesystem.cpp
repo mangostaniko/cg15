@@ -83,7 +83,7 @@ ParticleSystem::~ParticleSystem()
 	delete particleTexture;
 }
 
-void ParticleSystem::draw(const glm::mat4 &viewMat, const glm::mat4 &projMat)
+void ParticleSystem::draw(const glm::mat4 &viewMat, const glm::mat4 &projMat, const glm::vec3 &color)
 {
 
 	particleShader->useShader();
@@ -98,6 +98,9 @@ void ParticleSystem::draw(const glm::mat4 &viewMat, const glm::mat4 &projMat)
 	GLint particleTexLocation = glGetUniformLocation(particleShader->programHandle, "particleTexture"); // get uniform location in shader
 	glUniform1i(particleTexLocation, 0); // bind shader texture location with texture unit 0
 	particleTexture->bind(0); // activate texture unit 0 and bind texture to it
+
+	// pass color
+	glUniform3f(glGetUniformLocation(particleShader->programHandle, "color"), color.x, color.y, color.z);
 
 
 	// for instanced drawing we use glDrawArraysInstanced, which behaves like glDrawArrays,
@@ -128,6 +131,7 @@ void ParticleSystem::update(float timeDelta, const glm::mat4 &viewMat)
 			if (particles.size() < maxParticleCount) {
 				std::shared_ptr<Particle> particle = std::make_shared<Particle>();
 				particle->timeToLive = timeToLive;
+				particle->velocity = glm::vec3(randomFloat()-0.2f, randomFloat(), randomFloat()-0.2f) * 3.0f; // simulate wind
 				particles.push_back(particle);
 			} else {
 				spawningPaused = true;
@@ -153,9 +157,6 @@ void ParticleSystem::update(float timeDelta, const glm::mat4 &viewMat)
 		particle->velocity += glm::vec3(0.0f, -9.81f, 0.0f) * timeDelta * gravity;
 		particle->pos += particle->velocity * timeDelta;
 
-		// simulate wind by adding a bit of pseudorandom movement
-		particle->pos += glm::vec3((float)rand()/RAND_MAX, 0.0f, (float)rand()/RAND_MAX) * timeDelta * 10.0f * ((float)rand()/RAND_MAX - 0.5f);
-
 		// particle depth for sorting to draw with alpha
 		glm::vec3 particleViewPos = glm::vec3(modelViewMat * glm::vec4(particle->pos.x, particle->pos.y, particle->pos.z, 1));
 		particle->viewDepth = -particleViewPos.z;
@@ -175,7 +176,7 @@ void ParticleSystem::update(float timeDelta, const glm::mat4 &viewMat)
 		particleInstanceData.push_back(particle->pos.x);
 		particleInstanceData.push_back(particle->pos.y);
 		particleInstanceData.push_back(particle->pos.z);
-		particleInstanceData.push_back(particle->timeToLive);
+		particleInstanceData.push_back(particle->timeToLive / timeToLive);
 	}
 
 	// UPDATE BUFFER
@@ -202,4 +203,9 @@ void ParticleSystem::respawn(glm::vec3 location)
 	particles.clear();
 	secondsSinceLastSpawn = 0;
 	spawningPaused = false;
+}
+
+float ParticleSystem::randomFloat()
+{
+	return (float)rand()/RAND_MAX;
 }
