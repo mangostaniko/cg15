@@ -92,9 +92,9 @@ void Player::update(float timeDelta)
 
 }
 
-void Player::draw(Shader *shader, bool useFrustumCulling, Texture::FilterType filterType)
+void Player::draw(Shader *shader, bool useFrustumCulling, Texture::FilterType filterType, const glm::mat4 &viewMat)
 {
-	Geometry::draw(shader, camera, useFrustumCulling, filterType);
+	Geometry::draw(shader, camera, useFrustumCulling, filterType, viewMat);
 }
 
 void Player::handleInput(GLFWwindow *window, float timeDelta)

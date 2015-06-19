@@ -591,24 +591,24 @@ void drawScene()
 	Geometry::drawnSurfaceCount = 0;
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
-	player->draw(activeShader, frustumCullingEnabled, filterType);
+	player->draw(activeShader, frustumCullingEnabled, filterType, player->getViewMat());
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
-	hawk->draw(activeShader, camera, frustumCullingEnabled, filterType);
+	hawk->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
 	for (std::shared_ptr<Geometry> carr : carrots) {
-		carr->draw(activeShader, camera, frustumCullingEnabled, filterType);
+		carr->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
 	}
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 64.f);
-	terrain->draw(activeShader, camera, frustumCullingEnabled, filterType);
+	terrain->draw(activeShader, camera, false, filterType, player->getViewMat());
 
 	for (std::shared_ptr<Geometry> tree : trees) {
-		tree->draw(activeShader, camera, frustumCullingEnabled, filterType);
+		tree->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
 	}
 	for (std::shared_ptr<Geometry> shrub : shrubs) {
-		shrub->draw(activeShader, camera, frustumCullingEnabled, filterType);
+		shrub->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
 	}
 	
 	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); // disable wireframe

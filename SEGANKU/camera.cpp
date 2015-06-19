@@ -86,13 +86,13 @@ void Camera::lookAt(const glm::vec3 &target)
 	setTransform(glm::lookAt(getLocation(), target, glm::vec3(0, 1, 0)));
 }
 
-bool Camera::checkSphereInFrustum(const glm::vec3 &sphereCenterWorldSpace, const glm::vec3 &sphereFarthestPointWorldSpace)
+bool Camera::checkSphereInFrustum(const glm::vec3 &sphereCenterWorldSpace, const glm::vec3 &sphereFarthestPointWorldSpace, const glm::mat4 &viewMat)
 {
 	// get sphere into clip space and then into normalized device coordinates through perspective division,
 	// i.e. division by w which after the perspective projection stores the depth component z,
 	// such that all 6 view frustum planes are simply at distance 1 or -1 from the origin
-	glm::vec4 center = getProjectionMatrix() * getViewMatrix() * glm::vec4(sphereCenterWorldSpace, 1);
-	glm::vec4 sphereFarthestPoint = getProjectionMatrix() * getViewMatrix() * glm::vec4(sphereFarthestPointWorldSpace, 1);
+	glm::vec4 center = getProjectionMatrix() * viewMat * glm::vec4(sphereCenterWorldSpace, 1);
+	glm::vec4 sphereFarthestPoint = getProjectionMatrix() * viewMat * glm::vec4(sphereFarthestPointWorldSpace, 1);
 	center /= center.w;
 	sphereFarthestPoint /= sphereFarthestPoint.w;
 

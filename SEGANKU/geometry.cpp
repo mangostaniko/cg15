@@ -24,7 +24,7 @@ void Geometry::update(float timeDelta)
 
 }
 
-void Geometry::draw(Shader *shader, Camera *camera, bool useFrustumCulling, Texture::FilterType filterType)
+void Geometry::draw(Shader *shader, Camera *camera, bool useFrustumCulling, Texture::FilterType filterType, const glm::mat4 &viewMat)
 {
 	// pass model matrix to shader
 	GLint modelMatLocation = glGetUniformLocation(shader->programHandle, "modelMat"); // get uniform location in shader
@@ -42,7 +42,7 @@ void Geometry::draw(Shader *shader, Camera *camera, bool useFrustumCulling, Text
 			glm::vec3 boundingSphereCenter = (getMatrix() * glm::vec4(surfaces[i]->getBoundingSphereCenter(), 1)).xyz();
 			glm::vec3 boundingSphereFarthestPoint = (getMatrix() * glm::vec4(surfaces[i]->getBoundingSphereFarthestPoint(), 1)).xyz();
 
-			if (!camera->checkSphereInFrustum(boundingSphereCenter, boundingSphereFarthestPoint))
+			if (!camera->checkSphereInFrustum(boundingSphereCenter, boundingSphereFarthestPoint, viewMat))
 				continue;
 		}
 

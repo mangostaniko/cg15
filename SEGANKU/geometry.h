@@ -82,7 +82,7 @@ public:
 	/**
 	 * @brief draw the SceneObject using given shader
 	 */
-	virtual void draw(Shader *shader, Camera *camera, bool useFrustumCulling, Texture::FilterType filterType);
+	virtual void draw(Shader *shader, Camera *camera, bool useFrustumCulling, Texture::FilterType filterType, const glm::mat4 &viewMat);
 
 	/**
 	 * @brief return a the transposed inverse of the modelMatrix.
