@@ -3,7 +3,7 @@
 in vec2 texCoord;
 layout(location = 0) out vec4 outColor;
 
-const float SAMPLE_RADIUS = 2.f; // reference uses 1.5 [causes issues, currently not used]
+const float SAMPLE_RADIUS = 2.5f; // reference uses 1.5 [causes issues, currently not used]
 
 uniform sampler2D viewPosTexture; // interpolated vertex positions in view space
 uniform mat4 projMat;
@@ -46,10 +46,10 @@ void main()
 		// NOTE: in the reference, if actual depth at sampled position is too far off
 		// from depth at fragment position, it doesnt add to occlusion, to avoid artifacts.
 		// however, here this check causes artifacts
-//		float distance = abs(viewPos.z - sampleActualSurfaceDepth);
-//		if (distance < SAMPLE_RADIUS) {
-			AO += step(sampleActualSurfaceDepth, samplePos.z) * 1.6f;
-//		}
+		float distance = abs(viewPos.z - sampleActualSurfaceDepth);
+		if (distance < SAMPLE_RADIUS) {
+			AO += step(sampleActualSurfaceDepth, samplePos.z) * 1.7f;
+		}
     }
 
 	// normalize the ratio of sampled points lying behind the surface to a probability in [0,1]

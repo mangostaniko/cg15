@@ -39,7 +39,7 @@ class ParticleSystem : SceneObject
 	Texture *particleTexture = nullptr;
 
 	unsigned int maxParticleCount = 1000;  // maximum total particle count
-	bool spawningPaused = false;		   // whether to spawn new particles
+	bool spawningPaused = true;
 	float spawnRate = 200.0f;              // how many particles to spawn per second
 	float secondsSinceLastSpawn = -1.0f;   // time since last spawned particle, in seconds
 	float timeToLive = 10.0f;              // time in seconds until particle disappears
@@ -67,6 +67,7 @@ public:
 	 * @brief clear all particles and reinitiate spawning
 	 */
 	void respawn(glm::vec3 location);
+
 private:
 
 	/**

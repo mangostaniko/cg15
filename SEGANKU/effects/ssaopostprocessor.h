@@ -24,10 +24,12 @@ class SSAOPostprocessor
 
 	GLuint fboScreenData, screenColorTexture, viewPosTexture, screenDepthBuffer;
 	GLuint fboSSAO, ssaoTexture;
+	GLuint fboSSAOBlurredH, ssaoBlurredHTexture, fboSSAOBlurredV, ssaoBlurredVTexture;
 
 	GLuint screenQuadVAO, screenQuadVBO;
 
 	Shader *ssaoShader = nullptr;
+	Shader *blurShader = nullptr;
 
 	const static GLuint RANDOM_VECTOR_ARRAY_SIZE = 64; // reference uses 64 [increase for better quality]
 
@@ -69,6 +71,9 @@ public:
 	 */
 	void bindSSAOResultTexture(GLint ssaoTexShaderLocation, GLuint textureUnit);
 
+	void blurSSAOResultTexture();
+
+	void bindSSAOBlurredResultTexture(GLint ssaoTexShaderLocation, GLuint textureUnit);
 private:
 };
 

@@ -50,6 +50,7 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samp
     ////////////////////////////////////
 
 	ssaoShader = new Shader("../SEGANKU/shaders/ssao.vert", "../SEGANKU/shaders/ssao.frag");
+	blurShader = new Shader("../SEGANKU/shaders/blur.vert", "../SEGANKU/shaders/blur.frag");
 
 	// create array of random vectors for depth sampling in ssao shader
 	glm::vec3 randomVectors[RANDOM_VECTOR_ARRAY_SIZE];
@@ -63,7 +64,7 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samp
         // scale vectors depending on array index
 		// quadratic falloff so that more points lie closer to the origin
 		float scale = i / (float)(RANDOM_VECTOR_ARRAY_SIZE);
-        randomVector *= (0.4 + 0.6f * scale * scale);
+        randomVector *= (0.5f + 0.5f * scale * scale);
 
         randomVectors[i] = randomVector;
 		//std::cout << "x: " << randomVector.x << ", y: " << randomVector.y << ", z: " << randomVector.z << std::endl;
@@ -98,6 +99,7 @@ SSAOPostprocessor::~SSAOPostprocessor()
 	glDeleteVertexArrays(1, &screenQuadVAO);
 
 	delete ssaoShader; ssaoShader = nullptr;
+	delete blurShader; blurShader = nullptr;
 
 }
 
@@ -166,6 +168,30 @@ void SSAOPostprocessor::setupFramebuffers(int windowWidth, int windowHeight)
 		std::cerr << "ERROR in SSAOPostprocessor: SSAO Framebuffer not complete" << std::endl;
 	}
 
+	// fbo for horizontally blurred ssao
+	glGenTextures(1, &ssaoBlurredHTexture);
+	glBindTexture(GL_TEXTURE_2D, ssaoBlurredHTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, windowWidth, windowHeight, 0, GL_RED, GL_FLOAT, NULL);
+	glGenFramebuffers(1, &fboSSAOBlurredH);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurredH);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlurredHTexture, 0);
+
+	// fbo for vertically blurred ssao
+	glGenTextures(1, &ssaoBlurredVTexture);
+	glBindTexture(GL_TEXTURE_2D, ssaoBlurredVTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, windowWidth, windowHeight, 0, GL_RED, GL_FLOAT, NULL);
+	glGenFramebuffers(1, &fboSSAOBlurredV);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurredV);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlurredVTexture, 0);
+
 
 	// bind back to default framebuffer (as created by glfw)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -202,12 +228,51 @@ void SSAOPostprocessor::calulateSSAOValues(const glm::mat4 &projMat)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void SSAOPostprocessor::blurSSAOResultTexture()
+{
+	blurShader->useShader();
+
+	// filter horizontally
+	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAO);
+	glUniform1i(glGetUniformLocation(blurShader->programHandle, "ssaoTexture"), 4);
+	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_2D, ssaoTexture);
+	glUniform1i(glGetUniformLocation(blurShader->programHandle, "filterHorizontally"), true);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurredH);
+	glClear(GL_COLOR_BUFFER_BIT);
+	drawQuad();
+
+	// filter vertically
+	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurredH);
+	glUniform1i(glGetUniformLocation(blurShader->programHandle, "ssaoTexture"), 4);
+	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_2D, ssaoBlurredHTexture);
+	glUniform1i(glGetUniformLocation(blurShader->programHandle, "filterHorizontally"), false);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurredV);
+	glClear(GL_COLOR_BUFFER_BIT);
+	drawQuad();
+
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void SSAOPostprocessor::bindSSAOResultTexture(GLint ssaoTexShaderLocation, GLuint textureUnit)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAO);
 	glUniform1i(ssaoTexShaderLocation, textureUnit);
 	glActiveTexture(GL_TEXTURE0 + textureUnit);
 	glBindTexture(GL_TEXTURE_2D, ssaoTexture);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void SSAOPostprocessor::bindSSAOBlurredResultTexture(GLint ssaoTexShaderLocation, GLuint textureUnit)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurredV);
+	glUniform1i(ssaoTexShaderLocation, textureUnit);
+	glActiveTexture(GL_TEXTURE0 + textureUnit);
+	glBindTexture(GL_TEXTURE_2D, ssaoBlurredVTexture);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

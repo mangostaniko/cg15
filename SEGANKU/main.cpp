@@ -50,6 +50,7 @@ bool foundCarrot		       = false;
 bool debugInfoEnabled          = true;
 bool wireframeEnabled          = false;
 bool ssaoEnabled		       = false;
+bool ssaoBlurEnabled	       = true;
 bool shadowsEnabled		       = true;
 bool renderShadowMap	       = false;
 bool frustumCullingEnabled     = false;
@@ -313,6 +314,11 @@ int main(int argc, char **argv)
 			ssaoPostprocessor->calulateSSAOValues(player->getProjMat());
 			setActiveShader(textureShader);
 
+			//// SSAO BLUR PASS
+
+			ssaoPostprocessor->blurSSAOResultTexture();
+			setActiveShader(textureShader);
+
 		}
 
 		//// FINAL PASS
@@ -325,7 +331,12 @@ int main(int argc, char **argv)
 		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useSSAO"), ssaoEnabled);
 
 		GLint ssaoTexLocation = glGetUniformLocation(activeShader->programHandle, "ssaoTexture");
-		ssaoPostprocessor->bindSSAOResultTexture(ssaoTexLocation, 2);
+		if (ssaoBlurEnabled) {
+			ssaoPostprocessor->bindSSAOBlurredResultTexture(ssaoTexLocation, 2);
+		}
+		else {
+			ssaoPostprocessor->bindSSAOResultTexture(ssaoTexLocation, 2);
+		}
 
 		drawScene();
 
@@ -800,6 +811,12 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 		renderShadowMap = !renderShadowMap;
 		if (renderShadowMap) std::cout << "DEBUG DRAW SHADOW MAP ENABLED" << std::endl;
 		else std::cout << "DEBUG DRAW SHADOW MAP DISABLED" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_F12) == GLFW_PRESS) {
+		ssaoBlurEnabled = !ssaoBlurEnabled;
+		if (ssaoBlurEnabled) std::cout << "SSAO BLUR ENABLED" << std::endl;
+		else std::cout << "SSAO BLUR DISABLED" << std::endl;
 	}
 }
 

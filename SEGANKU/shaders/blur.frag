@@ -4,44 +4,30 @@ in vec2 texCoord;
 layout(location = 0) out vec4 outColor;
 
 uniform sampler2D ssaoTexture; // the ssao factor for each fragment
-uniform sampler2D screenColorTexture; // the whole rendered screen
+uniform bool filterHorizontally; // else filter horizontally
 
-uniform float blurEnabled; // whether to use blurring (glsl has no bool type so we check > 0.5)
-
-float offsets[5] = float[](-1.5f, -0.5f, 0.25f, 1.5f, 2.5f); // shifted a bit, somehow looks nicer
-float kernel5[25] = float[](.003f, .013f, .022f, .013f, .003f,
-                            .013f, .059f, .097f, .059f, .013f,
-                            .022f, .097f, .159f, .097f, .022f,
-                            .013f, .059f, .097f, .059f, .013f,
-                            .003f, .013f, .022f, .013f, .003f);
-
-float kernel3[9] = float[](.125f, .250f, .125f,
-                           .250f, .500f, .250f,
-                           .125f, .250f, .125f);
+float offsets[9] = float[](-4, -3, -2, -1, 0, 1, 2, 3, 4);
+float kernel[9] = float[](0.05f, 0.1f, 0.1f, 0.15f, 0.2f, 0.15f, 0.1f, 0.1f, 0.05f);
 
 void main()
 {
 
-	vec3 screenColor = texture(screenColorTexture, texCoord).rgb;
 	float AO = 0.0f;
 
-	if (blurEnabled > 0.5) {
+	// blur the ssao factors using the filter kernel
+	// horizontal and vertical filtering separated
+	for (int i = 0; i < 9; ++i) {
+		vec2 tc = texCoord;
 
-		// blur the ssao factors using gaussian kernel
-		// note: the filter kernel could be seperated into two passes to save 15 iterations for each fragment
-		for (int i = 0; i < 5; ++i) {
-			for (int j = 0; j < 5; ++j) {
-				vec2 tc = texCoord;
-				tc.x = texCoord.x + offsets[j] / textureSize(ssaoTexture, 0).x;
-				tc.y = texCoord.y + offsets[i] / textureSize(ssaoTexture, 0).y;
-				AO += texture(ssaoTexture, tc).r * kernel5[i+5*j];
-			}
+		if (filterHorizontally) {
+			tc.x = texCoord.x + offsets[i] / textureSize(ssaoTexture, 0).x;
+		} else {
+			tc.y = texCoord.y + offsets[i] / textureSize(ssaoTexture, 0).y;
 		}
-	}
-	else {
-		AO = texture(ssaoTexture, texCoord).r;
+
+		AO += texture(ssaoTexture, tc).r * kernel[i];
 	}
 
-	outColor = vec4(AO * screenColor, 1);
+	outColor = vec4(AO, AO, AO, 1);
 
 }
