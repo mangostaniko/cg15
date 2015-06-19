@@ -40,63 +40,7 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samp
 	/// - renderbuffer object: optimized for use as render target, less flexible
     ////////////////////////////////////
 
-
-	// generate screen color texture
-	// note: GL_NEAREST interpolation is ok since there is no subpixel sampling anyway
-	glGenTextures(1, &screenColorTexture);
-	glBindTexture(GL_TEXTURE_2D, screenColorTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
-	// generate vertex view space position texture
-	glGenTextures(1, &viewPosTexture);
-	glBindTexture(GL_TEXTURE_2D, viewPosTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, windowWidth, windowHeight, 0, GL_BGR, GL_FLOAT, NULL);
-
-	// generate depth renderbuffer. without this, depth testing wont work.
-	// we use a renderbuffer since we wont have to sample this, opengl uses it directly.
-	glGenRenderbuffers(1, &screenDepthBuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, screenDepthBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, windowWidth, windowHeight);
-
-	// generate framebuffer to attach color texture + view space positions texture + depth renderbuffer
-	glGenFramebuffers(1, &fboScreenData); // generate framebuffer object layout in vram and associate handle
-	glBindFramebuffer(GL_FRAMEBUFFER, fboScreenData); // bind fbo to active framebuffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenColorTexture, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, viewPosTexture, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, screenDepthBuffer);
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cerr << "ERROR in SSAOPostprocessor: ScreenData Framebuffer not complete" << std::endl;
-	}
-
-
-	// generate ssao texture
-	glGenTextures(1, &ssaoTexture);
-	glBindTexture(GL_TEXTURE_2D, ssaoTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, windowWidth, windowHeight, 0, GL_RED, GL_FLOAT, NULL);
-
-	// generate framebuffer to attach ssao texture
-	glGenFramebuffers(1, &fboSSAO); // generate framebuffer object layout in vram and associate handle
-	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAO); // bind fbo to active framebuffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoTexture, 0);
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cerr << "ERROR in SSAOPostprocessor: SSAO Framebuffer not complete" << std::endl;
-	}
-
-
-	// bind back to default framebuffer (as created by glfw)
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	setupFramebuffers(windowWidth, windowHeight);
 
 
 	////////////////////////////////////
@@ -154,6 +98,77 @@ SSAOPostprocessor::~SSAOPostprocessor()
 	glDeleteVertexArrays(1, &screenQuadVAO);
 
 	delete ssaoShader; ssaoShader = nullptr;
+
+}
+
+void SSAOPostprocessor::setupFramebuffers(int windowWidth, int windowHeight)
+{
+
+	glDeleteFramebuffers(1, &fboScreenData);
+	glDeleteTextures(1, &screenColorTexture);
+	glDeleteTextures(1, &viewPosTexture);
+	glDeleteRenderbuffers(1, &screenDepthBuffer);
+
+	glDeleteFramebuffers(1, &fboSSAO);
+	glDeleteTextures(1, &ssaoTexture);
+
+
+	// generate screen color texture
+	// note: GL_NEAREST interpolation is ok since there is no subpixel sampling anyway
+	glGenTextures(1, &screenColorTexture);
+	glBindTexture(GL_TEXTURE_2D, screenColorTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+	// generate vertex view space position texture
+	glGenTextures(1, &viewPosTexture);
+	glBindTexture(GL_TEXTURE_2D, viewPosTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, windowWidth, windowHeight, 0, GL_BGR, GL_FLOAT, NULL);
+
+	// generate depth renderbuffer. without this, depth testing wont work.
+	// we use a renderbuffer since we wont have to sample this, opengl uses it directly.
+	glGenRenderbuffers(1, &screenDepthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, screenDepthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, windowWidth, windowHeight);
+
+	// generate framebuffer to attach color texture + view space positions texture + depth renderbuffer
+	glGenFramebuffers(1, &fboScreenData); // generate framebuffer object layout in vram and associate handle
+	glBindFramebuffer(GL_FRAMEBUFFER, fboScreenData); // bind fbo to active framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenColorTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, viewPosTexture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, screenDepthBuffer);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cerr << "ERROR in SSAOPostprocessor: ScreenData Framebuffer not complete" << std::endl;
+	}
+
+
+	// generate ssao texture
+	glGenTextures(1, &ssaoTexture);
+	glBindTexture(GL_TEXTURE_2D, ssaoTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, windowWidth, windowHeight, 0, GL_RED, GL_FLOAT, NULL);
+
+	// generate framebuffer to attach ssao texture
+	glGenFramebuffers(1, &fboSSAO); // generate framebuffer object layout in vram and associate handle
+	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAO); // bind fbo to active framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoTexture, 0);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cerr << "ERROR in SSAOPostprocessor: SSAO Framebuffer not complete" << std::endl;
+	}
+
+
+	// bind back to default framebuffer (as created by glfw)
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 }
 

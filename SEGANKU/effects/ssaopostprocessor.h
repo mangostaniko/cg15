@@ -41,6 +41,13 @@ public:
 	~SSAOPostprocessor();
 
 	/**
+	 * @brief setup framebuffers and their screen filling texture or renderbuffer attachments
+	 * @param windowWidth buffer width
+	 * @param windowHeight buffer height
+	 */
+	void setupFramebuffers(int windowWidth, int windowHeight);
+
+	/**
 	 * @brief bind framebuffer in which screen colors and view space vertex positions should be stored for ssao postprocessing.
 	 * after binding this, execute the required draw calls using appropriate shaders.
 	 */
@@ -61,6 +68,8 @@ public:
 	 * @param textureUnit the texture unit
 	 */
 	void bindSSAOResultTexture(GLint ssaoTexShaderLocation, GLuint textureUnit);
+
+private:
 };
 
 #endif // SSAOPOSTPROCESSOR_H

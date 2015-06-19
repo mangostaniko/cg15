@@ -38,12 +38,12 @@ void initPhysicsObjects();
 void update(float timeDelta);
 void setActiveShader(Shader *shader);
 void drawScene();
-void drawSceneSSAO();
 void drawText(double deltaT, int windowWidth, int windowHeight);
 void cleanup();
 void newGame();
 
 GLFWwindow *window;
+int windowWidth, windowHeight;
 bool running			       = true;
 bool paused				       = false;
 bool foundCarrot		       = false;
@@ -139,15 +139,15 @@ int main(int argc, char **argv)
 
 	btCollisionShape *shape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
 
-	int windowWidth = 800;
-	int windowHeigth = 600;
+	windowWidth = 800;
+	windowHeight = 600;
 	int refresh_rate = 60;
 	bool fullscreen = 0;
 
 	if (argc == 1) {
 		// no parameters specified, continue with default values
 
-	} else if (argc != 4 || (std::stringstream(argv[1]) >> windowWidth).fail() || (std::stringstream(argv[2]) >> windowHeigth).fail() || (std::stringstream(argv[3]) >> fullscreen).fail()) {
+	} else if (argc != 4 || (std::stringstream(argv[1]) >> windowWidth).fail() || (std::stringstream(argv[2]) >> windowHeight).fail() || (std::stringstream(argv[3]) >> fullscreen).fail()) {
 		// if parameters are specified, must conform to given format
 
 		std::cout << "USAGE: <resolution width> <resolution height> <fullscreen? 0/1>\n";
@@ -171,7 +171,7 @@ int main(int argc, char **argv)
 	const GLFWvidmode *videoMode = glfwGetVideoMode(monitor);
 
 	window = nullptr;
-	window = glfwCreateWindow(windowWidth, windowHeigth, "SEGANKU", (fullscreen ? monitor : NULL), NULL);
+	window = glfwCreateWindow(windowWidth, windowHeight, "SEGANKU", (fullscreen ? monitor : NULL), NULL);
 	if (!window)
 	{
 		std::cerr << "ERROR: Failed to open GLFW window.\n";
@@ -180,7 +180,7 @@ int main(int argc, char **argv)
 	}
 
 	// center window on screen
-	glfwSetWindowPos(window, videoMode->width/2 - windowWidth/2, videoMode->height/2 - windowHeigth/2);
+	glfwSetWindowPos(window, videoMode->width/2 - windowWidth/2, videoMode->height/2 - windowHeight/2);
 
 	glfwMakeContextCurrent(window);
 
@@ -191,7 +191,7 @@ int main(int argc, char **argv)
 	//glClearColor(0.68f, 0.78f, 1.0f, 1.0f); // warm sky blue
 	//glClearColor(0.11f, 0.1f, 0.14f, 1.0f); // dark grey
 	glClearColor(0.f, 0.f, 0.f, 1.f);
-	glViewport(0, 0, windowWidth, windowHeigth);
+	glViewport(0, 0, windowWidth, windowHeight);
 
 	// print OpenGL version
 	std::cout << "OpenGL " << glGetString(GL_VERSION) << std::endl;
@@ -283,7 +283,7 @@ int main(int argc, char **argv)
 
 		// bind default FB and reset viewport
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, windowWidth, windowHeigth);
+		glViewport(0, 0, windowWidth, windowHeight);
 
 		setActiveShader(textureShader);
 
@@ -345,7 +345,7 @@ int main(int argc, char **argv)
 
 		particleSystem->draw(player->getViewMat(), player->getProjMat(), glm::vec3(1, 0.55, 0.5));
 
-		drawText(deltaT, windowWidth, windowHeigth);
+		drawText(deltaT, windowWidth, windowHeight);
 
 		// end the current frame (swaps the front and back buffers)
 		glfwSwapBuffers(window);		
@@ -425,14 +425,14 @@ void init(GLFWwindow *window)
 	// procedurally placed carrots
 	std::vector<glm::vec2> positions = PoissonDiskSampler::generatePoissonSample(100, 0.4f); // positions in range [0, 1]
 	for (glm::vec2 p : positions) {
-		p = (p - glm::vec2(0.5, 0.5)) * 150.0f;
+		p = (p - glm::vec2(0.5, 0.5)) * 100.0f;
 		carrots.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::mat4(1.0f), rand()*2*glm::pi<float>(), glm::vec3(0,1,0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/carrot.dae"));
 	}
 
 	// procedurally placed trees
-	positions = PoissonDiskSampler::generatePoissonSample(150, 0.4f); // positions in range [0, 1]
+	positions = PoissonDiskSampler::generatePoissonSample(100, 0.4f); // positions in range [0, 1]
 	for (glm::vec2 p : positions) {
-		p = (p - glm::vec2(0.5, 0.5)) * 150.0f;
+		p = (p - glm::vec2(0.5, 0.5)) * 100.0f;
 		// IMPORTANT -> DO NOT APPLY ROTATION TO TREES, otherwise collision object will end up in wrong place
 		trees.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.75 + rand() / 2)), rand() * 2 * glm::pi<float>(), glm::vec3(0, 1, 0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/tree.dae"));
 	}
@@ -441,7 +441,7 @@ void init(GLFWwindow *window)
 	positions = PoissonDiskSampler::generatePoissonSample(60, 0.4f); // positions in range [0, 1]
 	for (unsigned int i = 0; i < positions.size(); ++i) {
 		glm::vec2 p = positions[i];
-		p = (p - glm::vec2(0.5, 0.5)) * 150.0f;
+		p = (p - glm::vec2(0.5, 0.5)) * 100.0f;
 		if (i % 2 == 0) {
 			shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(1+rand()/2)), rand()*2*glm::pi<float>(), glm::vec3(0,1,0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/shrub1.dae"));
 		} else {
@@ -690,7 +690,11 @@ void cleanup()
  */
 void frameBufferResize(GLFWwindow *window, int width, int height)
 {
-	glViewport(0, 0, width, height);
+	std::cout << "FRAMEBUFFER RESIZED: " << width << ", " << height << std::endl;
+	windowWidth = width;
+	windowHeight = height;
+	glViewport(0, 0, windowWidth, windowHeight);
+	ssaoPostprocessor->setupFramebuffers(windowWidth, windowHeight);
 }
 
 
