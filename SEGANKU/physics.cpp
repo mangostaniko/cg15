@@ -19,7 +19,7 @@ struct CarrotContact : public btCollisionWorld::ContactResultCallback
 		Geometry *geometry = (Geometry*)carrotBody->getCollisionObject()->getUserPointer();
 
 		carrotBody->getCollisionObject()->setActivationState(0);
-		player->eatCarrot(geometry);
+		player->eat(geometry);
 		toDelete = (btRigidBody*)carrotBody;
 
 		return 0;

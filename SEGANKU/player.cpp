@@ -7,7 +7,7 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
     : Geometry(matrix_, filePath)
     , camera(camera_)
     , window(window_)
-	, eatenCarrots(0)
+	, foodCount(0)
 	, fullStomach(false)
 	, inBush(false)
 	, currentFood(nullptr)
@@ -17,6 +17,8 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	, breakDur(0)
 	, digestDur(0)
 	, canRun(true)
+    , defenseActive(false)
+    , defenseDur(0)
 	, timePassed(0)
 {
 	// set glfw callbacks
@@ -55,7 +57,7 @@ Player::~Player()
 
 void Player::update(float timeDelta)
 {
-	if (eatenCarrots >= NEEDED_FOOD) {
+	if (foodCount >= NEEDED_FOOD) {
 		fullStomach = true;
 	}
 
@@ -108,9 +110,8 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	// because we use bullet for motion, moveSpeed has to be quiet high for realistic feel
 	float moveSpeed = 400.0f;
 
-	/*
-	Speeding is only allowed if player is not overweight and he has not run for longer than MAX_RUN_TIME
-	 */
+
+	// speeding is only allowed if player is not overweight and he has not run for longer than MAX_RUN_TIME
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) && !overWeight && canRun) {
 		moveSpeed = 800.0f;
 		speeding = true;
@@ -219,10 +220,21 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	
 	// Digestion Period reached
 	if (digestDur > DIGEST_TIME) {
-		eatenCarrots--; // one carrot less
+		foodCount--; // one carrot less
 		digestDur = 0;
-		if (eatenCarrots < NEEDED_FOOD) {
+		if (foodCount < NEEDED_FOOD) {
 			overWeight = false; // if I was overweight, not anymore
+		}
+	}
+
+	// handle skunk defense duration
+	if (defenseActive) {
+
+		defenseDur += timeDelta;
+
+		if (defenseDur > DEFENSE_TIME) {
+			defenseActive = false;
+			defenseDur = 0;
 		}
 	}
 
@@ -314,16 +326,15 @@ void Player::handleNavModeChange()
 	lastNavMode = cameraNavMode;
 }
 
-void Player::eatCarrot(Geometry *carrot)
+void Player::eat(Geometry *carrot)
 {
 	if (!(currentFood != nullptr)) {
-		++eatenCarrots;
-		if (eatenCarrots > NEEDED_FOOD) {
+
+		++foodCount;
+		if (foodCount > NEEDED_FOOD) {
 			overWeight = true;
 		}
 		currentFood = carrot;
-
-
 	}
 }
 
@@ -337,14 +348,30 @@ bool Player::isInBush()
 	return inBush;
 }
 
-void Player::setInBush(bool inB)
+void Player::setInBush(bool inBush_)
 {
-	inBush = inB;
+	inBush = inBush_;
 }
 
-int Player::getFoodEaten()
+int Player::getFoodCount()
 {
-	return eatenCarrots;
+	return foodCount;
+}
+
+bool Player::isDefenseActive()
+{
+	return defenseActive;
+}
+
+bool Player::attemptDefenseActivation()
+{
+	if (!defenseActive && foodCount >= DEFENSE_FOOD_COST) {
+		defenseActive = true;
+		foodCount -= DEFENSE_FOOD_COST;
+		return true;
+	}
+
+	return false;
 }
 
 glm::mat4 Player::getViewMat()
@@ -364,7 +391,7 @@ btRigidBody *Player::getRigidBody()
 
 void Player::resetPlayer()
 {
-	eatenCarrots = 0;
+	foodCount = 0;
 	fullStomach = false;
 	
 	if (currentFood != nullptr) {
@@ -380,19 +407,19 @@ bool Player::isEating()
 
 std::string Player::getFoodReaction()
 {
-	if (eatenCarrots < NEEDED_FOOD * 0.25) {
+	if (foodCount < NEEDED_FOOD * 0.25) {
 		return "sooo hungry!";
 	}
-	else if (eatenCarrots < NEEDED_FOOD * 0.5) {
+	else if (foodCount < NEEDED_FOOD * 0.5) {
 		return "need more carrots";
 	}
-	else if (eatenCarrots < NEEDED_FOOD * 0.8) {
+	else if (foodCount < NEEDED_FOOD * 0.8) {
 		return "just a little bit more";
 	}
-	else if (eatenCarrots <= NEEDED_FOOD) {
+	else if (foodCount <= NEEDED_FOOD) {
 		return "Winter is coming! But I am prepared";
 	}
-	else if (eatenCarrots > NEEDED_FOOD) {
+	else if (foodCount > NEEDED_FOOD) {
 		return "augh, sooo full!";
 	}
 	else {

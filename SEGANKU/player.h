@@ -44,12 +44,15 @@ class Player : public Geometry
 
 
 	// GAMEPLAY SPECS
+	// durations are given in seconds
 	Geometry *currentFood;	// pointer to the currently eaten carrot
 	const float MAX_ANIM = 2.5;	// max length of animation
-	const int NEEDED_FOOD = 10;	// how much food is needed
+	const int NEEDED_FOOD = 10;	// how much food is needed to get through winter
+	const int DEFENSE_FOOD_COST = 3;	// how many carrots are used in a skunk defense
 	const float MAX_RUN_TIME = 4.0;	// max speed time
 	const float BREAK_TIME = 5.0;	// speed cool off time
 	const float DIGEST_TIME = 20.0;	// digestion time for 1 carrot
+	const float DEFENSE_TIME = 3.0;	// how long the player is protected after defense activation
 
 	bool overWeight;	// ate too much?
 	bool canRun;		// can use Speed?
@@ -58,10 +61,13 @@ class Player : public Geometry
 	float runDur;			// timer for speed duration
 	float breakDur;			// timer for speed cooloff duration
 	float digestDur;		// timer for digestion duration
+	float defenseDur;       // timer for active defense duration
 
-	int eatenCarrots;		// how much food was already eaten
+	int foodCount;		// how much food was already eaten
 	bool fullStomach;		// true if we ate enough
 	bool inBush;			// true if currently in bush
+	bool defenseActive;     // true if skunk defense cloud active
+
 
 
 	static double scrollY; // amount scrolled since last frame
@@ -130,7 +136,7 @@ public:
 	* @brief handle the event in which the Player collides with a food Geometry Object
 	* @param the Geometry Object that is currently being eaten
 	*/
-	void eatCarrot(Geometry *carrot);
+	void eat(Geometry *carrot);
 
 	/**
 	* @brief Get the information if the Player has already eaten enough carrots
@@ -145,16 +151,28 @@ public:
 	bool isInBush();
 
 	/**
+	* @brief check if the skunk defense cloud is currently active
+	* @return true if skunk defense cloud is currently active
+	*/
+	bool isDefenseActive();
+
+	/**
+	 * @brief activate the skunk defense cloud for a certain time.
+	 * @return whether the defense was successfully activated
+	 */
+	bool attemptDefenseActivation();
+
+	/**
 	* @brief get the number of currently eaten food objects
 	* @return the number of currently eaten carrots
 	*/
-	int getFoodEaten();
+	int getFoodCount();
 
 	/**
 	* @brief set the information whether or not Player is currently in a Bush (called and set by Physics Class)
 	* @param inB the information whether or not in bush
 	*/
-	void setInBush(bool inB);
+	void setInBush(bool inBush_);
 
 	/**
 	* @brief resets the Player for the start of a new game (reset number of carrots eaten)

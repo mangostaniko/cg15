@@ -408,7 +408,7 @@ void init(GLFWwindow *window)
 	textRenderer = new TextRenderer("../data/fonts/VeraMono.ttf", width, height);
 
 	// INIT PARTICLE SYSTEM
-	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png", 30, 100.f, 10.f, -0.05f);
+	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png", 30, 100.f, 15.f, -0.05f);
 
 	// INIT SSAO POST PROCESSOR
 	ssaoPostprocessor = new SSAOPostprocessor(width, height, 64);
@@ -630,6 +630,8 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 
 		if (!paused) {
 			textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, startY+6*deltaY, fontSize, glm::vec3(1));
+			textRenderer->renderText("player hidden: " + std::to_string(player->isInBush()), 25.0f, startY+7*deltaY, fontSize, glm::vec3(1));
+			textRenderer->renderText("player defense active: " + std::to_string(player->isDefenseActive()), 25.0f, startY+8*deltaY, fontSize, glm::vec3(1));
 		}
 	}
 	if (paused && !player->isFull()) {
@@ -639,8 +641,8 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 		textRenderer->renderText("CONGRATULATIONS!!! YOU MADE IT!", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.35f, 0.7f));
 	}
 
-	std::string carrotText = "carrots: " + std::to_string(player->getFoodEaten());
-	//textRenderer->renderText(carrotText, 25.0f, 30.0f, 0.7f, glm::vec3(1, 0.7f, 0.0f));
+	std::string carrotText = "carrots: " + std::to_string(player->getFoodCount());
+	textRenderer->renderText(carrotText, 25.0f, 30.0f, 0.7f, glm::vec3(1, 0.7f, 0.0f));
 
 	if (player->isEating()) {
 		textRenderer->renderText(player->getFoodReaction(), 512.0f, 350.0f, 0.4f, glm::vec3(0.5f, 0.7f, 0.5f));
@@ -729,8 +731,10 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
-		particleSystem->respawn(player->getLocation());
-		std::cout << "PARTICLE SYSTEM RESPAWNED" << std::endl;
+		if (player->attemptDefenseActivation()) {
+			particleSystem->respawn(player->getLocation());
+			std::cout << "PARTICLE SYSTEM RESPAWNED" << std::endl;
+		}
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS) {
