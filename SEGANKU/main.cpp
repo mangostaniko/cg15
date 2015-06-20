@@ -33,6 +33,8 @@
 
 
 void init(GLFWwindow *window);
+void initWorldBounds(float &miX, float &maX, float &miY, float &maY);
+float calcYCoordinate(glm::vec2 pos2D, float margin);
 void initSM();
 void initPhysicsObjects();
 void update(float timeDelta);
@@ -72,8 +74,6 @@ Light *sun;
 const glm::vec3 LIGHT_START(glm::vec3(-120, 200, 0));
 const glm::vec3 LIGHT_END(glm::vec3(40, 200, 0));
 
-Geometry *carrot;
-glm::vec3 carrotPos;
 std::vector<std::shared_ptr<Geometry>> carrots;
 std::vector<std::shared_ptr<Geometry>> trees;
 std::vector<std::shared_ptr<Geometry>> shrubs;
@@ -425,27 +425,35 @@ void init(GLFWwindow *window)
 	sun = new Light(glm::translate(glm::mat4(1.0f), LIGHT_START), LIGHT_END, glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
 
 	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/terrain_2.dae");
+	float minX, maxX, minZ, maxZ;
+	initWorldBounds(minX, maxX, minZ, maxZ);
+	std::cout << "min - max X: " << minX << " - " << maxX << std::endl;
+	std::cout << "min - max Z: " << minZ << " - " << maxZ << std::endl;
+
 
 	std::default_random_engine randGen(time(nullptr));
 	std::uniform_real_distribution<float> randDistribution(0.0f, 1.0f);
 	auto rand = std::bind(randDistribution, std::ref(randGen));
-	carrotPos = glm::vec3((rand()-0.5)*50, 0, (rand()-0.5)*50);
-	carrot = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(5)), "../data/models/world/carrot.dae");
-	carrot->translate(carrotPos, SceneObject::LEFT);
 
+	float y = 0.0f;
 	// procedurally placed carrots
 	std::vector<glm::vec2> positions = PoissonDiskSampler::generatePoissonSample(100, 0.4f); // positions in range [0, 1]
 	for (glm::vec2 p : positions) {
 		p = (p - glm::vec2(0.5, 0.5)) * 100.0f;
-		carrots.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::mat4(1.0f), rand()*2*glm::pi<float>(), glm::vec3(0,1,0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/carrot.dae"));
+		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ) {
+			y = calcYCoordinate(p, 1.5f);
+			carrots.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0, 1, 0)), glm::vec3(p.x, y, p.y)), "../data/models/world/carrot.dae"));
+		}
 	}
 
 	// procedurally placed trees
 	positions = PoissonDiskSampler::generatePoissonSample(100, 0.4f); // positions in range [0, 1]
 	for (glm::vec2 p : positions) {
 		p = (p - glm::vec2(0.5, 0.5)) * 100.0f;
-		// IMPORTANT -> DO NOT APPLY ROTATION TO TREES, otherwise collision object will end up in wrong place
-		trees.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.75 + rand() / 2)), rand() * 2 * glm::pi<float>(), glm::vec3(0, 1, 0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/tree.dae"));
+		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ) {
+			y = calcYCoordinate(p, 0.9f);
+			trees.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.75 + rand() / 2)), 0.0f, glm::vec3(0, 1, 0)), glm::vec3(p.x, y, p.y)), "../data/models/world/tree.dae")); //rand() * 2 * glm::pi<float>()
+		}
 	}
 
 	// procedurally placed shrubs
@@ -453,10 +461,14 @@ void init(GLFWwindow *window)
 	for (unsigned int i = 0; i < positions.size(); ++i) {
 		glm::vec2 p = positions[i];
 		p = (p - glm::vec2(0.5, 0.5)) * 100.0f;
-		if (i % 2 == 0) {
-			shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(1+rand()/2)), rand()*2*glm::pi<float>(), glm::vec3(0,1,0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/shrub1.dae"));
-		} else {
-			shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(1+rand()/2)), rand()*2*glm::pi<float>(), glm::vec3(0,1,0)), glm::vec3(p.x, 0, p.y)), "../data/models/world/shrub2.dae"));
+		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ) {
+			y = calcYCoordinate(p, 0.5f);
+			if (i % 2 == 0) {
+				shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(1 + rand() / 2)), 0.0f, glm::vec3(0, 1, 0)), glm::vec3(p.x, y, p.y)), "../data/models/world/shrub1.dae"));
+			}
+			else {
+				shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(1 + rand() / 2)), rand() * 2 * glm::pi<float>(), glm::vec3(0, 1, 0)), glm::vec3(p.x, y, p.y)), "../data/models/world/shrub2.dae"));
+			}
 		}
 	}
 	
@@ -516,7 +528,7 @@ void initPhysicsObjects()
 	physics->getDynamicsWorld()->addRigidBody(player->getRigidBody());
 
 	for (std::vector<std::shared_ptr<Geometry>>::iterator it = trees.begin(); it != trees.end(); ++it) {
-		physics->addTreeSphereToPhysics(it->get(), btScalar(0.6));
+		physics->addTreeCylinderToPhysics(it->get(), btScalar(0.6));
 	}
 
 	for (std::vector<std::shared_ptr<Geometry>>::iterator it = carrots.begin(); it != carrots.end(); ++it) {
@@ -688,7 +700,6 @@ void cleanup()
 	delete player; player = nullptr;
 	delete hawk; hawk = nullptr;
 	delete terrain; terrain = nullptr;
-	delete carrot; carrot = nullptr;
 
 	physics->cleanUp();
 	delete physics;
@@ -829,4 +840,66 @@ void setActiveShader(Shader *shader)
 {
 	activeShader = shader;
 	activeShader->useShader();
+}
+
+
+float calcYCoordinate(glm::vec2 pos2D, float margin)
+{
+	float newY = 0.0f;
+
+	float x = pos2D.x;
+	float z = pos2D.y;
+	float lowerX, upperX, lowerZ, upperZ;
+
+	std::vector<Vertex> verts = terrain->getSurface()->getVertices();
+
+	int i = 0;
+	while (i < verts.size()) {
+		glm::vec3 vPos = verts.at(i).position; // *glm::mat3(terrain->getMatrix());
+		
+		lowerX = vPos.x - margin; upperX = vPos.x + margin;
+		lowerZ = vPos.z - margin; upperZ = vPos.z + margin;
+
+		if (x > lowerX && x < upperX) {
+			if (z > lowerZ && z < upperZ) {
+				newY = vPos.y - 0.2f;
+				i = verts.size() + 1;
+			}
+		}
+
+		++i;
+	}
+
+	return newY;
+}
+
+void initWorldBounds(float &miX, float &maX, float &miZ, float &maZ)
+{
+	std::vector<Vertex> verts = terrain->getSurface()->getVertices();
+
+	miX = 99999, miZ = 99999;
+	maX = -99999, maZ = -99999;
+
+	int i = 0;
+	while (i < verts.size()) {
+		glm::vec3 pos = verts.at(i).position;
+
+		if (pos.x > maX) {
+			maX = pos.x;
+		} 
+		else if (pos.x < miX) {
+			miX = pos.x;
+		}
+
+		if (pos.z > maZ) {
+			maZ = pos.z;
+		}
+		else if (pos.z < miZ) {
+			miZ = pos.z;
+		}
+
+		++i;
+	}
+	miX += 5; maX -= 5;
+	miZ += 5; maZ -= 5;
 }
