@@ -38,11 +38,8 @@ struct BushContact : public btCollisionWorld::ContactResultCallback
 		int partId1,
 		int index1)
 	{
-
-		Player *player = (Player*)playerBody->getCollisionObject()->getUserPointer();
-
-		Geometry *geometry = (Geometry*)bushBody->getCollisionObject()->getUserPointer();
-
+//		Player *player = (Player*)playerBody->getCollisionObject()->getUserPointer();
+//		Geometry *geometry = (Geometry*)bushBody->getCollisionObject()->getUserPointer();
 		inBush = true;
 
 		return 0;
@@ -124,7 +121,7 @@ void Physics::addTerrainShapeToPhysics(Geometry *geometry)
 	*/
 
 	btTriangleMesh *mTriMesh = new btTriangleMesh();
-	for (int i = 0; i < vertices.size(); ++i) {
+	for (unsigned int i = 0; i < vertices.size(); ++i) {
 		btVector3 v1(vertices.at(i).position.x, vertices.at(i).position.y, vertices.at(i).position.z);
 		btVector3 v2(vertices.at(i+1).position.x, vertices.at(i+1).position.y, vertices.at(i+1).position.z);
 		btVector3 v3(vertices.at(i+2).position.x, vertices.at(i+2).position.y, vertices.at(i+2).position.z);

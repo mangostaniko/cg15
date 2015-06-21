@@ -23,6 +23,7 @@
 #include "sceneobject.h"
 #include "camera.h"
 #include "player.h"
+#include "eagle.h"
 #include "light.h"
 #include "textrenderer.h"
 #include "effects/ssaopostprocessor.h"
@@ -65,7 +66,7 @@ ParticleSystem *particleSystem;
 SSAOPostprocessor *ssaoPostprocessor;
 
 Player *player; glm::mat4 playerInitTransform(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
-Geometry *hawk; glm::mat4 hawkInitTransform(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)));
+Eagle *eagle; glm::mat4 eagleInitTransform(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)));
 Geometry *terrain;
 Camera *camera;
 Light *sun;
@@ -466,9 +467,9 @@ void init(GLFWwindow *window)
 	player = new Player(playerInitTransform, camera, window, "../data/models/skunk/skunk.dae");
 
 
-	// INIT HAWK
-	hawk = new Geometry(hawkInitTransform, "../data/models/hawk/hawk.dae");
-	hawk->rotateY(glm::radians(270.0), SceneObject::RIGHT);
+	// INIT EAGLE
+	eagle = new Eagle(eagleInitTransform, "../data/models/eagle/eagle.dae");
+	eagle->rotateY(glm::radians(270.0), SceneObject::RIGHT);
 
 
 	// INIT PHYSICS OBJECTS (add objects to dynamic World)
@@ -534,13 +535,7 @@ void initPhysicsObjects()
 void update(float timeDelta)
 {
 	player->update(timeDelta);
-
-	//hawk->update(timeDelta);
-	hawk->rotate(0.5f * timeDelta, SceneObject::LEFT, glm::vec3(0.f, 1.f, 0.f));
-	//hawk->rotateY(3*timeDelta, SceneObject::LEFT);
-	//hawk->translate(glm::vec3(0, glm::cos(glfwGetTime())/20, 0), SceneObject::RIGHT);
-	hawk->rotateZ(glm::cos(-glfwGetTime())/2000, SceneObject::RIGHT);
-	hawk->rotateX(glm::cos(-glfwGetTime())/2000, SceneObject::RIGHT);
+	eagle->update(timeDelta, player->getLocation() + glm::vec3(0, 2, 0), player->isInBush(), player->isDefenseActive());
 
 	particleSystem->update(timeDelta, player->getViewMat());
 
@@ -560,7 +555,6 @@ void update(float timeDelta)
 	glUniform3f(lightAmbientLocation, sun->getColor().x * 0.3f, sun->getColor().y * 0.3f, sun->getColor().z * 0.3f);
 	glUniform3f(lightDiffuseLocation, sun->getColor().x, sun->getColor().y, sun->getColor().z);
 	glUniform3f(lightSpecularLocation, sun->getColor().x * 0.8f, sun->getColor().y * 0.8f, sun->getColor().z * 0.8f);
-
 
 }
 
@@ -594,7 +588,7 @@ void drawScene()
 	player->draw(activeShader, frustumCullingEnabled, filterType, player->getViewMat());
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
-	hawk->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
+	eagle->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
 	for (std::shared_ptr<Geometry> carr : carrots) {
@@ -632,6 +626,8 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 			textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, startY+6*deltaY, fontSize, glm::vec3(1));
 			textRenderer->renderText("player hidden: " + std::to_string(player->isInBush()), 25.0f, startY+7*deltaY, fontSize, glm::vec3(1));
 			textRenderer->renderText("player defense active: " + std::to_string(player->isDefenseActive()), 25.0f, startY+8*deltaY, fontSize, glm::vec3(1));
+			std::string eagleStateStrings[3] = {"CIRCLING", "ATTACKING", "RETREATING"};
+			textRenderer->renderText("eagle state: " + eagleStateStrings[eagle->getState()], 25.0f, startY+9*deltaY, fontSize, glm::vec3(1));
 		}
 	}
 	if (paused && !player->isFull()) {
@@ -666,8 +662,8 @@ void newGame()
 	// RESET PLAYER + CAMERA
 	player->setTransform(playerInitTransform);
 	player->resetPlayer();
-	hawk->setTransform(hawkInitTransform);
-	hawk->rotateY(glm::radians(270.0), SceneObject::RIGHT);
+	eagle->setTransform(eagleInitTransform);
+	eagle->rotateY(glm::radians(270.0), SceneObject::RIGHT);
 
 	paused = false;
 	foundCarrot = false;
@@ -686,7 +682,7 @@ void cleanup()
 	delete ssaoPostprocessor; ssaoPostprocessor = nullptr;
 
 	delete player; player = nullptr;
-	delete hawk; hawk = nullptr;
+	delete eagle; eagle = nullptr;
 	delete terrain; terrain = nullptr;
 	delete carrot; carrot = nullptr;
 

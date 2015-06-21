@@ -68,6 +68,8 @@ set(SRC_CLASSES
 
 	SEGANKU/player.h
 	SEGANKU/player.cpp
+	SEGANKU/eagle.h
+	SEGANKU/eagle.cpp
 
 	SEGANKU/effects/ssaopostprocessor.h
 	SEGANKU/effects/ssaopostprocessor.cpp

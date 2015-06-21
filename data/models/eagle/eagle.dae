@@ -11,21 +11,21 @@
     <up_axis>Z_UP</up_axis>
   </asset>
   <library_images>
-    <image id="hawk_jpg" name="hawk_jpg">
-      <init_from>hawk.jpg</init_from>
+    <image id="eagle_jpg" name="eagle_jpg">
+      <init_from>eagle.jpg</init_from>
     </image>
   </library_images>
   <library_effects>
     <effect id="Material-effect">
       <profile_COMMON>
-        <newparam sid="hawk_jpg-surface">
+        <newparam sid="eagle_jpg-surface">
           <surface type="2D">
-            <init_from>hawk_jpg</init_from>
+            <init_from>eagle_jpg</init_from>
           </surface>
         </newparam>
-        <newparam sid="hawk_jpg-sampler">
+        <newparam sid="eagle_jpg-sampler">
           <sampler2D>
-            <source>hawk_jpg-surface</source>
+            <source>eagle_jpg-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -37,7 +37,7 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <texture texture="hawk_jpg-sampler" texcoord="UVMap"/>
+              <texture texture="eagle_jpg-sampler" texcoord="UVMap"/>
             </diffuse>
             <specular>
               <color sid="specular">0.5 0.5 0.5 1</color>
@@ -111,7 +111,7 @@
   </library_geometries>
   <library_visual_scenes>
     <visual_scene id="Scene" name="Scene">
-      <node id="hawk" name="hawk" type="NODE">
+      <node id="eagle" name="eagle" type="NODE">
         <matrix sid="transform">-3.19879e-7 -0.5 0 -0.01836849 0.5 -3.19879e-7 0 0.06995115 0 0 0.5 0.07587148 0 0 0 1</matrix>
         <instance_geometry url="#Cube_001-mesh">
           <bind_material>

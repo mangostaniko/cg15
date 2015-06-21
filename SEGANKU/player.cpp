@@ -91,6 +91,16 @@ void Player::update(float timeDelta)
 
 	projMat = camera->getProjectionMatrix();
 
+	// handle skunk defense duration
+	if (defenseActive) {
+
+		defenseDur += timeDelta;
+
+		if (defenseDur > DEFENSE_TIME) {
+			defenseActive = false;
+			defenseDur = 0;
+		}
+	}
 
 }
 
@@ -206,7 +216,7 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 
 
 	// Handle Carrot Consumption
-	
+
 	// digestion happens faster when moving
 	if (speeding && moving) {
 		digestDur += 2 * timeDelta;		// speeding while moving, fast digestion
@@ -217,24 +227,13 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	else {
 		digestDur += 1 * timeDelta;		// no movement at all, slow digestion
 	}
-	
+
 	// Digestion Period reached
-	if (digestDur > DIGEST_TIME) {
-		foodCount--; // one carrot less
+	if (digestDur > DIGEST_TIME && foodCount > 0) {
+		--foodCount; // one carrot less
 		digestDur = 0;
 		if (foodCount < NEEDED_FOOD) {
 			overWeight = false; // if I was overweight, not anymore
-		}
-	}
-
-	// handle skunk defense duration
-	if (defenseActive) {
-
-		defenseDur += timeDelta;
-
-		if (defenseDur > DEFENSE_TIME) {
-			defenseActive = false;
-			defenseDur = 0;
 		}
 	}
 
