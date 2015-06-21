@@ -94,7 +94,6 @@ void Physics::stepSimulation(float deltaT)
 
 void Physics::addTerrainShapeToPhysics(Geometry *geometry)
 {
-	
 	int vertStride = sizeof(btVector3);
 	int indexStride = 3 * sizeof(int);
 	
@@ -102,23 +101,6 @@ void Physics::addTerrainShapeToPhysics(Geometry *geometry)
 	std::vector<GLuint> indices = geometry->getSurface()->getIndices();
 	
 	const int triangles = vertices.size() / 3;
-
-	/*
-	btVector3 *gVertices = new btVector3[vertices.size()];
-	int *gIndices = new int[triangles * 3];
-
-	for (int i = 0; i < vertices.size(); ++i) {
-		gVertices[i] = btVector3(vertices.at(i).position.x, vertices.at(i).position.y, vertices.at(i).position.z);
-	}
-
-	for (int i = 0; i < indices.size(); ++i) {
-		gIndices[i] = indices.at(i);
-	}
-
-	btTriangleIndexVertexArray *vertArray = new btTriangleIndexVertexArray(triangles, gIndices, indexStride, 
-		vertices.size(), (btScalar*) &gVertices[0].x(), vertStride);
-
-	*/
 
 	btTriangleMesh *mTriMesh = new btTriangleMesh();
 	for (unsigned int i = 0; i < vertices.size(); ++i) {
@@ -130,7 +112,6 @@ void Physics::addTerrainShapeToPhysics(Geometry *geometry)
 	}
 
 	btTriangleMeshShape *terrain = new btBvhTriangleMeshShape(mTriMesh, false);
-
 	
 	btScalar mass(0.);
 	btVector3 localInertia(0, 0, 0);

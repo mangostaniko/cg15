@@ -60,6 +60,9 @@
     <ClCompile Include="poissondisksampler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="eagle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sceneobject.h">
@@ -102,6 +105,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="poissondisksampler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eagle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

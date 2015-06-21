@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="eagle.cpp" />
     <ClCompile Include="effects\particlesystem.cpp" />
     <ClCompile Include="effects\ssaopostprocessor.cpp" />
     <ClCompile Include="geometry.cpp" />
@@ -29,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="eagle.h" />
     <ClInclude Include="effects\particlesystem.h" />
     <ClInclude Include="effects\ssaopostprocessor.h" />
     <ClInclude Include="geometry.h" />

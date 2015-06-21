@@ -425,12 +425,9 @@ void init(GLFWwindow *window)
 
 	sun = new Light(glm::translate(glm::mat4(1.0f), LIGHT_START), LIGHT_END, glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
 
-	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/terrain_2.dae");
+	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/terrain.dae");
 	float minX, maxX, minZ, maxZ;
 	initWorldBounds(minX, maxX, minZ, maxZ);
-	std::cout << "min - max X: " << minX << " - " << maxX << std::endl;
-	std::cout << "min - max Z: " << minZ << " - " << maxZ << std::endl;
-
 
 	std::default_random_engine randGen(time(nullptr));
 	std::uniform_real_distribution<float> randDistribution(0.0f, 1.0f);
@@ -858,7 +855,7 @@ float calcYCoordinate(glm::vec2 pos2D, float margin)
 
 		if (x > lowerX && x < upperX) {
 			if (z > lowerZ && z < upperZ) {
-				newY = vPos.y - 0.2f;
+				newY = vPos.y - 0.5f;
 				i = verts.size() + 1;
 			}
 		}
@@ -896,6 +893,6 @@ void initWorldBounds(float &miX, float &maX, float &miZ, float &maZ)
 
 		++i;
 	}
-	miX += 5; maX -= 5;
-	miZ += 5; maZ -= 5;
+	miX += 7; maX -= 7;
+	miZ += 7; maZ -= 7;
 }
