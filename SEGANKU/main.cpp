@@ -438,7 +438,7 @@ void init(GLFWwindow *window)
 	glm::vec2 cavePos2D(0, 0);
 	cave = new Geometry(glm::mat4(1.0f), "../data/models/cave/cave.dae");
 	cave->setLocation(glm::vec3(cavePos2D.x, calcYCoordinate(cavePos2D, 0.5f), cavePos2D.y));
-	cave->translate(glm::vec3(0, 3, 0), SceneObject::LEFT);
+	cave->translate(glm::vec3(0, 2.7, 0), SceneObject::LEFT);
 
 	std::default_random_engine randGen(time(nullptr));
 	std::uniform_real_distribution<float> randDistribution(0.0f, 1.0f);

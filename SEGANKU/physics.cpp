@@ -23,9 +23,7 @@ struct CarrotContact : public btCollisionWorld::ContactResultCallback
 
 		//removeCollisionObject(const_cast<btCollisionObject*>(colObj0Wrap->getCollisionObject()));
 		player->eat(geometry);
-		std::cout << physicWorld->getCollisionObjectArray().size() << std::endl;
 		physicWorld->removeCollisionObject(const_cast<btCollisionObject*>(carrotBody->getCollisionObject()));
-		std::cout << physicWorld->getCollisionObjectArray().size() << std::endl;
 		toDelete = (btRigidBody*)carrotBody->getCollisionObject();
 
 		return 0;
@@ -132,7 +130,7 @@ void Physics::stepSimulation(float deltaT)
 	}
 
 	dynamicsWorld->contactPairTest(caveArea, player->getRigidBody(), caveAreaCallback);
-	std::cout << "this works" << std::endl;
+
 	dynamicsWorld->contactPairTest(cave, player->getRigidBody(), caveCallback);
 
 	// TODO DELETE THE CARROT WE ALREADY ATE
@@ -261,6 +259,13 @@ void Physics::setupCaveObjects(Geometry *geometry)
 	btCollisionShape *shapeArea = new btSphereShape(btScalar(3.));
 	btCollisionShape *shapeCave = new btSphereShape(btScalar(1.5));
 
+	// 1.5, 1.5, 2
+	// 4.5, 4, 4.5
+	btCollisionShape *shapeEnd = new btBoxShape(btVector3(2, 2, 0.15));
+	btCollisionShape *shapeSide1 = new btBoxShape(btVector3(0.15, 2, 2.25));
+	btCollisionShape *shapeSide2 = new btBoxShape(btVector3(0.15, 2, 2.25));
+
+	// setup Cave Area -> no collision
 	btTransform transform;
 	transform.setIdentity();
 	transform.setOrigin(btVector3(geometry->getLocation().x, geometry->getLocation().y, geometry->getLocation().z));
@@ -271,6 +276,7 @@ void Physics::setupCaveObjects(Geometry *geometry)
 	caveArea->setActivationState(DISABLE_DEACTIVATION);
 	caveArea->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
 
+	// setup inside cave -> no collision -> zone to be in for win
 	shapeCave->calculateLocalInertia(mass, localInertia);
 	btDefaultMotionState *motionState2 = new btDefaultMotionState(transform);
 	btRigidBody::btRigidBodyConstructionInfo info2(mass, motionState2, shapeCave, localInertia);
@@ -278,6 +284,34 @@ void Physics::setupCaveObjects(Geometry *geometry)
 	cave->setActivationState(DISABLE_DEACTIVATION);
 	cave->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
 
+	// setup cave walls -> collision -> back wall
+	transform.setOrigin(btVector3(geometry->getLocation().x, geometry->getLocation().y, geometry->getLocation().z-2.5));
+	shapeEnd->calculateLocalInertia(mass, localInertia);
+	btDefaultMotionState *stateEnd = new btDefaultMotionState(transform);
+	btRigidBody::btRigidBodyConstructionInfo infoEnd(mass, stateEnd, shapeEnd, localInertia);
+	btRigidBody *caveBack = new btRigidBody(infoEnd);
+	caveBack->setActivationState(DISABLE_DEACTIVATION);
+	caveBack->setCollisionFlags(caveBack->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
+
+	transform.setOrigin(btVector3(geometry->getLocation().x+2, geometry->getLocation().y, geometry->getLocation().z));
+	shapeSide1->calculateLocalInertia(mass, localInertia);
+	btDefaultMotionState *stateSide1 = new btDefaultMotionState(transform);
+	btRigidBody::btRigidBodyConstructionInfo infoSide1(mass, stateSide1, shapeSide1, localInertia);
+	btRigidBody *caveSide1 = new btRigidBody(infoSide1);
+	caveSide1->setActivationState(DISABLE_DEACTIVATION);
+	caveSide1->setCollisionFlags(caveSide1->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
+
+	transform.setOrigin(btVector3(geometry->getLocation().x - 2, geometry->getLocation().y, geometry->getLocation().z));
+	shapeSide2->calculateLocalInertia(mass, localInertia);
+	btDefaultMotionState *stateSide2 = new btDefaultMotionState(transform);
+	btRigidBody::btRigidBodyConstructionInfo infoSide2(mass, stateSide2, shapeSide2, localInertia);
+	btRigidBody *caveSide2 = new btRigidBody(infoSide2);
+	caveSide2->setActivationState(DISABLE_DEACTIVATION);
+	caveSide2->setCollisionFlags(caveSide2->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
+
+	dynamicsWorld->addRigidBody(caveSide1);
+	dynamicsWorld->addRigidBody(caveSide2);
+	dynamicsWorld->addRigidBody(caveBack);
 	dynamicsWorld->addRigidBody(caveArea);
 	dynamicsWorld->addRigidBody(cave);
 }

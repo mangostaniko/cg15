@@ -34,7 +34,7 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	playerShape = new btSphereShape(1);
 	btTransform playerTransform;
 	playerTransform.setIdentity();
-	playerTransform.setOrigin(btVector3(getLocation().x, getLocation().y+3, getLocation().z));
+	playerTransform.setOrigin(btVector3(getLocation().x, getLocation().y+0.5, getLocation().z));
 
 	btScalar mass(3.0); btVector3 inertia(0, 0, 0);
 	playerShape->calculateLocalInertia(mass, inertia);
