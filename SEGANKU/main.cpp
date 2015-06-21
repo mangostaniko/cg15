@@ -85,7 +85,7 @@ GLuint depthMapFBO;
 GLuint depthMap;
 
 
-const int SM_WIDTH = 2048, SM_HEIGHT = 2048;
+const int SM_WIDTH = 4096, SM_HEIGHT = 4096;
 
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
@@ -245,12 +245,13 @@ int main(int argc, char **argv)
 
 			update(deltaT);
 
-			// pause on starvation
-			if (glfwGetTime() > timeToStarvation-1) {
+			// pause on starvation or if player eaten by eagle
+			if (eagle->isTargetEaten() || glfwGetTime() > timeToStarvation-1) {
 				player->rotateZ(3.14159/2, SceneObject::RIGHT);
 				player->translate(glm::vec3(0, 0.3, 0), SceneObject::LEFT);
 				paused = true;
 			}
+
 		}
 
 
@@ -406,7 +407,8 @@ void init(GLFWwindow *window)
 
 
 	// INIT TEXT RENDERER
-	textRenderer = new TextRenderer("../data/fonts/VeraMono.ttf", width, height);
+	textRenderer = new TextRenderer("../data/fonts/cliff.ttf", width, height);
+
 
 	// INIT PARTICLE SYSTEM
 	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png", 30, 100.f, 15.f, -0.05f);
@@ -425,7 +427,7 @@ void init(GLFWwindow *window)
 
 	sun = new Light(glm::translate(glm::mat4(1.0f), LIGHT_START), LIGHT_END, glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
 
-	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/terrain_3.dae");
+	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/terrain.dae");
 	float minX, maxX, minZ, maxZ;
 	initWorldBounds(minX, maxX, minZ, maxZ);
 
@@ -636,14 +638,21 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 			textRenderer->renderText("player hidden: " + std::to_string(player->isInBush()), 25.0f, startY+7*deltaY, fontSize, glm::vec3(1));
 			textRenderer->renderText("player defense active: " + std::to_string(player->isDefenseActive()), 25.0f, startY+8*deltaY, fontSize, glm::vec3(1));
 			std::string eagleStateStrings[3] = {"CIRCLING", "ATTACKING", "RETREATING"};
-			textRenderer->renderText("eagle state: " + eagleStateStrings[eagle->getState()] + ", in reach: " + std::to_string(eagle->isTargetInReach()), 25.0f, startY+9*deltaY, fontSize, glm::vec3(1));
+			textRenderer->renderText("eagle state: " + eagleStateStrings[eagle->getState()] + ", in reach: " + std::to_string(eagle->isInTargetDefenseReach()), 25.0f, startY+9*deltaY, fontSize, glm::vec3(1));
 		}
 	}
-	if (paused && !player->isFull()) {
-		textRenderer->renderText("YOU STARVED :(", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.35f, 0.5f));
-	}
-	else if (paused && player->isFull()) {
-		textRenderer->renderText("CONGRATULATIONS!!! YOU MADE IT!", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.35f, 0.7f));
+	if (paused) {
+		if (eagle->isTargetEaten()) {
+			textRenderer->renderText("YOU GOT EATEN =(", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.35f, 0.7f));
+		}
+		else {
+			if (player->isFull()) {
+				textRenderer->renderText("CONGRATULATIONS!!! YOU MADE IT!", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.45f, 0.7f));
+			}
+			else {
+				textRenderer->renderText("YOU STARVED =(", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.35f, 0.5f));
+			}
+		}
 	}
 
 	std::string carrotText = "carrots: " + std::to_string(player->getFoodCount());

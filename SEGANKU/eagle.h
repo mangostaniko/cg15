@@ -23,7 +23,8 @@ class Eagle : public Geometry
 	// GAMEPLAY
 	// all durations given in seconds
 
-	const float TARGET_REACH_RADIUS = 13.0f;
+	const float EAT_RADIUS = 3.0f;
+	const float TARGET_DEFENSE_REACH_RADIUS = 13.0f;
 	const float ATTACK_WAIT_TIME_MIN = 10.0f; // min time after which eagle will attempt to attack player
 	const float ATTACK_WAIT_TIME_MAX = 20.0f; // max time after which eagle will attempt to attack player
 	glm::mat4 eagleInitTransform;
@@ -51,7 +52,17 @@ public:
 	 */
 	EagleState getState();
 
-	bool isTargetInReach();
+	/**
+	 * @brief check whether the target is in TARGET_DEFENSE_REACH_RADIUS of the eagle
+	 * @return whether the target is in TARGET_DEFENSE_REACH_RADIUS of the eagle
+	 */
+	bool isInTargetDefenseReach();
+
+	/**
+	 * @brief check whether the target is in EAT_RADIUS of the eagle
+	 * @return whether the target is in EAT_RADIUS of the eagle
+	 */
+	bool isTargetEaten();
 
 private:
 };

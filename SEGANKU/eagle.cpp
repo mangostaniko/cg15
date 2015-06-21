@@ -18,8 +18,6 @@ void Eagle::update(float timeDelta, const glm::vec3 &targetPos_, bool targetHidd
 	targetHidden = targetHidden_;
 	targetDefenseActive = targetDefenseActive_;
 
-	// TODO on collision with target gameover (maybe check in player or in main)
-
 	if (state == CIRCLING) {
 
 		// circle in the sky
@@ -41,7 +39,7 @@ void Eagle::update(float timeDelta, const glm::vec3 &targetPos_, bool targetHidd
 	else if (state == ATTACKING) {
 
 		// retreat if target hidden or target in reach and defends themselves
-		if (targetHidden || (targetDefenseActive && isTargetInReach())) {
+		if (targetHidden || (targetDefenseActive && isInTargetDefenseReach())) {
 			state = RETREATING;
 		}
 
@@ -52,7 +50,7 @@ void Eagle::update(float timeDelta, const glm::vec3 &targetPos_, bool targetHidd
 	}
 	else if (state == RETREATING) {
 
-		if (glm::distance(getLocation(), targetPos) < TARGET_REACH_RADIUS*3) {
+		if (glm::distance(getLocation(), targetPos) < TARGET_DEFENSE_REACH_RADIUS*3) {
 
 			// if we are close, fly away
 			glm::vec3 retreatDirection = glm::normalize(getLocation() - targetPos);
@@ -76,8 +74,13 @@ EagleState Eagle::getState()
 	return state;
 }
 
-bool Eagle::isTargetInReach()
+bool Eagle::isInTargetDefenseReach()
 {
-	return glm::distance(getLocation(), targetPos) < TARGET_REACH_RADIUS;
+	return glm::distance(getLocation(), targetPos) < TARGET_DEFENSE_REACH_RADIUS;
+}
+
+bool Eagle::isTargetEaten()
+{
+	return glm::distance(getLocation(), targetPos) < EAT_RADIUS;
 }
 
