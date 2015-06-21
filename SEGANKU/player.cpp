@@ -5,21 +5,8 @@ double Player::scrollY = 0.0;
 
 Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, const std::string &filePath)
     : Geometry(matrix_, filePath)
-    , camera(camera_)
+    , camera(camera_)    
     , window(window_)
-	, foodCount(0)
-	, fullStomach(false)
-	, inBush(false)
-	, currentFood(nullptr)
-	, animDur(0)
-	, overWeight(false)
-	, runDur(0)
-	, breakDur(0)
-	, digestDur(0)
-	, canRun(true)
-    , defenseActive(false)
-    , defenseDur(0)
-	, timePassed(0)
 {
 	// set glfw callbacks
 	glfwSetScrollCallback(window, onScroll);
@@ -33,7 +20,7 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	playerShape = new btSphereShape(1);
 	btTransform playerTransform;
 	playerTransform.setIdentity();
-	playerTransform.setOrigin(btVector3(getLocation().x, getLocation().y+3, getLocation().z));
+	playerTransform.setOrigin(btVector3(getLocation().x, getLocation().y+0.5f, getLocation().z));
 
 	btScalar mass(3.0); btVector3 inertia(0, 0, 0);
 	playerShape->calculateLocalInertia(mass, inertia);
