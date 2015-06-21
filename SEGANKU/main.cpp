@@ -69,7 +69,10 @@ SSAOPostprocessor *ssaoPostprocessor;
 
 Player *player; glm::mat4 playerInitTransform(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
 Eagle *eagle; glm::mat4 eagleInitTransform(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)));
-Geometry *terrain, *wall;
+
+Geometry *terrain;
+Geometry *cave;
+
 Camera *camera;
 Light *sun;
 const glm::vec3 LIGHT_START(glm::vec3(-120, 200, 0));
@@ -429,8 +432,15 @@ void init(GLFWwindow *window)
 
 	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/t.dae");
 
+	//terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/terrain_3.dae");
 	float minX, maxX, minZ, maxZ;
 	initWorldBounds(minX, maxX, minZ, maxZ);
+
+	// cave
+	glm::vec2 cavePos2D(0, 0);
+	cave = new Geometry(glm::mat4(1.0f), "../data/models/cave/cave.dae");
+	cave->setLocation(glm::vec3(cavePos2D.x, calcYCoordinate(cavePos2D, 0.5f), cavePos2D.y));
+	cave->translate(glm::vec3(0, 3, 0), SceneObject::LEFT);
 
 	std::default_random_engine randGen(time(nullptr));
 	std::uniform_real_distribution<float> randDistribution(0.0f, 1.0f);
@@ -438,31 +448,31 @@ void init(GLFWwindow *window)
 
 	float y = 0.0f;
 	// procedurally placed carrots
-	std::vector<glm::vec2> positions = PoissonDiskSampler::generatePoissonSample(100, 0.4f); // positions in range [0, 1]
+	std::vector<glm::vec2> positions = PoissonDiskSampler::generatePoissonSample(60, 0.6f); // positions in range [0, 1]
 	for (glm::vec2 p : positions) {
 		p = (p - glm::vec2(0.5, 0.5)) * 100.0f;
-		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ) {
-			y = calcYCoordinate(p, 1.5f);
+		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ && glm::distance(p, cavePos2D) > 15) {
+			y = calcYCoordinate(p, 5.0f);
 			carrots.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0, 1, 0)), glm::vec3(p.x, y, p.y)), "../data/models/world/carrot.dae"));
 		}
 	}
 
 	// procedurally placed trees
-	positions = PoissonDiskSampler::generatePoissonSample(100, 0.4f); // positions in range [0, 1]
+	positions = PoissonDiskSampler::generatePoissonSample(80, 0.6f); // positions in range [0, 1]
 	for (glm::vec2 p : positions) {
 		p = (p - glm::vec2(0.5, 0.5)) * 100.0f;
-		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ) {
+		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ && glm::distance(p, cavePos2D) > 7) {
 			y = calcYCoordinate(p, 0.9f);
 			trees.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.75 + rand() / 2)), 0.0f, glm::vec3(0, 1, 0)), glm::vec3(p.x, y, p.y)), "../data/models/world/tree.dae")); //rand() * 2 * glm::pi<float>()
 		}
 	}
 
 	// procedurally placed shrubs
-	positions = PoissonDiskSampler::generatePoissonSample(60, 0.4f); // positions in range [0, 1]
+	positions = PoissonDiskSampler::generatePoissonSample(60, 0.6f); // positions in range [0, 1]
 	for (unsigned int i = 0; i < positions.size(); ++i) {
 		glm::vec2 p = positions[i];
 		p = (p - glm::vec2(0.5, 0.5)) * 100.0f;
-		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ) {
+		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ && glm::distance(p, cavePos2D) > 10) {
 			y = calcYCoordinate(p, 0.5f);
 			if (i % 2 == 0) {
 				shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(1 + rand() / 2)), 0.0f, glm::vec3(0, 1, 0)), glm::vec3(p.x, y, p.y)), "../data/models/world/shrub1.dae"));
@@ -610,6 +620,8 @@ void drawScene()
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 64.f);
 	terrain->draw(activeShader, camera, false, filterType, player->getViewMat());
 
+	cave->draw(activeShader, camera, false, filterType, player->getViewMat());
+
 	for (std::shared_ptr<Geometry> tree : trees) {
 		tree->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
 	}
@@ -703,6 +715,7 @@ void cleanup()
 	delete player; player = nullptr;
 	delete eagle; eagle = nullptr;
 	delete terrain; terrain = nullptr;
+	delete cave; cave = nullptr;
 
 	physics->cleanUp();
 	delete physics;
