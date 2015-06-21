@@ -108,7 +108,7 @@ void Physics::addTerrainShapeToPhysics(Geometry *geometry)
 		btVector3 v2(vertices.at(i+1).position.x, vertices.at(i+1).position.y, vertices.at(i+1).position.z);
 		btVector3 v3(vertices.at(i+2).position.x, vertices.at(i+2).position.y, vertices.at(i+2).position.z);
 		mTriMesh->addTriangle(v1, v2, v3);
-		i += 2;
+		i += 3;
 	}
 
 	btTriangleMeshShape *terrain = new btBvhTriangleMeshShape(mTriMesh, false);
