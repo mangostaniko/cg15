@@ -639,7 +639,7 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 			textRenderer->renderText("player hidden: " + std::to_string(player->isInBush()), 25.0f, startY+7*deltaY, fontSize, glm::vec3(1));
 			textRenderer->renderText("player defense active: " + std::to_string(player->isDefenseActive()), 25.0f, startY+8*deltaY, fontSize, glm::vec3(1));
 			std::string eagleStateStrings[3] = {"CIRCLING", "ATTACKING", "RETREATING"};
-			textRenderer->renderText("eagle state: " + eagleStateStrings[eagle->getState()], 25.0f, startY+9*deltaY, fontSize, glm::vec3(1));
+			textRenderer->renderText("eagle state: " + eagleStateStrings[eagle->getState()] + ", in reach: " + std::to_string(eagle->isTargetInReach()), 25.0f, startY+9*deltaY, fontSize, glm::vec3(1));
 		}
 	}
 	if (paused && !player->isFull()) {

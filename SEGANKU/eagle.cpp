@@ -11,9 +11,12 @@ Eagle::~Eagle()
 
 }
 
-void Eagle::update(float timeDelta, const glm::vec3 &targetPos, bool targetHidden, bool targetDefenseActive)
+void Eagle::update(float timeDelta, const glm::vec3 &targetPos_, bool targetHidden_, bool targetDefenseActive_)
 {
 	totalTimePassed += timeDelta;
+	targetPos = targetPos_;
+	targetHidden = targetHidden_;
+	targetDefenseActive = targetDefenseActive_;
 
 	// TODO on collision with target gameover (maybe check in player or in main)
 
@@ -38,7 +41,7 @@ void Eagle::update(float timeDelta, const glm::vec3 &targetPos, bool targetHidde
 	else if (state == ATTACKING) {
 
 		// retreat if target hidden or target in reach and defends themselves
-		if (targetHidden || (targetDefenseActive && glm::distance(getLocation(), targetPos) < TARGET_REACH_RADIUS)) {
+		if (targetHidden || (targetDefenseActive && isTargetInReach())) {
 			state = RETREATING;
 		}
 
@@ -71,5 +74,10 @@ void Eagle::update(float timeDelta, const glm::vec3 &targetPos, bool targetHidde
 EagleState Eagle::getState()
 {
 	return state;
+}
+
+bool Eagle::isTargetInReach()
+{
+	return glm::distance(getLocation(), targetPos) < TARGET_REACH_RADIUS;
 }
 
