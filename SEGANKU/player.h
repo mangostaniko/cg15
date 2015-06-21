@@ -47,7 +47,7 @@ class Player : public Geometry
 	// durations are given in seconds
 	Geometry *currentFood = nullptr;	// pointer to the currently eaten carrot
 	const float MAX_ANIM = 2.5;	// max length of animation
-	const int NEEDED_FOOD = 7;	// how much food is needed to get through winter
+	const int NEEDED_FOOD = 10;	// how much food is needed to get through winter
 	const int DEFENSE_FOOD_COST = 3;	// how many carrots are used in a skunk defense
 	const float MAX_RUN_TIME = 4.0;	// max speed time
 	const float BREAK_TIME = 5.0;	// speed cool off time
@@ -168,6 +168,12 @@ public:
 	* @return the number of currently eaten carrots
 	*/
 	int getFoodCount();
+
+	/**
+	* @brief get the number of food objects that need to be eaten to be full
+	* @return the number of food objects that need to be eaten to be full
+	*/
+	int getNeededFood();
 
 	/**
 	* @brief set the information whether or not Player is currently in a Bush (called and set by Physics Class)

@@ -35,7 +35,7 @@
 
 void init(GLFWwindow *window);
 void initWorldBounds(float &miX, float &maX, float &miY, float &maY);
-float calcYCoordinate(glm::vec2 pos2D, float margin);
+float terrainGetYCoord(glm::vec2 pos2D, float maxDistanceXY, float offsetY);
 void initSM();
 void initPhysicsObjects();
 void update(float timeDelta);
@@ -50,7 +50,7 @@ int windowWidth, windowHeight;
 bool running			       = true;
 bool paused				       = false;
 bool foundCarrot		       = false;
-bool debugInfoEnabled          = true;
+bool debugInfoEnabled          = false;
 bool wireframeEnabled          = false;
 bool ssaoEnabled		       = false;
 bool ssaoBlurEnabled	       = true;
@@ -430,15 +430,14 @@ void init(GLFWwindow *window)
 
 	sun = new Light(glm::translate(glm::mat4(1.0f), LIGHT_START), LIGHT_END, glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
 
-	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/t.dae");
+	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/terrain.dae");
 	float minX, maxX, minZ, maxZ;
 	initWorldBounds(minX, maxX, minZ, maxZ);
 
 	// cave
 	glm::vec2 cavePos2D(0, 0);
 	cave = new Geometry(glm::mat4(1.0f), "../data/models/cave/cave.dae");
-	cave->setLocation(glm::vec3(cavePos2D.x, calcYCoordinate(cavePos2D, 0.5f), cavePos2D.y));
-	cave->translate(glm::vec3(0, 2.7, 0), SceneObject::LEFT);
+	cave->setLocation(glm::vec3(cavePos2D.x, terrainGetYCoord(cavePos2D, 5.0f, -0.4f), cavePos2D.y));
 
 	std::default_random_engine randGen(time(nullptr));
 	std::uniform_real_distribution<float> randDistribution(0.0f, 1.0f);
@@ -446,32 +445,32 @@ void init(GLFWwindow *window)
 
 	float y = 0.0f;
 	// procedurally placed carrots
-	std::vector<glm::vec2> positions = PoissonDiskSampler::generatePoissonSample(60, 0.6f); // positions in range [0, 1]
+	std::vector<glm::vec2> positions = PoissonDiskSampler::generatePoissonSample(80, 0.4f); // positions in range [0, 1]
 	for (glm::vec2 p : positions) {
-		p = (p - glm::vec2(0.5, 0.5)) * 100.0f;
-		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ && glm::distance(p, cavePos2D) > 15) {
-			y = calcYCoordinate(p, 5.0f);
+		p = (p - glm::vec2(0.5, 0.5)) * glm::max(maxX, maxZ)*1.8f;
+		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ && glm::distance(p, cavePos2D) > 10) {
+			y = terrainGetYCoord(p, 0.5f, -0.2f);
 			carrots.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0, 1, 0)), glm::vec3(p.x, y, p.y)), "../data/models/world/carrot.dae"));
 		}
 	}
 
 	// procedurally placed trees
-	positions = PoissonDiskSampler::generatePoissonSample(80, 0.6f); // positions in range [0, 1]
+	positions = PoissonDiskSampler::generatePoissonSample(60, 0.4f); // positions in range [0, 1]
 	for (glm::vec2 p : positions) {
-		p = (p - glm::vec2(0.5, 0.5)) * 100.0f;
+		p = (p - glm::vec2(0.5, 0.5)) * glm::max(maxX, maxZ)*1.8f;
 		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ && glm::distance(p, cavePos2D) > 7) {
-			y = calcYCoordinate(p, 0.9f);
+			y = terrainGetYCoord(p, 1.5f, -1.0f);
 			trees.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.75 + rand() / 2)), 0.0f, glm::vec3(0, 1, 0)), glm::vec3(p.x, y, p.y)), "../data/models/world/tree.dae")); //rand() * 2 * glm::pi<float>()
 		}
 	}
 
 	// procedurally placed shrubs
-	positions = PoissonDiskSampler::generatePoissonSample(60, 0.6f); // positions in range [0, 1]
+	positions = PoissonDiskSampler::generatePoissonSample(50, 0.4f); // positions in range [0, 1]
 	for (unsigned int i = 0; i < positions.size(); ++i) {
 		glm::vec2 p = positions[i];
-		p = (p - glm::vec2(0.5, 0.5)) * 100.0f;
+		p = (p - glm::vec2(0.5, 0.5)) * glm::max(maxX, maxZ)*1.8f;
 		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ && glm::distance(p, cavePos2D) > 10) {
-			y = calcYCoordinate(p, 0.5f);
+			y = terrainGetYCoord(p, 1.0f, -0.4f);
 			if (i % 2 == 0) {
 				shrubs.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(1 + rand() / 2)), 0.0f, glm::vec3(0, 1, 0)), glm::vec3(p.x, y, p.y)), "../data/models/world/shrub1.dae"));
 			}
@@ -647,10 +646,9 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 
 		if (!paused) {
 			textRenderer->renderText("time until starvation: " + std::to_string(int(timeToStarvation - glfwGetTime())), 25.0f, startY+6*deltaY, fontSize, glm::vec3(1));
-			textRenderer->renderText("player hidden: " + std::to_string(player->isInBush()), 25.0f, startY+7*deltaY, fontSize, glm::vec3(1));
-			textRenderer->renderText("player defense active: " + std::to_string(player->isDefenseActive()), 25.0f, startY+8*deltaY, fontSize, glm::vec3(1));
+			textRenderer->renderText("player hidden: " + std::to_string(player->isInBush()) /* + ", defense active: " + std::to_string(player->isDefenseActive()) */, 25.0f, startY+7*deltaY, fontSize, glm::vec3(1));
 			std::string eagleStateStrings[3] = {"CIRCLING", "ATTACKING", "RETREATING"};
-			textRenderer->renderText("eagle state: " + eagleStateStrings[eagle->getState()] + ", in reach: " + std::to_string(eagle->isInTargetDefenseReach()), 25.0f, startY+9*deltaY, fontSize, glm::vec3(1));
+			textRenderer->renderText("eagle state: " + eagleStateStrings[eagle->getState()] /* + ", in reach: " + std::to_string(eagle->isInTargetDefenseReach()) */, 25.0f, startY+8*deltaY, fontSize, glm::vec3(1));
 		}
 	}
 
@@ -664,15 +662,15 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 	}
 
 	if (player->isFull() && player->isInCave()) {
-		textRenderer->renderText("CONGRATULATIONS!!! YOU MADE IT!", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.45f, 0.7f));
+		textRenderer->renderText("YOU MADE IT!!!", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.45f, 0.7f));
 		paused = true;
 	}
 
-	std::string carrotText = "carrots: " + std::to_string(player->getFoodCount());
+	std::string carrotText = "carrots: " + std::to_string(player->getFoodCount()) + " / " + std::to_string(player->getNeededFood());
 	textRenderer->renderText(carrotText, 25.0f, 30.0f, 0.7f, glm::vec3(1, 0.7f, 0.0f));
 
 	if (player->isEating()) {
-		textRenderer->renderText(player->getFoodReaction(), 512.0f, 350.0f, 0.4f, glm::vec3(0.5f, 0.7f, 0.5f));
+		textRenderer->renderText(player->getFoodReaction(), 100.0f, 350.0f, 0.4f, glm::vec3(0.5f, 0.7f, 0.5f));
 	}
 
 	glEnable(GL_DEPTH_TEST);
@@ -859,7 +857,7 @@ void setActiveShader(Shader *shader)
 }
 
 
-float calcYCoordinate(glm::vec2 pos2D, float margin)
+float terrainGetYCoord(glm::vec2 pos2D, float maxDistanceXY, float offsetY)
 {
 	float newY = 0.0f;
 
@@ -873,12 +871,12 @@ float calcYCoordinate(glm::vec2 pos2D, float margin)
 	while (i < verts.size()) {
 		glm::vec3 vPos = verts.at(i).position; // *glm::mat3(terrain->getMatrix());
 		
-		lowerX = vPos.x - margin; upperX = vPos.x + margin;
-		lowerZ = vPos.z - margin; upperZ = vPos.z + margin;
+		lowerX = vPos.x - maxDistanceXY; upperX = vPos.x + maxDistanceXY;
+		lowerZ = vPos.z - maxDistanceXY; upperZ = vPos.z + maxDistanceXY;
 
 		if (x > lowerX && x < upperX) {
 			if (z > lowerZ && z < upperZ) {
-				newY = vPos.y - 0.5f;
+				newY = vPos.y + offsetY;
 				i = verts.size() + 1;
 			}
 		}

@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.73.0 commit date:2015-01-20, commit time:18:16, hash:bbf09d9</authoring_tool>
     </contributor>
-    <created>2015-06-21T17:51:37</created>
-    <modified>2015-06-21T17:51:37</modified>
+    <created>2015-06-22T01:09:12</created>
+    <modified>2015-06-22T01:09:12</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -412,7 +412,7 @@
   <library_visual_scenes>
     <visual_scene id="Scene" name="Scene">
       <node id="tree" name="tree" type="NODE">
-        <matrix sid="transform">0.7830307 -1.421674 0.1978545 -3.17351 1.456532 0.8153421 0.0239137 0.6388712 -0.232161 0.3202863 0.8173519 -2.552083 0 0 0 1</matrix>
+        <matrix sid="transform">0.7830307 -1.421674 0.1978545 -3.17351 1.456532 0.8153421 0.0239137 0.6388712 -0.232161 0.3202863 0.8173519 -0.5435431 0 0 0 1</matrix>
         <instance_geometry url="#Mesh_100-mesh">
           <bind_material>
             <technique_common>
@@ -423,7 +423,7 @@
         </instance_geometry>
       </node>
       <node id="shrub2" name="shrub2" type="NODE">
-        <matrix sid="transform">0.5697245 -0.6191732 1.03543e-7 2.29173 0.5147501 0.6852998 -2.13586e-7 0.7305292 2.88999e-8 1.19383e-7 1.763075 -1.6879 0 0 0 1</matrix>
+        <matrix sid="transform">0.5697245 -0.6191732 1.03543e-7 2.29173 0.5147501 0.6852998 -2.13586e-7 0.7305292 2.88999e-8 1.19383e-7 1.763075 0.3206402 0 0 0 1</matrix>
         <instance_geometry url="#Cube_000-mesh">
           <bind_material>
             <technique_common>
@@ -433,7 +433,7 @@
         </instance_geometry>
       </node>
       <node id="cave_baked_texture" name="cave_baked_texture" type="NODE">
-        <matrix sid="transform">1 0 0 -1.27386e-8 0 1 0 -3.08658e-7 0 0 0.5669051 6.40917e-7 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 -1.27386e-8 0 1 0 -3.08658e-7 0 0 0.5669051 2.008541 0 0 0 1</matrix>
         <instance_geometry url="#Cave_001-mesh">
           <bind_material>
             <technique_common>
@@ -443,7 +443,7 @@
         </instance_geometry>
       </node>
       <node id="shrub1" name="shrub1" type="NODE">
-        <matrix sid="transform">-0.7756036 -0.2930768 1.39898e-7 -1.668304 0.2436497 -0.9329438 2.0997e-7 2.563563 3.05993e-8 1.26403e-7 1.874092 -1.703318 0 0 0 1</matrix>
+        <matrix sid="transform">-0.7756036 -0.2930768 1.39898e-7 -1.668304 0.2436497 -0.9329438 2.0997e-7 2.563563 3.05993e-8 1.26403e-7 1.874092 0.305222 0 0 0 1</matrix>
         <instance_geometry url="#Cube_001-mesh">
           <bind_material>
             <technique_common>
@@ -453,7 +453,7 @@
         </instance_geometry>
       </node>
       <node id="shrub0" name="shrub0" type="NODE">
-        <matrix sid="transform">-0.68301 0.5303834 -7.21258e-8 -2.772243 -0.4409347 -0.8215666 2.41778e-7 -0.2693782 3.05993e-8 1.26403e-7 1.874092 -1.703318 0 0 0 1</matrix>
+        <matrix sid="transform">-0.68301 0.5303834 -7.21258e-8 -2.772243 -0.4409347 -0.8215666 2.41778e-7 -0.2693782 3.05993e-8 1.26403e-7 1.874092 0.305222 0 0 0 1</matrix>
         <instance_geometry url="#Cube_002-mesh">
           <bind_material>
             <technique_common>
@@ -463,7 +463,7 @@
         </instance_geometry>
       </node>
       <node id="shrub_roof" name="shrub_roof" type="NODE">
-        <matrix sid="transform">-0.1011173 -1.254985 0.4011936 0.8097626 1.054669 -0.1032085 0.2250552 -0.6832787 -0.08212022 0.2197982 2.396377 1.031039 0 0 0 1</matrix>
+        <matrix sid="transform">-0.1011173 -1.254985 0.4011936 0.8097626 1.054669 -0.1032085 0.2250552 -0.6832787 -0.08212022 0.2197982 2.396377 3.039579 0 0 0 1</matrix>
         <instance_geometry url="#Cube_003-mesh">
           <bind_material>
             <technique_common>

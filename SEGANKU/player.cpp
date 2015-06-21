@@ -205,14 +205,15 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 
 	// digestion happens faster when moving
 	if (speeding && moving) {
-		digestDur += 2 * timeDelta;		// speeding while moving, fast digestion
+		digestDur += 4 * timeDelta;		// speeding while moving, fast digestion
 	}
+	/*
 	else if (moving) {
 		digestDur += 1.5 * timeDelta;	// only moving
 	}
 	else {
-		digestDur += 1 * timeDelta;		// no movement at all, slow digestion
-	}
+		digestDur = 1 * timeDelta;		// no movement at all, slow digestion
+	}*/
 
 	// Digestion Period reached
 	if (digestDur > DIGEST_TIME && foodCount > 0) {
@@ -343,6 +344,11 @@ int Player::getFoodCount()
 	return foodCount;
 }
 
+int Player::getNeededFood()
+{
+	return NEEDED_FOOD;
+}
+
 bool Player::isDefenseActive()
 {
 	return defenseActive;
@@ -396,12 +402,15 @@ std::string Player::getFoodReaction()
 		return "sooo hungry!";
 	}
 	else if (foodCount < NEEDED_FOOD * 0.5) {
+		return "gimme more!";
+	}
+	else if (foodCount < NEEDED_FOOD * 0.75) {
 		return "need more carrots";
 	}
-	else if (foodCount < NEEDED_FOOD * 0.8) {
+	else if (foodCount < NEEDED_FOOD) {
 		return "just a little bit more";
 	}
-	else if (foodCount <= NEEDED_FOOD) {
+	else if (foodCount == NEEDED_FOOD) {
 		return "Winter is coming! But I am prepared";
 	}
 	else if (foodCount > NEEDED_FOOD) {
