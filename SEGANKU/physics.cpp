@@ -1,7 +1,7 @@
 #include "physics.h"
 
 bool inBush;
-const btRigidBody *toDelete = nullptr;
+btRigidBody *toDelete = nullptr;
 
 struct CarrotContact : public btCollisionWorld::ContactResultCallback
 {
@@ -18,7 +18,8 @@ struct CarrotContact : public btCollisionWorld::ContactResultCallback
 		Player *player = (Player*)playerBody->getCollisionObject()->getUserPointer();
 		Geometry *geometry = (Geometry*)carrotBody->getCollisionObject()->getUserPointer();
 
-		carrotBody->getCollisionObject()->setActivationState(0);
+		carrotBody->getCollisionObject()->forceActivationState(DISABLE_SIMULATION);
+
 		player->eat(geometry);
 		toDelete = (btRigidBody*)carrotBody;
 
@@ -38,8 +39,7 @@ struct BushContact : public btCollisionWorld::ContactResultCallback
 		int partId1,
 		int index1)
 	{
-//		Player *player = (Player*)playerBody->getCollisionObject()->getUserPointer();
-//		Geometry *geometry = (Geometry*)bushBody->getCollisionObject()->getUserPointer();
+
 		inBush = true;
 
 		return 0;
@@ -85,10 +85,15 @@ void Physics::stepSimulation(float deltaT)
 		dynamicsWorld->contactPairTest(*it, player->getRigidBody(), bushCallback);
 	}
 
-
-
 	// TODO DELETE THE CARROT WE ALREADY ATE
-
+	/*
+	if (toDelete != nullptr) {
+		std::vector<btRigidBody*>::iterator it = std::find(carrotsGeo.begin(), carrotsGeo.end(), toDelete);
+		carrotsGeo.erase(it);
+		deletedBodies.push_back(toDelete);
+		toDelete = nullptr;
+	}
+	*/
 	player->setInBush(inBush);
 }
 
@@ -103,15 +108,14 @@ void Physics::addTerrainShapeToPhysics(Geometry *geometry)
 	const int triangles = vertices.size() / 3;
 
 	btTriangleMesh *mTriMesh = new btTriangleMesh();
-	for (unsigned int i = 0; i < vertices.size(); ++i) {
+	for (unsigned int i = 0; i < vertices.size(); i += 3) {
 		btVector3 v1(vertices.at(i).position.x, vertices.at(i).position.y, vertices.at(i).position.z);
 		btVector3 v2(vertices.at(i+1).position.x, vertices.at(i+1).position.y, vertices.at(i+1).position.z);
 		btVector3 v3(vertices.at(i+2).position.x, vertices.at(i+2).position.y, vertices.at(i+2).position.z);
 		mTriMesh->addTriangle(v1, v2, v3);
-		i += 3;
 	}
 
-	btTriangleMeshShape *terrain = new btBvhTriangleMeshShape(mTriMesh, false);
+	btTriangleMeshShape *terrain = new btBvhTriangleMeshShape(mTriMesh, true);
 	
 	btScalar mass(0.);
 	btVector3 localInertia(0, 0, 0);
@@ -154,8 +158,6 @@ void Physics::addTreeCylinderToPhysics(Geometry *geometry, btScalar radius)
 	body->setActivationState(DISABLE_DEACTIVATION);
 	body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
 
-	//collisionShapes.push_back(shape);
-
 	dynamicsWorld->addRigidBody(body);
 }
 
@@ -178,7 +180,6 @@ void Physics::addFoodSphereToPhysics(Geometry *geometry, btScalar radius)
 	body->setUserPointer(geometry);
 
 	carrotsGeo.push_back(body);
-	//collisionShapes.push_back(shape);
 
 	dynamicsWorld->addRigidBody(body);
 }
@@ -203,7 +204,6 @@ void Physics::addBushSphereToPhysics(Geometry *geometry, btScalar radius)
 	body->setUserPointer(geometry);
 
 	bushesGeo.push_back(body);
-	//collisionShapes.push_back(shape);
 
 	dynamicsWorld->addRigidBody(body);
 }
