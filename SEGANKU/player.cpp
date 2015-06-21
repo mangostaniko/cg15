@@ -5,22 +5,8 @@ double Player::scrollY = 0.0;
 
 Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, const std::string &filePath)
     : Geometry(matrix_, filePath)
-    , camera(camera_)
+    , camera(camera_)    
     , window(window_)
-	, foodCount(0)
-	, fullStomach(false)
-	, inBush(false)
-	, currentFood(nullptr)
-	, animDur(0)
-	, overWeight(false)
-	, runDur(0)
-	, breakDur(0)
-	, digestDur(0)
-	, canRun(true)
-    , defenseActive(false)
-    , defenseDur(0)
-	, timePassed(0)
-	, inCave(false)
 {
 	// set glfw callbacks
 	glfwSetScrollCallback(window, onScroll);

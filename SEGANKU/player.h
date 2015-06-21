@@ -40,12 +40,12 @@ class Player : public Geometry
 	btCollisionShape *playerShape;
 	btRigidBody *playerBody;
 	btDefaultMotionState *motionState;
-	float timePassed; // in seconds
+	float timePassed = 0; // in seconds
 
 
 	// GAMEPLAY SPECS
 	// durations are given in seconds
-	Geometry *currentFood;	// pointer to the currently eaten carrot
+	Geometry *currentFood = nullptr;	// pointer to the currently eaten carrot
 	const float MAX_ANIM = 2.5;	// max length of animation
 	const int NEEDED_FOOD = 7;	// how much food is needed to get through winter
 	const int DEFENSE_FOOD_COST = 3;	// how many carrots are used in a skunk defense
@@ -54,20 +54,20 @@ class Player : public Geometry
 	const float DIGEST_TIME = 20.0;	// digestion time for 1 carrot
 	const float DEFENSE_TIME = 3.0;	// how long the player is protected after defense activation
 
-	bool overWeight;	// ate too much?
-	bool canRun;		// can use Speed?
+	int foodCount = 0;		    // how much food was already eaten
+	bool fullStomach = false;   // true if we ate enough
+	bool overWeight  = false;	// ate too much?
+	bool canRun      = true;	// can use Speed?
 
-	float animDur;			// timer for animation duration
-	float runDur;			// timer for speed duration
-	float breakDur;			// timer for speed cooloff duration
-	float digestDur;		// timer for digestion duration
-	float defenseDur;       // timer for active defense duration
+	float animDur    = 0;		// timer for animation duration
+	float runDur     = 0;		// timer for speed duration
+	float breakDur   = 0;       // timer for speed cooloff duration
+	float digestDur  = 0;		// timer for digestion duration
+	float defenseDur = 0;       // timer for active defense duration
 
-	int foodCount;		// how much food was already eaten
-	bool fullStomach;		// true if we ate enough
-	bool inBush;			// true if currently in bush
-	bool inCave;
-	bool defenseActive;     // true if skunk defense cloud active
+	bool inBush = true;
+	bool inCave = true;
+	bool defenseActive = false; // true if skunk defense cloud active
 
 
 

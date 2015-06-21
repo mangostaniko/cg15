@@ -869,7 +869,7 @@ float calcYCoordinate(glm::vec2 pos2D, float margin)
 
 	std::vector<Vertex> verts = terrain->getSurface()->getVertices();
 
-	int i = 0;
+	unsigned int i = 0;
 	while (i < verts.size()) {
 		glm::vec3 vPos = verts.at(i).position; // *glm::mat3(terrain->getMatrix());
 		
@@ -896,7 +896,7 @@ void initWorldBounds(float &miX, float &maX, float &miZ, float &maZ)
 	miX = 99999, miZ = 99999;
 	maX = -99999, maZ = -99999;
 
-	int i = 0;
+	unsigned int i = 0;
 	while (i < verts.size()) {
 		glm::vec3 pos = verts.at(i).position;
 
