@@ -156,12 +156,12 @@ void Physics::addTerrainShapeToPhysics(Geometry *geometry)
 
 }
 
-void Physics::addTreeSphereToPhysics(Geometry *geometry, btScalar radius)
+void Physics::addTreeCylinderToPhysics(Geometry *geometry, btScalar radius)
 {
 	btScalar mass(0.);
 	btVector3 localInertia(0, 0, 0);
 
-	btCollisionShape *shape = new btSphereShape(radius);
+	btCollisionShape *shape = new btCylinderShape(btVector3(radius, 10, radius));
 	btTransform transform;
 	transform.setIdentity();
 	transform.setOrigin(btVector3(geometry->getLocation().x, radius, geometry->getLocation().z));

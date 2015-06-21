@@ -54,7 +54,7 @@ public:
 	* @param geometry the geometry object that is to be a collision object (-> use for Tree and other static objects)
 	* @param radius radius for the Sphere Collision Object
 	*/
-	void addTreeSphereToPhysics(Geometry *geometry, btScalar radius);
+	void addTreeCylinderToPhysics(Geometry *geometry, btScalar radius);
 
 	/**
 	* @brief add the TerrainShape to the physics world, for now btCollisionBox is made, later should be made with mesh
