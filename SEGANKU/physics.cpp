@@ -1,7 +1,8 @@
 #include "physics.h"
 
-bool inBush;
+bool inBush, inCave;
 btRigidBody *toDelete = nullptr;
+btDiscreteDynamicsWorld *physicWorld;
 
 struct CarrotContact : public btCollisionWorld::ContactResultCallback
 {
@@ -18,10 +19,14 @@ struct CarrotContact : public btCollisionWorld::ContactResultCallback
 		Player *player = (Player*)playerBody->getCollisionObject()->getUserPointer();
 		Geometry *geometry = (Geometry*)carrotBody->getCollisionObject()->getUserPointer();
 
-		carrotBody->getCollisionObject()->forceActivationState(DISABLE_SIMULATION);
+		carrotBody->getCollisionObject()->setActivationState(DISABLE_SIMULATION);
 
+		//removeCollisionObject(const_cast<btCollisionObject*>(colObj0Wrap->getCollisionObject()));
 		player->eat(geometry);
-		toDelete = (btRigidBody*)carrotBody;
+		std::cout << physicWorld->getCollisionObjectArray().size() << std::endl;
+		physicWorld->removeCollisionObject(const_cast<btCollisionObject*>(carrotBody->getCollisionObject()));
+		std::cout << physicWorld->getCollisionObjectArray().size() << std::endl;
+		toDelete = (btRigidBody*)carrotBody->getCollisionObject();
 
 		return 0;
 	}
@@ -46,8 +51,47 @@ struct BushContact : public btCollisionWorld::ContactResultCallback
 	}
 };
 
+struct CaveAreaContact : public btCollisionWorld::ContactResultCallback
+{
+	CaveAreaContact() {}
+
+	btScalar addSingleResult(btManifoldPoint& cp,
+		const btCollisionObjectWrapper* caveBody,
+		int partId0,
+		int index0,
+		const btCollisionObjectWrapper* playerBody,
+		int partId1,
+		int index1)
+	{
+
+		inBush = true;
+
+		return 0;
+	}
+};
+
+struct CaveContact : public btCollisionWorld::ContactResultCallback
+{
+	CaveContact() {}
+
+	btScalar addSingleResult(btManifoldPoint& cp,
+		const btCollisionObjectWrapper* caveBody,
+		int partId0,
+		int index0,
+		const btCollisionObjectWrapper* playerBody,
+		int partId1,
+		int index1)
+	{
+
+		inCave = true;
+
+		return 0;
+	}
+};
 CarrotContact carrotCallback;
 BushContact bushCallback;
+CaveAreaContact caveAreaCallback;
+CaveContact caveCallback;
 
 Physics::Physics(Player *player) : player(player)
 {
@@ -70,11 +114,13 @@ void Physics::init()
 
 	debugDrawerPhysics = new SimpleDebugDrawer();
 	dynamicsWorld->setDebugDrawer(debugDrawerPhysics);
+	physicWorld = dynamicsWorld;
 }
 
 void Physics::stepSimulation(float deltaT)
 {
 	inBush = false;
+	inCave = false;
 	dynamicsWorld->stepSimulation(btScalar(deltaT));
 
 	for (std::vector<btRigidBody*>::iterator it = carrotsGeo.begin(); it != carrotsGeo.end(); ++it) {
@@ -85,16 +131,20 @@ void Physics::stepSimulation(float deltaT)
 		dynamicsWorld->contactPairTest(*it, player->getRigidBody(), bushCallback);
 	}
 
+	dynamicsWorld->contactPairTest(caveArea, player->getRigidBody(), caveAreaCallback);
+	std::cout << "this works" << std::endl;
+	dynamicsWorld->contactPairTest(cave, player->getRigidBody(), caveCallback);
+
 	// TODO DELETE THE CARROT WE ALREADY ATE
-	/*
+	
 	if (toDelete != nullptr) {
-		std::vector<btRigidBody*>::iterator it = std::find(carrotsGeo.begin(), carrotsGeo.end(), toDelete);
-		carrotsGeo.erase(it);
+		carrotsGeo.erase(std::find(carrotsGeo.begin(), carrotsGeo.end(), toDelete));
 		deletedBodies.push_back(toDelete);
 		toDelete = nullptr;
 	}
-	*/
+	
 	player->setInBush(inBush);
+	player->setIsInCave(inCave);
 }
 
 void Physics::addTerrainShapeToPhysics(Geometry *geometry)
@@ -123,8 +173,6 @@ void Physics::addTerrainShapeToPhysics(Geometry *geometry)
 	btTransform groundTransform;
 	groundTransform.setIdentity();
 	groundTransform.setOrigin(btVector3(0, geometry->getLocation().y-1, 0));
-	//groundTransform.setFromOpenGLMatrix(glm::value_ptr(geometry->getMatrix()));
-	//terrain->calculateLocalInertia(mass, localInertia);
 	
 	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
 	btDefaultMotionState *myMotionState = new btDefaultMotionState(groundTransform);
@@ -133,9 +181,6 @@ void Physics::addTerrainShapeToPhysics(Geometry *geometry)
 	floor->setActivationState(DISABLE_DEACTIVATION);
 	floor->setCollisionFlags(floor->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
 	floor->setFriction(10);
-
-	
-	//collisionShapes.push_back(terrain);
 
 	dynamicsWorld->addRigidBody(floor);
 
@@ -208,6 +253,34 @@ void Physics::addBushSphereToPhysics(Geometry *geometry, btScalar radius)
 	dynamicsWorld->addRigidBody(body);
 }
 
+void Physics::setupCaveObjects(Geometry *geometry)
+{
+	btScalar mass(0.);
+	btVector3 localInertia(0, 0, 0);
+
+	btCollisionShape *shapeArea = new btSphereShape(btScalar(3.));
+	btCollisionShape *shapeCave = new btSphereShape(btScalar(1.5));
+
+	btTransform transform;
+	transform.setIdentity();
+	transform.setOrigin(btVector3(geometry->getLocation().x, geometry->getLocation().y, geometry->getLocation().z));
+	shapeArea->calculateLocalInertia(mass, localInertia);
+	btDefaultMotionState *motionState = new btDefaultMotionState(transform);
+	btRigidBody::btRigidBodyConstructionInfo info(mass, motionState, shapeArea, localInertia);
+	caveArea = new btRigidBody(info);
+	caveArea->setActivationState(DISABLE_DEACTIVATION);
+	caveArea->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+
+	shapeCave->calculateLocalInertia(mass, localInertia);
+	btDefaultMotionState *motionState2 = new btDefaultMotionState(transform);
+	btRigidBody::btRigidBodyConstructionInfo info2(mass, motionState2, shapeCave, localInertia);
+	cave = new btRigidBody(info2);
+	cave->setActivationState(DISABLE_DEACTIVATION);
+	cave->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+
+	dynamicsWorld->addRigidBody(caveArea);
+	dynamicsWorld->addRigidBody(cave);
+}
 
 void Physics::debugDrawWorld(bool draw)
 {

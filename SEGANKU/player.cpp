@@ -20,6 +20,7 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
     , defenseActive(false)
     , defenseDur(0)
 	, timePassed(0)
+	, inCave(false)
 {
 	// set glfw callbacks
 	glfwSetScrollCallback(window, onScroll);
@@ -46,7 +47,6 @@ Player::Player(const glm::mat4 &matrix_, Camera *camera_, GLFWwindow *window_, c
 	playerBody->setUserPointer(this);
 	playerBody->setFriction(10);
 	//playerBody->setDamping(3, 3);
-
 }
 
 Player::~Player()
@@ -425,4 +425,14 @@ std::string Player::getFoodReaction()
 		return " ";
 	}
 
+}
+
+bool Player::isInCave()
+{
+	return inCave;
+}
+
+void Player::setIsInCave(bool inC)
+{
+	inCave = inC;
 }

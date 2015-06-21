@@ -47,7 +47,7 @@ class Player : public Geometry
 	// durations are given in seconds
 	Geometry *currentFood;	// pointer to the currently eaten carrot
 	const float MAX_ANIM = 2.5;	// max length of animation
-	const int NEEDED_FOOD = 10;	// how much food is needed to get through winter
+	const int NEEDED_FOOD = 7;	// how much food is needed to get through winter
 	const int DEFENSE_FOOD_COST = 3;	// how many carrots are used in a skunk defense
 	const float MAX_RUN_TIME = 4.0;	// max speed time
 	const float BREAK_TIME = 5.0;	// speed cool off time
@@ -66,6 +66,7 @@ class Player : public Geometry
 	int foodCount;		// how much food was already eaten
 	bool fullStomach;		// true if we ate enough
 	bool inBush;			// true if currently in bush
+	bool inCave;
 	bool defenseActive;     // true if skunk defense cloud active
 
 
@@ -190,6 +191,10 @@ public:
 	* @return whether or not the Player is currently eating
 	*/
 	std::string getFoodReaction();
+	
+	bool isInCave();
+
+	void setIsInCave(bool inC);
 
 };
 

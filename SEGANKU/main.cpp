@@ -551,6 +551,7 @@ void initPhysicsObjects()
 	}
 
 	physics->addTerrainShapeToPhysics(terrain);
+	physics->setupCaveObjects(cave);
 	
 }
 
@@ -654,18 +655,19 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 			textRenderer->renderText("eagle state: " + eagleStateStrings[eagle->getState()] + ", in reach: " + std::to_string(eagle->isInTargetDefenseReach()), 25.0f, startY+9*deltaY, fontSize, glm::vec3(1));
 		}
 	}
+
 	if (paused) {
 		if (eagle->isTargetEaten()) {
 			textRenderer->renderText("YOU GOT EATEN =(", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.35f, 0.7f));
 		}
-		else {
-			if (player->isFull()) {
-				textRenderer->renderText("CONGRATULATIONS!!! YOU MADE IT!", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.45f, 0.7f));
-			}
-			else {
-				textRenderer->renderText("YOU STARVED =(", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.35f, 0.5f));
-			}
+		else if (glfwGetTime() > timeToStarvation - 1) {
+			textRenderer->renderText("YOU STARVED =(", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.35f, 0.5f));
 		}
+	}
+
+	if (player->isFull() && player->isInCave()) {
+		textRenderer->renderText("CONGRATULATIONS!!! YOU MADE IT!", 25.0f, 150.0f, 0.7f, glm::vec3(1, 0.45f, 0.7f));
+		paused = true;
 	}
 
 	std::string carrotText = "carrots: " + std::to_string(player->getFoodCount());

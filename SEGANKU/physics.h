@@ -73,11 +73,14 @@ public:
 	*/
 	btDiscreteDynamicsWorld *getDynamicsWorld();
 
+	void setupCaveObjects(Geometry *geometry);
+
 private:
 
 	Player *player;
 
 	btRigidBody *floor;
+	btRigidBody *cave, *caveArea;
 
 	bool drawDebug;
 	btDefaultCollisionConfiguration *collisionConfiguration;
