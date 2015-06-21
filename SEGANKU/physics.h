@@ -93,6 +93,7 @@ private:
 
 	std::vector<btRigidBody*> carrotsGeo;
 	std::vector<btRigidBody*> bushesGeo;
+	std::vector<btRigidBody*> deletedBodies;
 };
 
 #endif// PHYSICS_H

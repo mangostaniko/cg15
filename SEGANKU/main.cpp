@@ -69,8 +69,10 @@ SSAOPostprocessor *ssaoPostprocessor;
 
 Player *player; glm::mat4 playerInitTransform(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
 Eagle *eagle; glm::mat4 eagleInitTransform(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)));
+
 Geometry *terrain;
 Geometry *cave;
+
 Camera *camera;
 Light *sun;
 const glm::vec3 LIGHT_START(glm::vec3(-120, 200, 0));
@@ -428,7 +430,7 @@ void init(GLFWwindow *window)
 
 	sun = new Light(glm::translate(glm::mat4(1.0f), LIGHT_START), LIGHT_END, glm::vec3(1.f, 0.89f, 0.6f), glm::vec3(0.87f, 0.53f, 0.f), timeToStarvation);
 
-	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/terrain.dae");
+	terrain = new Geometry(glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 1)), "../data/models/world/t.dae");
 	float minX, maxX, minZ, maxZ;
 	initWorldBounds(minX, maxX, minZ, maxZ);
 
