@@ -49,9 +49,9 @@ class Player : public Geometry
 	const float MAX_ANIM = 2.5;	// max length of animation
 	const int NEEDED_FOOD = 10;	// how much food is needed to get through winter
 	const int DEFENSE_FOOD_COST = 3;	// how many carrots are used in a skunk defense
-	const float MAX_RUN_TIME = 4.0;	// max speed time
+	const float MAX_RUN_TIME = 2.0;	// max speed time
 	const float BREAK_TIME = 5.0;	// speed cool off time
-	const float DIGEST_TIME = 20.0;	// digestion time for 1 carrot
+	const float DIGEST_TIME = 1.0;	// digestion time for 1 carrot
 	const float DEFENSE_TIME = 3.0;	// how long the player is protected after defense activation
 
 	int foodCount = 0;		    // how much food was already eaten
@@ -75,7 +75,7 @@ class Player : public Geometry
 
 	/**
 	 * @brief check if the camera navigation mode has changed and set camera accordingly
-	 * NOTE: currently only works if there are only 2 nav modes
+	 * note: currently only works if there are only 2 nav modes
 	 */
 	void handleNavModeChange();
 

@@ -68,7 +68,7 @@ ParticleSystem *particleSystem;
 SSAOPostprocessor *ssaoPostprocessor;
 
 Player *player; glm::mat4 playerInitTransform(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
-Eagle *eagle; glm::mat4 eagleInitTransform(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)));
+Eagle *eagle; glm::mat4 eagleInitTransform(glm::translate(glm::mat4(1.0f), glm::vec3(0, 30, -45)));
 
 Geometry *terrain;
 Geometry *cave;
@@ -465,7 +465,7 @@ void init(GLFWwindow *window)
 	}
 
 	// procedurally placed shrubs
-	positions = PoissonDiskSampler::generatePoissonSample(50, 0.4f); // positions in range [0, 1]
+	positions = PoissonDiskSampler::generatePoissonSample(40, 0.6f); // positions in range [0, 1]
 	for (unsigned int i = 0; i < positions.size(); ++i) {
 		glm::vec2 p = positions[i];
 		p = (p - glm::vec2(0.5, 0.5)) * glm::max(maxX, maxZ)*1.8f;
@@ -488,7 +488,6 @@ void init(GLFWwindow *window)
 
 	// INIT EAGLE
 	eagle = new Eagle(eagleInitTransform, "../data/models/eagle/eagle.dae");
-	eagle->rotateY(glm::radians(270.0), SceneObject::RIGHT);
 
 
 	// INIT PHYSICS OBJECTS (add objects to dynamic World)
@@ -555,7 +554,7 @@ void initPhysicsObjects()
 void update(float timeDelta)
 {
 	player->update(timeDelta);
-	player->setIsInCave(glm::distance(player->getLocation(), cave->getLocation()) < 5.0f);
+	player->setIsInCave(glm::distance(player->getLocation(), cave->getLocation()) < 2.0f);
 
 	eagle->update(timeDelta, player->getLocation() + glm::vec3(0, 2, 0), player->isInBush() || player->isInCave(), player->isDefenseActive());
 
@@ -639,8 +638,8 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 
 	if (debugInfoEnabled) {
 
-		int startY = windowHeight;
-		int deltaY = -20;
+		int startY = 400;
+		int deltaY = 20;
 		float fontSize = 0.35f;
 		textRenderer->renderText("drawn surface count: " + std::to_string(Geometry::drawnSurfaceCount), 25, startY+2*deltaY, fontSize, glm::vec3(1));
 		textRenderer->renderText("delta time: " + std::to_string(int(deltaT*1000 + 0.5)) + " ms", 25, startY+3*deltaY, fontSize, glm::vec3(1));
@@ -672,7 +671,7 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 	textRenderer->renderText(carrotText, 25.0f, 30.0f, 0.7f, glm::vec3(1, 0.7f, 0.0f));
 
 	if (player->isEating()) {
-		textRenderer->renderText(player->getFoodReaction(), 100.0f, 350.0f, 0.4f, glm::vec3(0.5f, 0.7f, 0.5f));
+		textRenderer->renderText(player->getFoodReaction(), 300.0f, 300.0f, 0.4f, glm::vec3(0.5f, 0.7f, 0.5f));
 	}
 
 	glEnable(GL_DEPTH_TEST);
@@ -694,7 +693,7 @@ void newGame()
 	player->setTransform(playerInitTransform);
 	player->resetPlayer();
 	eagle->setTransform(eagleInitTransform);
-	eagle->rotateY(glm::radians(270.0), SceneObject::RIGHT);
+	eagle->resetEagle();
 
 	paused = false;
 	foundCarrot = false;
@@ -844,11 +843,12 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 		else std::cout << "DEBUG DRAW SHADOW MAP DISABLED" << std::endl;
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_F12) == GLFW_PRESS) {
-		ssaoBlurEnabled = !ssaoBlurEnabled;
-		if (ssaoBlurEnabled) std::cout << "SSAO BLUR ENABLED" << std::endl;
-		else std::cout << "SSAO BLUR DISABLED" << std::endl;
-	}
+	// BUG: uncommented due to crash on windows on disabling blur when ssao enabled
+//	if (glfwGetKey(window, GLFW_KEY_F12) == GLFW_PRESS) {
+//		ssaoBlurEnabled = !ssaoBlurEnabled;
+//		if (ssaoBlurEnabled) std::cout << "SSAO BLUR ENABLED" << std::endl;
+//		else std::cout << "SSAO BLUR DISABLED" << std::endl;
+//	}
 }
 
 

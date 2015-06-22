@@ -102,7 +102,7 @@ void TextRenderer::renderText(const std::string &text, GLfloat x, GLfloat y, GLf
 void TextRenderer::loadGlyphs(const std::string &fontPath)
 {
 	// init FreeType library object
-	// NOTE: FreeType functions return a value different from 0 if an error occurred
+	// note: FreeType functions return a value different from 0 if an error occurred
 	// i.e. the 'root' of a set of fonts, faces, sizes, etc.
 	// also includes a memory manager and a font rasterizer
 	FT_Library ft;

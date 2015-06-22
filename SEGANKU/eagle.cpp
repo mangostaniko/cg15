@@ -22,9 +22,9 @@ void Eagle::update(float timeDelta, const glm::vec3 &targetPos_, bool targetHidd
 
 		// circle in the sky
 		rotate(0.5f * timeDelta, SceneObject::LEFT, glm::vec3(0, 1, 0));
-		translate(glm::vec3(0, glm::cos(totalTimePassed)/80, 0), SceneObject::RIGHT);
-		rotateZ(glm::cos(-totalTimePassed)/4000, SceneObject::RIGHT);
-		rotateX(glm::cos(-totalTimePassed)/4000, SceneObject::RIGHT);
+//		translate(glm::vec3(0, glm::cos(totalTimePassed)/80, 0), SceneObject::RIGHT);
+//		rotateZ(glm::cos(-totalTimePassed)/4000, SceneObject::RIGHT);
+//		rotateX(glm::cos(-totalTimePassed)/4000, SceneObject::RIGHT);
 
 		// wait for next time to attack
 		timeSinceLastAttack += timeDelta;
@@ -43,10 +43,17 @@ void Eagle::update(float timeDelta, const glm::vec3 &targetPos_, bool targetHidd
 			state = RETREATING;
 		}
 
-		// fly to target
-//		setTransform(glm::lookAt(getLocation(), targetPos, glm::vec3(0, 1, 0))); // TODO look at target
+		// orient to look at target
 		glm::vec3 attackDirection = glm::normalize(targetPos - getLocation());
-		translate(attackDirection*glm::sqrt(glm::distance(targetPos, getLocation()))*0.05f, SceneObject::LEFT);
+		glm::mat4 attackMat = getMatrix();
+		attackMat[0] = -glm::vec4(attackDirection.x, 0, attackDirection.z, 0);
+		attackMat[1] = glm::vec4(0, 1, 0, 0);
+		attackMat[2] = glm::vec4(glm::cross(attackMat[0].xyz(), attackMat[1].xyz()), 0);
+		setTransform(attackMat);
+
+		// fly to target
+		float speed = glm::max(glm::sqrt(glm::distance(targetPos, getLocation()))*2.0f, 8.0f);
+		translate(attackDirection*speed*timeDelta, SceneObject::LEFT);
 
 	}
 	else if (state == RETREATING) {
@@ -56,7 +63,7 @@ void Eagle::update(float timeDelta, const glm::vec3 &targetPos_, bool targetHidd
 			// if we are close, fly away
 			glm::vec3 retreatDirection = glm::normalize(getLocation() - targetPos);
 			retreatDirection.y = 4.0f;
-			translate(retreatDirection/30.0f, SceneObject::LEFT);
+			translate(retreatDirection*1.5f*timeDelta, SceneObject::LEFT);
 		}
 		else {
 
@@ -83,5 +90,18 @@ bool Eagle::isInTargetDefenseReach()
 bool Eagle::isTargetEaten()
 {
 	return glm::distance(getLocation(), targetPos) < EAT_RADIUS;
+}
+
+void Eagle::resetEagle()
+{
+	state = CIRCLING;
+
+	totalTimePassed = 0;
+	timeSinceLastAttack = 0;
+	timeIntervalToNextAttack = ATTACK_WAIT_TIME_MIN;
+
+	targetPos = glm::vec3(0);
+	targetHidden = false;
+	targetDefenseActive = false;
 }
 

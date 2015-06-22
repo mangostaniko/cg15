@@ -205,14 +205,14 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 
 	// digestion happens faster when moving
 	if (speeding && moving) {
-		digestDur += 4 * timeDelta;		// speeding while moving, fast digestion
+		digestDur += timeDelta;	// speeding while moving, fast digestion
 	}
 	/*
 	else if (moving) {
-		digestDur += 1.5 * timeDelta;	// only moving
+		digestDur += 0.5f * timeDelta;	// only moving
 	}
 	else {
-		digestDur = 1 * timeDelta;		// no movement at all, slow digestion
+		digestDur = 0.25f * timeDelta;		// no movement at all, slow digestion
 	}*/
 
 	// Digestion Period reached
@@ -411,7 +411,7 @@ std::string Player::getFoodReaction()
 		return "just a little bit more";
 	}
 	else if (foodCount == NEEDED_FOOD) {
-		return "Winter is coming! But I am prepared";
+		return "Winter may come! I'm prepared";
 	}
 	else if (foodCount > NEEDED_FOOD) {
 		return "augh, sooo full!";

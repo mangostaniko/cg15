@@ -133,7 +133,7 @@ void Physics::stepSimulation(float deltaT)
 
 	dynamicsWorld->contactPairTest(cave, player->getRigidBody(), caveCallback);
 
-	// TODO DELETE THE CARROT WE ALREADY ATE
+	// DELETE THE CARROT WE ALREADY ATE
 	
 	if (toDelete != nullptr) {
 		carrotsGeo.erase(std::find(carrotsGeo.begin(), carrotsGeo.end(), toDelete));

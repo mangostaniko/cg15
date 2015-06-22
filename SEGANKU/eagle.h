@@ -2,8 +2,10 @@
 #define EAGLE_H
 
 #define GLM_SWIZZLE
+#define GLM_FORCE_RADIANS
 
 #include <btBulletDynamicsCommon.h>
+#include <glm/gtx/vector_angle.hpp>
 #include "geometry.h"
 
 enum EagleState
@@ -23,7 +25,7 @@ class Eagle : public Geometry
 	// GAMEPLAY
 	// all durations given in seconds
 
-	const float EAT_RADIUS = 2.0f;
+	const float EAT_RADIUS = 1.0f;
 	const float TARGET_DEFENSE_REACH_RADIUS = 13.0f;
 	const float ATTACK_WAIT_TIME_MIN = 15.0f; // min time after which eagle will attempt to attack player
 	const float ATTACK_WAIT_TIME_MAX = 25.0f; // max time after which eagle will attempt to attack player
@@ -63,6 +65,8 @@ public:
 	 * @return whether the target is in EAT_RADIUS of the eagle
 	 */
 	bool isTargetEaten();
+
+	void resetEagle();
 
 private:
 };
