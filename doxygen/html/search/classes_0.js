@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['camera',['Camera',['../classCamera.html',1,'']]]
+  ['bushcontact',['BushContact',['../structBushContact.html',1,'']]]
 ];

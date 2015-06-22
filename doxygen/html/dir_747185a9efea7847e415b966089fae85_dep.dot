@@ -1,0 +1,9 @@
+digraph "SEGANKU/effects" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_4b6d757f976b0978fcad2b2592628b6f {
+    graph [ bgcolor="#ddddee", pencolor="black", label="SEGANKU" fontname="Helvetica", fontsize="10", URL="dir_4b6d757f976b0978fcad2b2592628b6f.html"]
+  dir_747185a9efea7847e415b966089fae85 [shape=box, label="effects", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_747185a9efea7847e415b966089fae85.html"];
+  }
+}

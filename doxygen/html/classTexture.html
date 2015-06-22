@@ -83,6 +83,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classTexture-members.html">List of all members</a>  </div>
@@ -96,16 +97,33 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p><code>#include &lt;<a class="el" href="texture_8h_source.html">texture.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:adc049eca269e3e6f28b910d65508efcf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adc049eca269e3e6f28b910d65508efcf"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>FilterType</b> { <br />
+&#160;&#160;<b>NEAREST_MIPMAP_OFF</b> = 0, 
+<b>NEAREST_MIPMAP_NEAREST</b> = 1, 
+<b>NEAREST_MIPMAP_LINEAR</b> = 2, 
+<b>LINEAR_MIPMAP_OFF</b> = 3, 
+<br />
+&#160;&#160;<b>LINEAR_MIPMAP_NEAREST</b> = 4, 
+<b>LINEAR_MIPMAP_LINEAR</b> = 5
+<br />
+ }</td></tr>
+<tr class="separator:adc049eca269e3e6f28b910d65508efcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a25ab3a58fa60ccafe3e3883727bc63fc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a25ab3a58fa60ccafe3e3883727bc63fc"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Texture</b> (const std::string &amp;filePath)</td></tr>
-<tr class="separator:a25ab3a58fa60ccafe3e3883727bc63fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac535347b6ab0af8c821f8502b7991237"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac535347b6ab0af8c821f8502b7991237"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Texture</b> (const std::string &amp;filePath, bool alpha)</td></tr>
+<tr class="separator:ac535347b6ab0af8c821f8502b7991237"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab13af2ee5ae56a8d74074fdf66100cd7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTexture.html#ab13af2ee5ae56a8d74074fdf66100cd7">bind</a> (int unit)</td></tr>
 <tr class="memdesc:ab13af2ee5ae56a8d74074fdf66100cd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">binds this texture to the given opengl texture unit  <a href="#ab13af2ee5ae56a8d74074fdf66100cd7">More...</a><br /></td></tr>
 <tr class="separator:ab13af2ee5ae56a8d74074fdf66100cd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f3deecfbc701044c6dec3eba4bc1b06"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f3deecfbc701044c6dec3eba4bc1b06"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getFilePath</b> () const </td></tr>
+<tr class="memitem:a86d908f353a75b63cb4f7fd7902c1c51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTexture.html#a86d908f353a75b63cb4f7fd7902c1c51">setFilterMode</a> (FilterType filterType)</td></tr>
+<tr class="memdesc:a86d908f353a75b63cb4f7fd7902c1c51"><td class="mdescLeft">&#160;</td><td class="mdescRight">set texture minification and magnification filters minification: how to filter downsampled texture when there's not enough space magnification: how to interpolate texture to fill remaining space  <a href="#a86d908f353a75b63cb4f7fd7902c1c51">More...</a><br /></td></tr>
+<tr class="separator:a86d908f353a75b63cb4f7fd7902c1c51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f3deecfbc701044c6dec3eba4bc1b06"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTexture.html#a5f3deecfbc701044c6dec3eba4bc1b06">getFilePath</a> () const </td></tr>
+<tr class="memdesc:a5f3deecfbc701044c6dec3eba4bc1b06"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the texture file path  <a href="#a5f3deecfbc701044c6dec3eba4bc1b06">More...</a><br /></td></tr>
 <tr class="separator:a5f3deecfbc701044c6dec3eba4bc1b06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
@@ -144,6 +162,48 @@ const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>filePath
 
 </div>
 </div>
+<a class="anchor" id="a5f3deecfbc701044c6dec3eba4bc1b06"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Texture::getFilePath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get the texture file path </p>
+<dl class="section return"><dt>Returns</dt><dd>the texture file path </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a86d908f353a75b63cb4f7fd7902c1c51"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Texture::setFilterMode </td>
+          <td>(</td>
+          <td class="paramtype">FilterType&#160;</td>
+          <td class="paramname"><em>filterType</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>set texture minification and magnification filters minification: how to filter downsampled texture when there's not enough space magnification: how to interpolate texture to fill remaining space </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filterType</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>SEGANKU/<a class="el" href="texture_8h_source.html">texture.h</a></li>
 <li>SEGANKU/texture.cpp</li>
@@ -151,7 +211,7 @@ const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>filePath
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 3 2015 20:47:43 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 22 2015 22:18:11 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

@@ -1,5 +1,9 @@
 var searchData=
 [
+  ['randomfloat',['randomFloat',['../classParticleSystem.html#a61d48078e2095370e54a8b9d510f1cee',1,'ParticleSystem']]],
+  ['rendertext',['renderText',['../classTextRenderer.html#a98485e9afd965386e15a14f9822c9052',1,'TextRenderer']]],
+  ['resetplayer',['resetPlayer',['../classPlayer.html#a64f3efd0c43b7aa3138d532ff8dc615a',1,'Player']]],
+  ['respawn',['respawn',['../classParticleSystem.html#ab0c5baac04ee98b8db9448f912962d34',1,'ParticleSystem']]],
   ['right',['RIGHT',['../classSceneObject.html#a0d3334cd8ccdb4f7370a17c736233b1da0ae44da3aba1751789da10746e732db5',1,'SceneObject']]],
   ['rotate',['rotate',['../classSceneObject.html#a07481cd1ccd6028a11326338364529bb',1,'SceneObject']]],
   ['rotatex',['rotateX',['../classSceneObject.html#a23654f0c10aa113c3c43a8fb7fac2637',1,'SceneObject']]],

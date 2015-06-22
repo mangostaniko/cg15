@@ -84,8 +84,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="#pri-static-attribs">Static Private Attributes</a> &#124;
 <a href="classGeometry-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">Geometry Class Reference</div>  </div>
@@ -119,13 +121,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7146c1743d75b861a1d310aefe863068"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeometry.html#a7146c1743d75b861a1d310aefe863068">update</a> (float timeDelta)</td></tr>
 <tr class="memdesc:a7146c1743d75b861a1d310aefe863068"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the state of the <a class="el" href="classSceneObject.html" title="A SceneObject holds a transformation matrix and its inverse and provides functions to manipulate them...">SceneObject</a>  <a href="#a7146c1743d75b861a1d310aefe863068">More...</a><br /></td></tr>
 <tr class="separator:a7146c1743d75b861a1d310aefe863068"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c4bb19ec88da4b2b99807a97010fa10"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7c4bb19ec88da4b2b99807a97010fa10"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeometry.html#a7c4bb19ec88da4b2b99807a97010fa10">draw</a> (<a class="el" href="classShader.html">Shader</a> *shader)</td></tr>
-<tr class="memdesc:a7c4bb19ec88da4b2b99807a97010fa10"><td class="mdescLeft">&#160;</td><td class="mdescRight">draw the <a class="el" href="classSceneObject.html" title="A SceneObject holds a transformation matrix and its inverse and provides functions to manipulate them...">SceneObject</a> using given shader <br /></td></tr>
-<tr class="separator:a7c4bb19ec88da4b2b99807a97010fa10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a407b6088bfb5f21e6a185fa28593ef49"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a407b6088bfb5f21e6a185fa28593ef49"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeometry.html#a407b6088bfb5f21e6a185fa28593ef49">draw</a> (<a class="el" href="classShader.html">Shader</a> *shader, <a class="el" href="classCamera.html">Camera</a> *camera, bool useFrustumCulling, Texture::FilterType filterType, const glm::mat4 &amp;viewMat)</td></tr>
+<tr class="memdesc:a407b6088bfb5f21e6a185fa28593ef49"><td class="mdescLeft">&#160;</td><td class="mdescRight">draw the <a class="el" href="classSceneObject.html" title="A SceneObject holds a transformation matrix and its inverse and provides functions to manipulate them...">SceneObject</a> using given shader <br /></td></tr>
+<tr class="separator:a407b6088bfb5f21e6a185fa28593ef49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa918fc922ada5e9fb838bd502602b475"><td class="memItemLeft" align="right" valign="top">glm::mat3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeometry.html#aa918fc922ada5e9fb838bd502602b475">getNormalMatrix</a> () const </td></tr>
 <tr class="memdesc:aa918fc922ada5e9fb838bd502602b475"><td class="mdescLeft">&#160;</td><td class="mdescRight">return a the transposed inverse of the modelMatrix. this should be used to transform normals into world space. the inverse is used since the normals of a scaled vector are inversely scaled, the transpose is used to revert the inversion of the rotational components while not affecting the scale factors which lie on the main diagonal. mat3 is used since the translational component is irrelevant for normals.  <a href="#aa918fc922ada5e9fb838bd502602b475">More...</a><br /></td></tr>
 <tr class="separator:aa918fc922ada5e9fb838bd502602b475"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1089e0f8c94ea63b4824026873d47ea0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1089e0f8c94ea63b4824026873d47ea0"></a>
+<a class="el" href="classSurface.html">Surface</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getSurface</b> ()</td></tr>
+<tr class="separator:a1089e0f8c94ea63b4824026873d47ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classSceneObject"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classSceneObject')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classSceneObject.html">SceneObject</a></td></tr>
 <tr class="memitem:ad362cceccda728875f60632e4da3db97 inherit pub_methods_classSceneObject"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad362cceccda728875f60632e4da3db97"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>SceneObject</b> (const glm::mat4 &amp;modelMatrix_)</td></tr>
@@ -168,6 +173,12 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr class="memdesc:a6fc1ddd01745f521709b24227c41dd8d inherit pub_methods_classSceneObject"><td class="mdescLeft">&#160;</td><td class="mdescRight">get a string to visualize the given matrix  <a href="#a6fc1ddd01745f521709b24227c41dd8d">More...</a><br /></td></tr>
 <tr class="separator:a6fc1ddd01745f521709b24227c41dd8d inherit pub_methods_classSceneObject"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a5c2eda4cbb5e206df16b4a68f55673c9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5c2eda4cbb5e206df16b4a68f55673c9"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>drawnSurfaceCount</b> = 0</td></tr>
+<tr class="separator:a5c2eda4cbb5e206df16b4a68f55673c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:aeed1fc7590be736468e6d2b0845e5c73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeometry.html#aeed1fc7590be736468e6d2b0845e5c73">loadSurfaces</a> (const std::string &amp;filePath)</td></tr>
@@ -192,10 +203,13 @@ std::vector&lt; std::shared_ptr<br class="typebreak" />
 <tr class="memitem:a958834d03260ef2a6dfb47faeaca7dc3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a958834d03260ef2a6dfb47faeaca7dc3"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>directoryPath</b></td></tr>
 <tr class="separator:a958834d03260ef2a6dfb47faeaca7dc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9fc6c191ac69a276fdcbc7c4d9669e2b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9fc6c191ac69a276fdcbc7c4d9669e2b"></a>
-std::vector&lt; std::shared_ptr<br class="typebreak" />
-&lt; <a class="el" href="classTexture.html">Texture</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>loadedTextures</b></td></tr>
-<tr class="separator:a9fc6c191ac69a276fdcbc7c4d9669e2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
+Static Private Attributes</h2></td></tr>
+<tr class="memitem:a6dc6838eacd8456d48603f4238954ebd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6dc6838eacd8456d48603f4238954ebd"></a>
+static std::vector<br class="typebreak" />
+&lt; std::shared_ptr&lt; <a class="el" href="classTexture.html">Texture</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>loadedTextures</b> = {}</td></tr>
+<tr class="separator:a6dc6838eacd8456d48603f4238954ebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -420,8 +434,6 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classSceneObject.html#a96072f52cf4eca80d310c5ca53a33daa">SceneObject</a>.</p>
-
 <p>Reimplemented in <a class="el" href="classPlayer.html#afdceffffd4625301ce378e08fa342721">Player</a>.</p>
 
 </div>
@@ -433,7 +445,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 3 2015 20:47:43 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 22 2015 22:18:11 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

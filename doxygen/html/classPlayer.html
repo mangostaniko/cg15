@@ -122,17 +122,76 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afdceffffd4625301ce378e08fa342721"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#afdceffffd4625301ce378e08fa342721">update</a> (float timeDelta)</td></tr>
 <tr class="memdesc:afdceffffd4625301ce378e08fa342721"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the state of the <a class="el" href="classSceneObject.html" title="A SceneObject holds a transformation matrix and its inverse and provides functions to manipulate them...">SceneObject</a>  <a href="#afdceffffd4625301ce378e08fa342721">More...</a><br /></td></tr>
 <tr class="separator:afdceffffd4625301ce378e08fa342721"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89d7ab61a1679e9a4d9779ef227ce38d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a89d7ab61a1679e9a4d9779ef227ce38d"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a89d7ab61a1679e9a4d9779ef227ce38d">draw</a> (<a class="el" href="classShader.html">Shader</a> *shader)</td></tr>
-<tr class="memdesc:a89d7ab61a1679e9a4d9779ef227ce38d"><td class="mdescLeft">&#160;</td><td class="mdescRight">draw the <a class="el" href="classSceneObject.html" title="A SceneObject holds a transformation matrix and its inverse and provides functions to manipulate them...">SceneObject</a> using given shader <br /></td></tr>
-<tr class="separator:a89d7ab61a1679e9a4d9779ef227ce38d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6e8cdf9f2efe64699f317d0357f032a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af6e8cdf9f2efe64699f317d0357f032a"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>draw</b> (<a class="el" href="classShader.html">Shader</a> *shader, bool useFrustumCulling, Texture::FilterType filterType, const glm::mat4 &amp;viewMat)</td></tr>
+<tr class="separator:af6e8cdf9f2efe64699f317d0357f032a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c920df1f32f4633e6146cb5cf4dfec0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3c920df1f32f4633e6146cb5cf4dfec0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a3c920df1f32f4633e6146cb5cf4dfec0">toggleNavMode</a> ()</td></tr>
+<tr class="memdesc:a3c920df1f32f4633e6146cb5cf4dfec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">toggle the camera navigation mode <br /></td></tr>
+<tr class="separator:a3c920df1f32f4633e6146cb5cf4dfec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add3eb1173dde3e35b5aa45cdee0bda19"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#add3eb1173dde3e35b5aa45cdee0bda19">getViewMat</a> ()</td></tr>
+<tr class="memdesc:add3eb1173dde3e35b5aa45cdee0bda19"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the current view matrix of the player camera  <a href="#add3eb1173dde3e35b5aa45cdee0bda19">More...</a><br /></td></tr>
+<tr class="separator:add3eb1173dde3e35b5aa45cdee0bda19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a428345b6d8fc13e972c2e551eb544faa"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a428345b6d8fc13e972c2e551eb544faa">getProjMat</a> ()</td></tr>
+<tr class="memdesc:a428345b6d8fc13e972c2e551eb544faa"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the current projection matrix of the player camera  <a href="#a428345b6d8fc13e972c2e551eb544faa">More...</a><br /></td></tr>
+<tr class="separator:a428345b6d8fc13e972c2e551eb544faa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68288d9235a289d1995dc6e164b585e7"><td class="memItemLeft" align="right" valign="top">btRigidBody *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a68288d9235a289d1995dc6e164b585e7">getRigidBody</a> ()</td></tr>
+<tr class="memdesc:a68288d9235a289d1995dc6e164b585e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the RigidBody of the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> for Bullet Collision  <a href="#a68288d9235a289d1995dc6e164b585e7">More...</a><br /></td></tr>
+<tr class="separator:a68288d9235a289d1995dc6e164b585e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a501074e29814b1a9ad5afe9dd725b5a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a501074e29814b1a9ad5afe9dd725b5a1">eat</a> (<a class="el" href="classGeometry.html">Geometry</a> *carrot)</td></tr>
+<tr class="memdesc:a501074e29814b1a9ad5afe9dd725b5a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the event in which the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> collides with a food <a class="el" href="classGeometry.html" title="A Geometry is a SceneObject that holds Surfaces which contain mesh data and textures. ">Geometry</a> Object  <a href="#a501074e29814b1a9ad5afe9dd725b5a1">More...</a><br /></td></tr>
+<tr class="separator:a501074e29814b1a9ad5afe9dd725b5a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8b8d421a883a96f23076bc89e3b5a8e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#ad8b8d421a883a96f23076bc89e3b5a8e">isFull</a> ()</td></tr>
+<tr class="memdesc:ad8b8d421a883a96f23076bc89e3b5a8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the information if the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> has already eaten enough carrots.  <a href="#ad8b8d421a883a96f23076bc89e3b5a8e">More...</a><br /></td></tr>
+<tr class="separator:ad8b8d421a883a96f23076bc89e3b5a8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06c636ae06aa1a6d5d1422c8d925fe06"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a06c636ae06aa1a6d5d1422c8d925fe06">isInBush</a> ()</td></tr>
+<tr class="memdesc:a06c636ae06aa1a6d5d1422c8d925fe06"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the information if the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> is currently hidden in a Bush <a class="el" href="classGeometry.html" title="A Geometry is a SceneObject that holds Surfaces which contain mesh data and textures. ">Geometry</a> Object  <a href="#a06c636ae06aa1a6d5d1422c8d925fe06">More...</a><br /></td></tr>
+<tr class="separator:a06c636ae06aa1a6d5d1422c8d925fe06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add886b39822464fa6f8361f1ea92d844"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#add886b39822464fa6f8361f1ea92d844">isDefenseActive</a> ()</td></tr>
+<tr class="memdesc:add886b39822464fa6f8361f1ea92d844"><td class="mdescLeft">&#160;</td><td class="mdescRight">check if the skunk defense cloud is currently active  <a href="#add886b39822464fa6f8361f1ea92d844">More...</a><br /></td></tr>
+<tr class="separator:add886b39822464fa6f8361f1ea92d844"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a291069d8e761a8953d099b65a570b08a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a291069d8e761a8953d099b65a570b08a">attemptDefenseActivation</a> ()</td></tr>
+<tr class="memdesc:a291069d8e761a8953d099b65a570b08a"><td class="mdescLeft">&#160;</td><td class="mdescRight">activate the skunk defense cloud for a certain time.  <a href="#a291069d8e761a8953d099b65a570b08a">More...</a><br /></td></tr>
+<tr class="separator:a291069d8e761a8953d099b65a570b08a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc6cd5f7f43e4b72d86d3c998f69f4f6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#abc6cd5f7f43e4b72d86d3c998f69f4f6">getFoodCount</a> ()</td></tr>
+<tr class="memdesc:abc6cd5f7f43e4b72d86d3c998f69f4f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the number of currently eaten food objects  <a href="#abc6cd5f7f43e4b72d86d3c998f69f4f6">More...</a><br /></td></tr>
+<tr class="separator:abc6cd5f7f43e4b72d86d3c998f69f4f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a614408b54211c5eb999ff15dd8827003"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a614408b54211c5eb999ff15dd8827003">getNeededFood</a> ()</td></tr>
+<tr class="memdesc:a614408b54211c5eb999ff15dd8827003"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the number of food objects that need to be eaten to be full  <a href="#a614408b54211c5eb999ff15dd8827003">More...</a><br /></td></tr>
+<tr class="separator:a614408b54211c5eb999ff15dd8827003"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a489aa385cc0cba468da3415b88adf1f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a489aa385cc0cba468da3415b88adf1f6">setInBush</a> (bool inBush_)</td></tr>
+<tr class="memdesc:a489aa385cc0cba468da3415b88adf1f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the information whether or not <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> is currently in a Bush (called and set by <a class="el" href="classPhysics.html">Physics</a> Class)  <a href="#a489aa385cc0cba468da3415b88adf1f6">More...</a><br /></td></tr>
+<tr class="separator:a489aa385cc0cba468da3415b88adf1f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64f3efd0c43b7aa3138d532ff8dc615a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a64f3efd0c43b7aa3138d532ff8dc615a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a64f3efd0c43b7aa3138d532ff8dc615a">resetPlayer</a> ()</td></tr>
+<tr class="memdesc:a64f3efd0c43b7aa3138d532ff8dc615a"><td class="mdescLeft">&#160;</td><td class="mdescRight">resets the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> for the start of a new game (reset number of carrots eaten) <br /></td></tr>
+<tr class="separator:a64f3efd0c43b7aa3138d532ff8dc615a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeb928e9d8bb5c95dc104fcf8c69770b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#aeeb928e9d8bb5c95dc104fcf8c69770b">isEating</a> ()</td></tr>
+<tr class="memdesc:aeeb928e9d8bb5c95dc104fcf8c69770b"><td class="mdescLeft">&#160;</td><td class="mdescRight">resets the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> for the start of a new game (reset number of carrots eaten)  <a href="#aeeb928e9d8bb5c95dc104fcf8c69770b">More...</a><br /></td></tr>
+<tr class="separator:aeeb928e9d8bb5c95dc104fcf8c69770b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a894aac8977d8ea0ba8bd87d5371e19e9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a894aac8977d8ea0ba8bd87d5371e19e9">getFoodReaction</a> ()</td></tr>
+<tr class="memdesc:a894aac8977d8ea0ba8bd87d5371e19e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a String depending on the current food level (eg. "Still hungry", "Need more", "I'm so full")  <a href="#a894aac8977d8ea0ba8bd87d5371e19e9">More...</a><br /></td></tr>
+<tr class="separator:a894aac8977d8ea0ba8bd87d5371e19e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bd02459ff49575aa14efa799b37c48b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6bd02459ff49575aa14efa799b37c48b"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInCave</b> ()</td></tr>
+<tr class="separator:a6bd02459ff49575aa14efa799b37c48b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08669abc4e318d65c38d05eecae1ab89"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a08669abc4e318d65c38d05eecae1ab89"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setIsInCave</b> (bool inC)</td></tr>
+<tr class="separator:a08669abc4e318d65c38d05eecae1ab89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classGeometry"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGeometry')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGeometry.html">Geometry</a></td></tr>
 <tr class="memitem:a8d30f5ea8f87f647a25dbfa70e1ec033 inherit pub_methods_classGeometry"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8d30f5ea8f87f647a25dbfa70e1ec033"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Geometry</b> (const glm::mat4 &amp;matrix_, const std::string &amp;filePath)</td></tr>
 <tr class="separator:a8d30f5ea8f87f647a25dbfa70e1ec033 inherit pub_methods_classGeometry"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a407b6088bfb5f21e6a185fa28593ef49 inherit pub_methods_classGeometry"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a407b6088bfb5f21e6a185fa28593ef49"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeometry.html#a407b6088bfb5f21e6a185fa28593ef49">draw</a> (<a class="el" href="classShader.html">Shader</a> *shader, <a class="el" href="classCamera.html">Camera</a> *camera, bool useFrustumCulling, Texture::FilterType filterType, const glm::mat4 &amp;viewMat)</td></tr>
+<tr class="memdesc:a407b6088bfb5f21e6a185fa28593ef49 inherit pub_methods_classGeometry"><td class="mdescLeft">&#160;</td><td class="mdescRight">draw the <a class="el" href="classSceneObject.html" title="A SceneObject holds a transformation matrix and its inverse and provides functions to manipulate them...">SceneObject</a> using given shader <br /></td></tr>
+<tr class="separator:a407b6088bfb5f21e6a185fa28593ef49 inherit pub_methods_classGeometry"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa918fc922ada5e9fb838bd502602b475 inherit pub_methods_classGeometry"><td class="memItemLeft" align="right" valign="top">glm::mat3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeometry.html#aa918fc922ada5e9fb838bd502602b475">getNormalMatrix</a> () const </td></tr>
 <tr class="memdesc:aa918fc922ada5e9fb838bd502602b475 inherit pub_methods_classGeometry"><td class="mdescLeft">&#160;</td><td class="mdescRight">return a the transposed inverse of the modelMatrix. this should be used to transform normals into world space. the inverse is used since the normals of a scaled vector are inversely scaled, the transpose is used to revert the inversion of the rotational components while not affecting the scale factors which lie on the main diagonal. mat3 is used since the translational component is irrelevant for normals.  <a href="#aa918fc922ada5e9fb838bd502602b475">More...</a><br /></td></tr>
 <tr class="separator:aa918fc922ada5e9fb838bd502602b475 inherit pub_methods_classGeometry"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1089e0f8c94ea63b4824026873d47ea0 inherit pub_methods_classGeometry"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1089e0f8c94ea63b4824026873d47ea0"></a>
+<a class="el" href="classSurface.html">Surface</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getSurface</b> ()</td></tr>
+<tr class="separator:a1089e0f8c94ea63b4824026873d47ea0 inherit pub_methods_classGeometry"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classSceneObject"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classSceneObject')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classSceneObject.html">SceneObject</a></td></tr>
 <tr class="memitem:ad362cceccda728875f60632e4da3db97 inherit pub_methods_classSceneObject"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad362cceccda728875f60632e4da3db97"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>SceneObject</b> (const glm::mat4 &amp;modelMatrix_)</td></tr>
@@ -186,7 +245,7 @@ Private Types</h2></td></tr>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:a591bcbde3d1502c826cd15e0717acfef"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a591bcbde3d1502c826cd15e0717acfef"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a591bcbde3d1502c826cd15e0717acfef">handleNavModeChange</a> ()</td></tr>
-<tr class="memdesc:a591bcbde3d1502c826cd15e0717acfef"><td class="mdescLeft">&#160;</td><td class="mdescRight">check if the camera navigation mode has changed and set camera accordingly NOTE: currently only works if there are only 2 nav modes <br /></td></tr>
+<tr class="memdesc:a591bcbde3d1502c826cd15e0717acfef"><td class="mdescLeft">&#160;</td><td class="mdescRight">check if the camera navigation mode has changed and set camera accordingly note: currently only works if there are only 2 nav modes <br /></td></tr>
 <tr class="separator:a591bcbde3d1502c826cd15e0717acfef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c223300fb3f43517ca9611aafce7e64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a2c223300fb3f43517ca9611aafce7e64">handleInput</a> (GLFWwindow *window, float timeDelta)</td></tr>
 <tr class="memdesc:a2c223300fb3f43517ca9611aafce7e64"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle input to control player and camera. the camera follows the player geometry and looks at it, while allowing to be rotated around it.  <a href="#a2c223300fb3f43517ca9611aafce7e64">More...</a><br /></td></tr>
@@ -197,9 +256,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-methods"></a>
 Static Private Member Functions</h2></td></tr>
-<tr class="memitem:a9a4e88d4349e83b438acdf94f39b5f76"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a9a4e88d4349e83b438acdf94f39b5f76">keyCallback</a> (GLFWwindow *window, int key, int scancode, int action, int mods)</td></tr>
-<tr class="memdesc:a9a4e88d4349e83b438acdf94f39b5f76"><td class="mdescLeft">&#160;</td><td class="mdescRight">glfw keyCallback on key events  <a href="#a9a4e88d4349e83b438acdf94f39b5f76">More...</a><br /></td></tr>
-<tr class="separator:a9a4e88d4349e83b438acdf94f39b5f76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34b3f346805e304fddafa2a5b4ca5223"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a34b3f346805e304fddafa2a5b4ca5223">onScroll</a> (GLFWwindow *window, double deltaX, double deltaY)</td></tr>
 <tr class="memdesc:a34b3f346805e304fddafa2a5b4ca5223"><td class="mdescLeft">&#160;</td><td class="mdescRight">glfw callback on mouse scroll  <a href="#a34b3f346805e304fddafa2a5b4ca5223">More...</a><br /></td></tr>
 <tr class="separator:a34b3f346805e304fddafa2a5b4ca5223"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -221,15 +277,90 @@ glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>camRight</b></td
 <tr class="memitem:aa493771493b81a32c2407daf79ae4050"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa493771493b81a32c2407daf79ae4050"></a>
 glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>camUp</b></td></tr>
 <tr class="separator:aa493771493b81a32c2407daf79ae4050"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6ab331f6adc14b35da7af97f360f518"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad6ab331f6adc14b35da7af97f360f518"></a>
-glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>viewProjMat</b></td></tr>
-<tr class="separator:ad6ab331f6adc14b35da7af97f360f518"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a752a89593a3a01a47ecf15db527c5cad"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a752a89593a3a01a47ecf15db527c5cad"></a>
+glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>viewMat</b></td></tr>
+<tr class="separator:a752a89593a3a01a47ecf15db527c5cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf17de0a509f56baad8404d275288d42"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaf17de0a509f56baad8404d275288d42"></a>
+glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>projMat</b></td></tr>
+<tr class="separator:aaf17de0a509f56baad8404d275288d42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13b76dc3dfc14a72b1a46a3383e888bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a13b76dc3dfc14a72b1a46a3383e888bd"></a>
 CameraNavigationMode&#160;</td><td class="memItemRight" valign="bottom"><b>lastNavMode</b></td></tr>
 <tr class="separator:a13b76dc3dfc14a72b1a46a3383e888bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ddb5d12a3e555ac98f0af179ad9aeb6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8ddb5d12a3e555ac98f0af179ad9aeb6"></a>
 glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>lastCamTransform</b></td></tr>
 <tr class="separator:a8ddb5d12a3e555ac98f0af179ad9aeb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ece53c9bd22d3034c22c517b3b745ca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9ece53c9bd22d3034c22c517b3b745ca"></a>
+btCollisionShape *&#160;</td><td class="memItemRight" valign="bottom"><b>playerShape</b></td></tr>
+<tr class="separator:a9ece53c9bd22d3034c22c517b3b745ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61b1a9617ac27ecc708bb3d615f07c89"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a61b1a9617ac27ecc708bb3d615f07c89"></a>
+btRigidBody *&#160;</td><td class="memItemRight" valign="bottom"><b>playerBody</b></td></tr>
+<tr class="separator:a61b1a9617ac27ecc708bb3d615f07c89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4abb3432179838bdbf34df9b35079661"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4abb3432179838bdbf34df9b35079661"></a>
+btDefaultMotionState *&#160;</td><td class="memItemRight" valign="bottom"><b>motionState</b></td></tr>
+<tr class="separator:a4abb3432179838bdbf34df9b35079661"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a766fd32dc3fd41e42ad458c0eb0bd13c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a766fd32dc3fd41e42ad458c0eb0bd13c"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>timePassed</b> = 0</td></tr>
+<tr class="separator:a766fd32dc3fd41e42ad458c0eb0bd13c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a371de27f6d58c7004da693677d825f8b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a371de27f6d58c7004da693677d825f8b"></a>
+<a class="el" href="classGeometry.html">Geometry</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>currentFood</b> = nullptr</td></tr>
+<tr class="separator:a371de27f6d58c7004da693677d825f8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0733c9887577d142452a726681e83504"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0733c9887577d142452a726681e83504"></a>
+const float&#160;</td><td class="memItemRight" valign="bottom"><b>MAX_ANIM</b> = 1.75</td></tr>
+<tr class="separator:a0733c9887577d142452a726681e83504"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93b1f542949499ad5cca7f0a2263b2b4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a93b1f542949499ad5cca7f0a2263b2b4"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>NEEDED_FOOD</b> = 10</td></tr>
+<tr class="separator:a93b1f542949499ad5cca7f0a2263b2b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a109b49b752db664cc18a95f7140b5590"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a109b49b752db664cc18a95f7140b5590"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>DEFENSE_FOOD_COST</b> = 3</td></tr>
+<tr class="separator:a109b49b752db664cc18a95f7140b5590"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab16f984c07eb72db4a8546bca07e0f0e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab16f984c07eb72db4a8546bca07e0f0e"></a>
+const float&#160;</td><td class="memItemRight" valign="bottom"><b>MAX_RUN_TIME</b> = 2.0</td></tr>
+<tr class="separator:ab16f984c07eb72db4a8546bca07e0f0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa13ca9100d62a7d55ffb7cc217e44f3f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa13ca9100d62a7d55ffb7cc217e44f3f"></a>
+const float&#160;</td><td class="memItemRight" valign="bottom"><b>BREAK_TIME</b> = 5.0</td></tr>
+<tr class="separator:aa13ca9100d62a7d55ffb7cc217e44f3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30119c805bc2529fd9616f3594d9cac8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a30119c805bc2529fd9616f3594d9cac8"></a>
+const float&#160;</td><td class="memItemRight" valign="bottom"><b>DIGEST_TIME</b> = 1.0</td></tr>
+<tr class="separator:a30119c805bc2529fd9616f3594d9cac8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab24834ccbc635cbe514fa2403e7c1dd1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab24834ccbc635cbe514fa2403e7c1dd1"></a>
+const float&#160;</td><td class="memItemRight" valign="bottom"><b>DEFENSE_TIME</b> = 3.0</td></tr>
+<tr class="separator:ab24834ccbc635cbe514fa2403e7c1dd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff5465914da1d8236b6b2b41bf6cf6f5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aff5465914da1d8236b6b2b41bf6cf6f5"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>foodCount</b> = 0</td></tr>
+<tr class="separator:aff5465914da1d8236b6b2b41bf6cf6f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4f91efda27f5eaf329fa29360a79d56"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae4f91efda27f5eaf329fa29360a79d56"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>fullStomach</b> = false</td></tr>
+<tr class="separator:ae4f91efda27f5eaf329fa29360a79d56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acade1297d12e2affdc100d0e189ce9c9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acade1297d12e2affdc100d0e189ce9c9"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>overWeight</b> = false</td></tr>
+<tr class="separator:acade1297d12e2affdc100d0e189ce9c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdb6a8bccb7c73864df8e9cc2f8d38a4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acdb6a8bccb7c73864df8e9cc2f8d38a4"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>canRun</b> = true</td></tr>
+<tr class="separator:acdb6a8bccb7c73864df8e9cc2f8d38a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba2a429e13ed6287b49a7929cec5a476"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba2a429e13ed6287b49a7929cec5a476"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>animDur</b> = 0</td></tr>
+<tr class="separator:aba2a429e13ed6287b49a7929cec5a476"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ba2b0274ef1e4a8532fe2ec0708dd0a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0ba2b0274ef1e4a8532fe2ec0708dd0a"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>runDur</b> = 0</td></tr>
+<tr class="separator:a0ba2b0274ef1e4a8532fe2ec0708dd0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e40b9aae9ea3b42920463c3272d7a5e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e40b9aae9ea3b42920463c3272d7a5e"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>breakDur</b> = 0</td></tr>
+<tr class="separator:a6e40b9aae9ea3b42920463c3272d7a5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b4d6212b6383db7527a39811a5b1f5f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8b4d6212b6383db7527a39811a5b1f5f"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>digestDur</b> = 0</td></tr>
+<tr class="separator:a8b4d6212b6383db7527a39811a5b1f5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6c2bd17c013389f7d4d17b8a4bd75b5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af6c2bd17c013389f7d4d17b8a4bd75b5"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>defenseDur</b> = 0</td></tr>
+<tr class="separator:af6c2bd17c013389f7d4d17b8a4bd75b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9001a536d0180212c74557f43ed4bbec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9001a536d0180212c74557f43ed4bbec"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>inBush</b> = true</td></tr>
+<tr class="separator:a9001a536d0180212c74557f43ed4bbec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8367b0ee2f8d03483f4332c43ff4ef76"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8367b0ee2f8d03483f4332c43ff4ef76"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>inCave</b> = true</td></tr>
+<tr class="separator:a8367b0ee2f8d03483f4332c43ff4ef76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe15844e4456a80f825dc74783c17b80"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afe15844e4456a80f825dc74783c17b80"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>defenseActive</b> = false</td></tr>
+<tr class="separator:afe15844e4456a80f825dc74783c17b80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
 Static Private Attributes</h2></td></tr>
@@ -248,10 +379,164 @@ Additional Inherited Members</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a0d3334cd8ccdb4f7370a17c736233b1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">enum specifying matrix multiplication order  <a href="classSceneObject.html#a0d3334cd8ccdb4f7370a17c736233b1d">More...</a><br /></td></tr>
 <tr class="separator:a0d3334cd8ccdb4f7370a17c736233b1d inherit pub_types_classSceneObject"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_static_attribs_classGeometry"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classGeometry')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="classGeometry.html">Geometry</a></td></tr>
+<tr class="memitem:a5c2eda4cbb5e206df16b4a68f55673c9 inherit pub_static_attribs_classGeometry"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5c2eda4cbb5e206df16b4a68f55673c9"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>drawnSurfaceCount</b> = 0</td></tr>
+<tr class="separator:a5c2eda4cbb5e206df16b4a68f55673c9 inherit pub_static_attribs_classGeometry"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> class. This stores the player <a class="el" href="classGeometry.html" title="A Geometry is a SceneObject that holds Surfaces which contain mesh data and textures. ">Geometry</a> and a <a class="el" href="classCamera.html" title="A Camera is a SceneObject that maintains a view matrix, as well as parameters defining the projection...">Camera</a>, as well as a GLFWwindow to handle input. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a291069d8e761a8953d099b65a570b08a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Player::attemptDefenseActivation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>activate the skunk defense cloud for a certain time. </p>
+<dl class="section return"><dt>Returns</dt><dd>whether the defense was successfully activated </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a501074e29814b1a9ad5afe9dd725b5a1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Player::eat </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGeometry.html">Geometry</a> *&#160;</td>
+          <td class="paramname"><em>carrot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>handle the event in which the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> collides with a food <a class="el" href="classGeometry.html" title="A Geometry is a SceneObject that holds Surfaces which contain mesh data and textures. ">Geometry</a> Object </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">the</td><td><a class="el" href="classGeometry.html" title="A Geometry is a SceneObject that holds Surfaces which contain mesh data and textures. ">Geometry</a> Object that is currently being eaten </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="abc6cd5f7f43e4b72d86d3c998f69f4f6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Player::getFoodCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get the number of currently eaten food objects </p>
+<dl class="section return"><dt>Returns</dt><dd>the number of currently eaten carrots </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a894aac8977d8ea0ba8bd87d5371e19e9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Player::getFoodReaction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a String depending on the current food level (eg. "Still hungry", "Need more", "I'm so full") </p>
+<dl class="section return"><dt>Returns</dt><dd>whether or not the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> is currently eating </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a614408b54211c5eb999ff15dd8827003"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Player::getNeededFood </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get the number of food objects that need to be eaten to be full </p>
+<dl class="section return"><dt>Returns</dt><dd>the number of food objects that need to be eaten to be full </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a428345b6d8fc13e972c2e551eb544faa"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 Player::getProjMat </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get the current projection matrix of the player camera </p>
+<dl class="section return"><dt>Returns</dt><dd>the current projection matrix </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a68288d9235a289d1995dc6e164b585e7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">btRigidBody * Player::getRigidBody </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get the RigidBody of the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> for Bullet Collision </p>
+<dl class="section return"><dt>Returns</dt><dd>the btRigidBody </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="add3eb1173dde3e35b5aa45cdee0bda19"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 Player::getViewMat </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get the current view matrix of the player camera </p>
+<dl class="section return"><dt>Returns</dt><dd>the current view matrix </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a2c223300fb3f43517ca9611aafce7e64"></a>
 <div class="memitem">
 <div class="memproto">
@@ -339,67 +624,75 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a9a4e88d4349e83b438acdf94f39b5f76"></a>
+<a class="anchor" id="add886b39822464fa6f8361f1ea92d844"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Player::keyCallback </td>
+          <td class="memname">bool Player::isDefenseActive </td>
           <td>(</td>
-          <td class="paramtype">GLFWwindow *&#160;</td>
-          <td class="paramname"><em>window</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>key</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>scancode</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>action</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>mods</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p>glfw keyCallback on key events </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">window</td><td>pointer to active window </td></tr>
-    <tr><td class="paramname">key</td><td>the key code of the key that caused the event </td></tr>
-    <tr><td class="paramname">scancode</td><td>a system and platform specific constant </td></tr>
-    <tr><td class="paramname">action</td><td>type of key event: GLFW_PRESS, GLFW_RELEASE, GLFW_REPEAT </td></tr>
-    <tr><td class="paramname">mods</td><td>modifier keys held down on event </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>check if the skunk defense cloud is currently active </p>
+<dl class="section return"><dt>Returns</dt><dd>true if skunk defense cloud is currently active </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aeeb928e9d8bb5c95dc104fcf8c69770b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Player::isEating </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>resets the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> for the start of a new game (reset number of carrots eaten) </p>
+<dl class="section return"><dt>Returns</dt><dd>whether or not the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> is currently eating </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ad8b8d421a883a96f23076bc89e3b5a8e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Player::isFull </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the information if the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> has already eaten enough carrots. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if the player is already full </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a06c636ae06aa1a6d5d1422c8d925fe06"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Player::isInBush </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get the information if the <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> is currently hidden in a Bush <a class="el" href="classGeometry.html" title="A Geometry is a SceneObject that holds Surfaces which contain mesh data and textures. ">Geometry</a> Object </p>
+<dl class="section return"><dt>Returns</dt><dd>true if player is currently in a Bush, else false </dd></dl>
 
 </div>
 </div>
@@ -453,6 +746,30 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a489aa385cc0cba468da3415b88adf1f6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Player::setInBush </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>inBush_</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>set the information whether or not <a class="el" href="classPlayer.html" title="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp...">Player</a> is currently in a Bush (called and set by <a class="el" href="classPhysics.html">Physics</a> Class) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">inB</td><td>the information whether or not in bush </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="afdceffffd4625301ce378e08fa342721"></a>
 <div class="memitem">
 <div class="memproto">
@@ -494,7 +811,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 3 2015 20:47:43 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 22 2015 22:18:11 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

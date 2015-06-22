@@ -112,35 +112,55 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    std::vector&lt;Vertex&gt; vertices;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    std::vector&lt;GLuint&gt; indices; <span class="comment">// indices associate vertices to define mesh topology</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="comment">// Textures</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    std::shared_ptr&lt;Texture&gt; texDiffuse, texSpecular, texNormal;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="comment">// handle for vertex array object (vao). the vao simply stores the bindings set when its active</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="comment">// so that they can be reactived quickly later, instead of setting it up all over again.</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    GLuint vao;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="comment">// handles for vram buffers.</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    GLuint vertexBuffer, indexBuffer;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classSurface.html#a194087202684a4b3a71c24f02faeb404">init</a>();</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="comment">// Bounding Sphere</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="comment">// for view frustum culling</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    glm::vec3 boundingSphereCenter;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    glm::vec3 boundingSphereFarthestPoint;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="comment">// Textures</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    std::shared_ptr&lt;Texture&gt; texDiffuse, texSpecular, texNormal;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="comment">// handle for vertex array object (vao). the vao simply stores the bindings set when its active</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="comment">// so that they can be reactived quickly later, instead of setting it up all over again.</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    GLuint vao;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="comment">// handles for vram buffers.</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    GLuint vertexBuffer, indexBuffer;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <a class="code" href="classSurface.html">Surface</a>(<span class="keyword">const</span> std::vector&lt;Vertex&gt; &amp;vertices_, <span class="keyword">const</span> std::vector&lt;GLuint&gt; &amp;indices_, <span class="keyword">const</span> std::shared_ptr&lt;Texture&gt; &amp;texDiffuse_, <span class="keyword">const</span> std::shared_ptr&lt;Texture&gt; &amp;texSpecular_, <span class="keyword">const</span> std::shared_ptr&lt;Texture&gt; &amp;texNormal_);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    ~<a class="code" href="classSurface.html">Surface</a>();</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classSurface.html#a736b8fe9ff0c78c0b31331ec68bcb401">draw</a>(<a class="code" href="classShader.html">Shader</a> *shader);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classSurface.html#adf6185f1ae887914e0e152820c9934ff">initBuffers</a>();</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <a class="code" href="classSurface.html">Surface</a>(<span class="keyword">const</span> std::vector&lt;Vertex&gt; &amp;vertices_, <span class="keyword">const</span> std::vector&lt;GLuint&gt; &amp;indices_, <span class="keyword">const</span> std::shared_ptr&lt;Texture&gt; &amp;texDiffuse_, <span class="keyword">const</span> std::shared_ptr&lt;Texture&gt; &amp;texSpecular_, <span class="keyword">const</span> std::shared_ptr&lt;Texture&gt; &amp;texNormal_);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    ~<a class="code" href="classSurface.html">Surface</a>();</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    std::vector&lt;Vertex&gt; getVertices();</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    std::vector&lt;GLuint&gt; getIndices();</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor">#endif // SURFACE_H</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classSurface.html#ad449d7fdfa621b0e177158cf9bc0c719">draw</a>(<a class="code" href="classShader.html">Shader</a> *shader, Texture::FilterType filterType);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    glm::vec3 <a class="code" href="classSurface.html#a3373847f7304794b8c40e7599300815e">getBoundingSphereCenter</a>();</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    glm::vec3 <a class="code" href="classSurface.html#acd93414a69323834346e5ed1797ca965">getBoundingSphereFarthestPoint</a>();</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classSurface.html#ad8464f49e2514d2f5af684f087aecb5f">calculateBoundingSphere</a>();</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;};</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#endif // SURFACE_H</span></div>
 <div class="ttc" id="classSurface_html"><div class="ttname"><a href="classSurface.html">Surface</a></div><div class="ttdoc">A Surface holds mesh data (vertex data and indices) and textures. This communicates with Vertex Buffe...</div><div class="ttdef"><b>Definition:</b> surface.h:28</div></div>
-<div class="ttc" id="classShader_html"><div class="ttname"><a href="classShader.html">Shader</a></div><div class="ttdoc">Shader class. This loads and compiles glsl shader files and creates a linked shader program...</div><div class="ttdef"><b>Definition:</b> shader.h:14</div></div>
+<div class="ttc" id="classShader_html"><div class="ttname"><a href="classShader.html">Shader</a></div><div class="ttdoc">Shader class. This loads and compiles glsl shader files and creates a linked shader program...</div><div class="ttdef"><b>Definition:</b> shader.h:16</div></div>
 <div class="ttc" id="structVertex_html"><div class="ttname"><a href="structVertex.html">Vertex</a></div><div class="ttdoc">Vertex struct for internal representation. </div><div class="ttdef"><b>Definition:</b> surface.h:17</div></div>
-<div class="ttc" id="classSurface_html_a194087202684a4b3a71c24f02faeb404"><div class="ttname"><a href="classSurface.html#a194087202684a4b3a71c24f02faeb404">Surface::init</a></div><div class="ttdeci">void init()</div><div class="ttdoc">initialize vba, copy vertex data to vram buffers and associate with shader attributes ...</div><div class="ttdef"><b>Definition:</b> surface.cpp:13</div></div>
-<div class="ttc" id="classSurface_html_a736b8fe9ff0c78c0b31331ec68bcb401"><div class="ttname"><a href="classSurface.html#a736b8fe9ff0c78c0b31331ec68bcb401">Surface::draw</a></div><div class="ttdeci">void draw(Shader *shader)</div><div class="ttdoc">draw triangles from vertex data from buffers bound as specified by the vba. note: the transformation ...</div><div class="ttdef"><b>Definition:</b> surface.cpp:65</div></div>
+<div class="ttc" id="classSurface_html_a3373847f7304794b8c40e7599300815e"><div class="ttname"><a href="classSurface.html#a3373847f7304794b8c40e7599300815e">Surface::getBoundingSphereCenter</a></div><div class="ttdeci">glm::vec3 getBoundingSphereCenter()</div><div class="ttdoc">get the center of the bounding sphere for this surface to be used in view frustum culling ...</div><div class="ttdef"><b>Definition:</b> surface.cpp:78</div></div>
+<div class="ttc" id="classSurface_html_acd93414a69323834346e5ed1797ca965"><div class="ttname"><a href="classSurface.html#acd93414a69323834346e5ed1797ca965">Surface::getBoundingSphereFarthestPoint</a></div><div class="ttdeci">glm::vec3 getBoundingSphereFarthestPoint()</div><div class="ttdoc">get the farthest point on the bounding sphere whose length defines the bounding sphere radius...</div><div class="ttdef"><b>Definition:</b> surface.cpp:83</div></div>
+<div class="ttc" id="classSurface_html_adf6185f1ae887914e0e152820c9934ff"><div class="ttname"><a href="classSurface.html#adf6185f1ae887914e0e152820c9934ff">Surface::initBuffers</a></div><div class="ttdeci">void initBuffers()</div><div class="ttdoc">initialize vba, copy vertex data to vram buffers and associate with shader attributes ...</div><div class="ttdef"><b>Definition:</b> surface.cpp:14</div></div>
+<div class="ttc" id="classSurface_html_ad449d7fdfa621b0e177158cf9bc0c719"><div class="ttname"><a href="classSurface.html#ad449d7fdfa621b0e177158cf9bc0c719">Surface::draw</a></div><div class="ttdeci">void draw(Shader *shader, Texture::FilterType filterType)</div><div class="ttdoc">draw triangles from vertex data from buffers bound as specified by the vba. note: the transformation ...</div><div class="ttdef"><b>Definition:</b> surface.cpp:97</div></div>
+<div class="ttc" id="classSurface_html_ad8464f49e2514d2f5af684f087aecb5f"><div class="ttname"><a href="classSurface.html#ad8464f49e2514d2f5af684f087aecb5f">Surface::calculateBoundingSphere</a></div><div class="ttdeci">void calculateBoundingSphere()</div><div class="ttdoc">calculate parameters defining a bounding sphere for this surface to be used in view frustum culling ...</div><div class="ttdef"><b>Definition:</b> surface.cpp:57</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 3 2015 20:47:43 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 22 2015 22:18:11 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

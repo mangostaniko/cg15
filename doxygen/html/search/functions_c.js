@@ -1,10 +1,11 @@
 var searchData=
 [
-  ['scale',['scale',['../classSceneObject.html#a68c9e8a1cae5e12d0afb7e2a16b3026a',1,'SceneObject']]],
-  ['setaspectratio',['setAspectRatio',['../classCamera.html#ad790dab815b73800c6930679b13cc613',1,'Camera']]],
-  ['setfarplane',['setFarPlane',['../classCamera.html#aa534ec9213b77e02ba22dad1b3abf114',1,'Camera']]],
-  ['setfieldofview',['setFieldOfView',['../classCamera.html#af8d56a3fc81afa1fa0ed1036c2874d37',1,'Camera']]],
-  ['setlocation',['setLocation',['../classSceneObject.html#a5e4f5ed018a9c32c81c6d2f9483b49d9',1,'SceneObject']]],
-  ['setnearplane',['setNearPlane',['../classCamera.html#adda231996fff377042fa5fcf440b0f85',1,'Camera']]],
-  ['settransform',['setTransform',['../classSceneObject.html#a4d115838f7df8410a6f36a5ba4eb5bc4',1,'SceneObject']]]
+  ['randomfloat',['randomFloat',['../classParticleSystem.html#a61d48078e2095370e54a8b9d510f1cee',1,'ParticleSystem']]],
+  ['rendertext',['renderText',['../classTextRenderer.html#a98485e9afd965386e15a14f9822c9052',1,'TextRenderer']]],
+  ['resetplayer',['resetPlayer',['../classPlayer.html#a64f3efd0c43b7aa3138d532ff8dc615a',1,'Player']]],
+  ['respawn',['respawn',['../classParticleSystem.html#ab0c5baac04ee98b8db9448f912962d34',1,'ParticleSystem']]],
+  ['rotate',['rotate',['../classSceneObject.html#a07481cd1ccd6028a11326338364529bb',1,'SceneObject']]],
+  ['rotatex',['rotateX',['../classSceneObject.html#a23654f0c10aa113c3c43a8fb7fac2637',1,'SceneObject']]],
+  ['rotatey',['rotateY',['../classSceneObject.html#a3d588db113ce844fe1d022a3cae38ff5',1,'SceneObject']]],
+  ['rotatez',['rotateZ',['../classSceneObject.html#a33041ba7b98378e0fb5abe57145b5609',1,'SceneObject']]]
 ];

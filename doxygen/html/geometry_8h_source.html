@@ -91,68 +91,77 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define GEOMETRY_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#define GLM_FORCE_RADIANS</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;glm/gtc/type_ptr.hpp&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;sceneobject.h&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;surface.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;shader.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;texture.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;assimp/Importer.hpp&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;assimp/scene.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;assimp/postprocess.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classGeometry.html">   22</a></span>&#160;<span class="keyword">class </span><a class="code" href="classGeometry.html">Geometry</a> : <span class="keyword">public</span> <a class="code" href="classSceneObject.html">SceneObject</a></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;{</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="comment">// surfaces store mesh data and textures</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    std::vector&lt;std::shared_ptr&lt;Surface&gt;&gt; surfaces;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="comment">// the path of the directory containing the model file to load</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    std::string directoryPath;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="comment">// pointers to all textures loaded by the surfaces of this geometry, to avoid loading twice</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    std::vector&lt;std::shared_ptr&lt;Texture&gt;&gt; loadedTextures;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classGeometry.html#aeed1fc7590be736468e6d2b0845e5c73">loadSurfaces</a>(<span class="keyword">const</span> std::string &amp;filePath);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classGeometry.html#a5a1ea6e3fb86cfef73973b64b86fd64e">processNode</a>(aiNode *node, <span class="keyword">const</span> aiScene *scene);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classGeometry.html#a1ac853ba774a9bcefbc24d6e5934ea6a">processMesh</a>(aiMesh *mesh, <span class="keyword">const</span> aiScene *scene);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    std::shared_ptr&lt;Texture&gt; <a class="code" href="classGeometry.html#a642e705400989b354f1c001813bbf7b6">loadMaterialTexture</a>(aiMaterial *mat, aiTextureType type);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#define GLM_SWIZZLE</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;glm/gtc/type_ptr.hpp&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;sceneobject.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;surface.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;shader.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;texture.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;camera.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;assimp/Importer.hpp&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;assimp/scene.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;assimp/postprocess.h&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classGeometry.html">   24</a></span>&#160;<span class="keyword">class </span><a class="code" href="classGeometry.html">Geometry</a> : <span class="keyword">public</span> <a class="code" href="classSceneObject.html">SceneObject</a></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;{</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="comment">// surfaces store mesh data and textures</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    std::vector&lt;std::shared_ptr&lt;Surface&gt;&gt; surfaces;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="comment">// the path of the directory containing the model file to load</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    std::string directoryPath;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="comment">// pointers to all textures loaded by the surfaces of this geometry, to avoid loading twice</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">static</span> std::vector&lt;std::shared_ptr&lt;Texture&gt;&gt; loadedTextures;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classGeometry.html#aeed1fc7590be736468e6d2b0845e5c73">loadSurfaces</a>(<span class="keyword">const</span> std::string &amp;filePath);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classGeometry.html#a5a1ea6e3fb86cfef73973b64b86fd64e">processNode</a>(aiNode *node, <span class="keyword">const</span> aiScene *scene);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classGeometry.html#a1ac853ba774a9bcefbc24d6e5934ea6a">processMesh</a>(aiMesh *mesh, <span class="keyword">const</span> aiScene *scene);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    std::shared_ptr&lt;Texture&gt; <a class="code" href="classGeometry.html#a642e705400989b354f1c001813bbf7b6">loadMaterialTexture</a>(aiMaterial *mat, aiTextureType type);</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <a class="code" href="classGeometry.html">Geometry</a>(<span class="keyword">const</span> glm::mat4 &amp;matrix_, <span class="keyword">const</span> std::string &amp;filePath);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classGeometry.html">Geometry</a>();</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classGeometry.html#a7146c1743d75b861a1d310aefe863068">update</a>(<span class="keywordtype">float</span> timeDelta);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <a class="code" href="classGeometry.html">Geometry</a>(<span class="keyword">const</span> glm::mat4 &amp;matrix_, <span class="keyword">const</span> std::string &amp;filePath);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classGeometry.html">Geometry</a>();</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classGeometry.html#a7c4bb19ec88da4b2b99807a97010fa10">draw</a>(<a class="code" href="classShader.html">Shader</a> *shader);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    glm::mat3 <a class="code" href="classGeometry.html#aa918fc922ada5e9fb838bd502602b475">getNormalMatrix</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;};</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#endif // GEOMETRY_H</span></div>
-<div class="ttc" id="classGeometry_html_aa918fc922ada5e9fb838bd502602b475"><div class="ttname"><a href="classGeometry.html#aa918fc922ada5e9fb838bd502602b475">Geometry::getNormalMatrix</a></div><div class="ttdeci">glm::mat3 getNormalMatrix() const </div><div class="ttdoc">return a the transposed inverse of the modelMatrix. this should be used to transform normals into wor...</div><div class="ttdef"><b>Definition:</b> geometry.cpp:14</div></div>
-<div class="ttc" id="classGeometry_html_a7146c1743d75b861a1d310aefe863068"><div class="ttname"><a href="classGeometry.html#a7146c1743d75b861a1d310aefe863068">Geometry::update</a></div><div class="ttdeci">virtual void update(float timeDelta)</div><div class="ttdoc">update the state of the SceneObject </div><div class="ttdef"><b>Definition:</b> geometry.cpp:19</div></div>
-<div class="ttc" id="classShader_html"><div class="ttname"><a href="classShader.html">Shader</a></div><div class="ttdoc">Shader class. This loads and compiles glsl shader files and creates a linked shader program...</div><div class="ttdef"><b>Definition:</b> shader.h:14</div></div>
-<div class="ttc" id="classGeometry_html"><div class="ttname"><a href="classGeometry.html">Geometry</a></div><div class="ttdoc">A Geometry is a SceneObject that holds Surfaces which contain mesh data and textures. </div><div class="ttdef"><b>Definition:</b> geometry.h:22</div></div>
-<div class="ttc" id="classGeometry_html_a7c4bb19ec88da4b2b99807a97010fa10"><div class="ttname"><a href="classGeometry.html#a7c4bb19ec88da4b2b99807a97010fa10">Geometry::draw</a></div><div class="ttdeci">virtual void draw(Shader *shader)</div><div class="ttdoc">draw the SceneObject using given shader </div><div class="ttdef"><b>Definition:</b> geometry.cpp:24</div></div>
-<div class="ttc" id="classGeometry_html_a642e705400989b354f1c001813bbf7b6"><div class="ttname"><a href="classGeometry.html#a642e705400989b354f1c001813bbf7b6">Geometry::loadMaterialTexture</a></div><div class="ttdeci">std::shared_ptr&lt; Texture &gt; loadMaterialTexture(aiMaterial *mat, aiTextureType type)</div><div class="ttdoc">load assimp aiMesh texture of given type. textures of same filePath are reused among the geometry obj...</div><div class="ttdef"><b>Definition:</b> geometry.cpp:148</div></div>
-<div class="ttc" id="classGeometry_html_a5a1ea6e3fb86cfef73973b64b86fd64e"><div class="ttname"><a href="classGeometry.html#a5a1ea6e3fb86cfef73973b64b86fd64e">Geometry::processNode</a></div><div class="ttdeci">void processNode(aiNode *node, const aiScene *scene)</div><div class="ttdoc">process all meshes contained in given node and recursively process all child nodes ...</div><div class="ttdef"><b>Definition:</b> geometry.cpp:67</div></div>
-<div class="ttc" id="classGeometry_html_a1ac853ba774a9bcefbc24d6e5934ea6a"><div class="ttname"><a href="classGeometry.html#a1ac853ba774a9bcefbc24d6e5934ea6a">Geometry::processMesh</a></div><div class="ttdeci">void processMesh(aiMesh *mesh, const aiScene *scene)</div><div class="ttdoc">load data from assimp aiMesh to new Surface object note: this loads only the first diffuse...</div><div class="ttdef"><b>Definition:</b> geometry.cpp:84</div></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classGeometry.html#a7146c1743d75b861a1d310aefe863068">update</a>(<span class="keywordtype">float</span> timeDelta);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classGeometry.html#a407b6088bfb5f21e6a185fa28593ef49">draw</a>(<a class="code" href="classShader.html">Shader</a> *shader, <a class="code" href="classCamera.html">Camera</a> *camera, <span class="keywordtype">bool</span> useFrustumCulling, Texture::FilterType filterType, <span class="keyword">const</span> glm::mat4 &amp;viewMat);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    glm::mat3 <a class="code" href="classGeometry.html#aa918fc922ada5e9fb838bd502602b475">getNormalMatrix</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="comment">// the number of surfaces being drawn</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> drawnSurfaceCount;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <a class="code" href="classSurface.html">Surface</a> *getSurface();</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;};</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="preprocessor">#endif // GEOMETRY_H</span></div>
+<div class="ttc" id="classGeometry_html_aa918fc922ada5e9fb838bd502602b475"><div class="ttname"><a href="classGeometry.html#aa918fc922ada5e9fb838bd502602b475">Geometry::getNormalMatrix</a></div><div class="ttdeci">glm::mat3 getNormalMatrix() const </div><div class="ttdoc">return a the transposed inverse of the modelMatrix. this should be used to transform normals into wor...</div><div class="ttdef"><b>Definition:</b> geometry.cpp:17</div></div>
+<div class="ttc" id="classSurface_html"><div class="ttname"><a href="classSurface.html">Surface</a></div><div class="ttdoc">A Surface holds mesh data (vertex data and indices) and textures. This communicates with Vertex Buffe...</div><div class="ttdef"><b>Definition:</b> surface.h:28</div></div>
+<div class="ttc" id="classGeometry_html_a7146c1743d75b861a1d310aefe863068"><div class="ttname"><a href="classGeometry.html#a7146c1743d75b861a1d310aefe863068">Geometry::update</a></div><div class="ttdeci">virtual void update(float timeDelta)</div><div class="ttdoc">update the state of the SceneObject </div><div class="ttdef"><b>Definition:</b> geometry.cpp:22</div></div>
+<div class="ttc" id="classShader_html"><div class="ttname"><a href="classShader.html">Shader</a></div><div class="ttdoc">Shader class. This loads and compiles glsl shader files and creates a linked shader program...</div><div class="ttdef"><b>Definition:</b> shader.h:16</div></div>
+<div class="ttc" id="classGeometry_html"><div class="ttname"><a href="classGeometry.html">Geometry</a></div><div class="ttdoc">A Geometry is a SceneObject that holds Surfaces which contain mesh data and textures. </div><div class="ttdef"><b>Definition:</b> geometry.h:24</div></div>
+<div class="ttc" id="classGeometry_html_a642e705400989b354f1c001813bbf7b6"><div class="ttname"><a href="classGeometry.html#a642e705400989b354f1c001813bbf7b6">Geometry::loadMaterialTexture</a></div><div class="ttdeci">std::shared_ptr&lt; Texture &gt; loadMaterialTexture(aiMaterial *mat, aiTextureType type)</div><div class="ttdoc">load assimp aiMesh texture of given type. textures of same filePath are reused among the geometry obj...</div><div class="ttdef"><b>Definition:</b> geometry.cpp:166</div></div>
+<div class="ttc" id="classGeometry_html_a5a1ea6e3fb86cfef73973b64b86fd64e"><div class="ttname"><a href="classGeometry.html#a5a1ea6e3fb86cfef73973b64b86fd64e">Geometry::processNode</a></div><div class="ttdeci">void processNode(aiNode *node, const aiScene *scene)</div><div class="ttdoc">process all meshes contained in given node and recursively process all child nodes ...</div><div class="ttdef"><b>Definition:</b> geometry.cpp:84</div></div>
+<div class="ttc" id="classGeometry_html_a1ac853ba774a9bcefbc24d6e5934ea6a"><div class="ttname"><a href="classGeometry.html#a1ac853ba774a9bcefbc24d6e5934ea6a">Geometry::processMesh</a></div><div class="ttdeci">void processMesh(aiMesh *mesh, const aiScene *scene)</div><div class="ttdoc">load data from assimp aiMesh to new Surface object note: this loads only the first diffuse...</div><div class="ttdef"><b>Definition:</b> geometry.cpp:101</div></div>
+<div class="ttc" id="classGeometry_html_a407b6088bfb5f21e6a185fa28593ef49"><div class="ttname"><a href="classGeometry.html#a407b6088bfb5f21e6a185fa28593ef49">Geometry::draw</a></div><div class="ttdeci">virtual void draw(Shader *shader, Camera *camera, bool useFrustumCulling, Texture::FilterType filterType, const glm::mat4 &amp;viewMat)</div><div class="ttdoc">draw the SceneObject using given shader </div><div class="ttdef"><b>Definition:</b> geometry.cpp:27</div></div>
 <div class="ttc" id="classSceneObject_html"><div class="ttname"><a href="classSceneObject.html">SceneObject</a></div><div class="ttdoc">A SceneObject holds a transformation matrix and its inverse and provides functions to manipulate them...</div><div class="ttdef"><b>Definition:</b> sceneobject.h:19</div></div>
-<div class="ttc" id="classGeometry_html_aeed1fc7590be736468e6d2b0845e5c73"><div class="ttname"><a href="classGeometry.html#aeed1fc7590be736468e6d2b0845e5c73">Geometry::loadSurfaces</a></div><div class="ttdeci">void loadSurfaces(const std::string &amp;filePath)</div><div class="ttdoc">load surfaces from file note: this loads only the first diffuse, specular and normal texture for each...</div><div class="ttdef"><b>Definition:</b> geometry.cpp:41</div></div>
+<div class="ttc" id="classCamera_html"><div class="ttname"><a href="classCamera.html">Camera</a></div><div class="ttdoc">A Camera is a SceneObject that maintains a view matrix, as well as parameters defining the projection...</div><div class="ttdef"><b>Definition:</b> camera.h:14</div></div>
+<div class="ttc" id="classGeometry_html_aeed1fc7590be736468e6d2b0845e5c73"><div class="ttname"><a href="classGeometry.html#aeed1fc7590be736468e6d2b0845e5c73">Geometry::loadSurfaces</a></div><div class="ttdeci">void loadSurfaces(const std::string &amp;filePath)</div><div class="ttdoc">load surfaces from file note: this loads only the first diffuse, specular and normal texture for each...</div><div class="ttdef"><b>Definition:</b> geometry.cpp:55</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 3 2015 20:47:43 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 22 2015 22:18:11 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

@@ -2,5 +2,9 @@ digraph "SEGANKU" {
   compound=true
   node [ fontsize="10", fontname="Helvetica"];
   edge [ labelfontsize="10", labelfontname="Helvetica"];
-  dir_4b6d757f976b0978fcad2b2592628b6f [shape=box, label="SEGANKU", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_4b6d757f976b0978fcad2b2592628b6f.html"];
+  subgraph clusterdir_4b6d757f976b0978fcad2b2592628b6f {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_4b6d757f976b0978fcad2b2592628b6f.html"];
+    dir_4b6d757f976b0978fcad2b2592628b6f [shape=plaintext label="SEGANKU"];
+    dir_747185a9efea7847e415b966089fae85 [shape=box label="effects" color="black" fillcolor="white" style="filled" URL="dir_747185a9efea7847e415b966089fae85.html"];
+  }
 }

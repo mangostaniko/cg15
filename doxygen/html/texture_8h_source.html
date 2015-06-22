@@ -99,25 +99,39 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="classTexture.html">   16</a></span>&#160;<span class="keyword">class </span><a class="code" href="classTexture.html">Texture</a></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    GLuint handle;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keyword">const</span> std::string filePath;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <a class="code" href="classTexture.html">Texture</a>(<span class="keyword">const</span> std::string &amp;filePath);</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    ~<a class="code" href="classTexture.html">Texture</a>();</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classTexture.html#ab13af2ee5ae56a8d74074fdf66100cd7">bind</a>(<span class="keywordtype">int</span> unit);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    std::string getFilePath() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;};</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#endif // TEXTURE_H</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    GLuint handle;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">const</span> std::string filePath;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="classTexture.html">Texture</a>(<span class="keyword">const</span> std::string &amp;filePath, <span class="keywordtype">bool</span> alpha);</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    ~<a class="code" href="classTexture.html">Texture</a>();</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">enum</span> FilterType {</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        NEAREST_MIPMAP_OFF     = 0,</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        NEAREST_MIPMAP_NEAREST = 1,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        NEAREST_MIPMAP_LINEAR  = 2,</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        LINEAR_MIPMAP_OFF      = 3,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        LINEAR_MIPMAP_NEAREST  = 4,</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        LINEAR_MIPMAP_LINEAR   = 5</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    };</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classTexture.html#ab13af2ee5ae56a8d74074fdf66100cd7">bind</a>(<span class="keywordtype">int</span> unit);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classTexture.html#a86d908f353a75b63cb4f7fd7902c1c51">setFilterMode</a>(FilterType filterType);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    std::string <a class="code" href="classTexture.html#a5f3deecfbc701044c6dec3eba4bc1b06">getFilePath</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;};</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#endif // TEXTURE_H</span></div>
+<div class="ttc" id="classTexture_html_a5f3deecfbc701044c6dec3eba4bc1b06"><div class="ttname"><a href="classTexture.html#a5f3deecfbc701044c6dec3eba4bc1b06">Texture::getFilePath</a></div><div class="ttdeci">std::string getFilePath() const </div><div class="ttdoc">get the texture file path </div><div class="ttdef"><b>Definition:</b> texture.cpp:77</div></div>
 <div class="ttc" id="classTexture_html"><div class="ttname"><a href="classTexture.html">Texture</a></div><div class="ttdoc">Texture class. This loads an opengl texture from an image file and stores a handle to it...</div><div class="ttdef"><b>Definition:</b> texture.h:16</div></div>
 <div class="ttc" id="classTexture_html_ab13af2ee5ae56a8d74074fdf66100cd7"><div class="ttname"><a href="classTexture.html#ab13af2ee5ae56a8d74074fdf66100cd7">Texture::bind</a></div><div class="ttdeci">void bind(int unit)</div><div class="ttdoc">binds this texture to the given opengl texture unit </div><div class="ttdef"><b>Definition:</b> texture.cpp:41</div></div>
+<div class="ttc" id="classTexture_html_a86d908f353a75b63cb4f7fd7902c1c51"><div class="ttname"><a href="classTexture.html#a86d908f353a75b63cb4f7fd7902c1c51">Texture::setFilterMode</a></div><div class="ttdeci">void setFilterMode(FilterType filterType)</div><div class="ttdoc">set texture minification and magnification filters minification: how to filter downsampled texture wh...</div><div class="ttdef"><b>Definition:</b> texture.cpp:47</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 3 2015 20:47:43 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 22 2015 22:18:11 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>
