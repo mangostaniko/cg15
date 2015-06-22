@@ -50,7 +50,7 @@ int windowWidth, windowHeight;
 bool running			       = true;
 bool paused				       = false;
 bool foundCarrot		       = false;
-bool debugInfoEnabled          = false;
+bool debugInfoEnabled          = true;
 bool wireframeEnabled          = false;
 bool ssaoEnabled		       = false;
 bool ssaoBlurEnabled	       = true;
@@ -555,7 +555,9 @@ void initPhysicsObjects()
 void update(float timeDelta)
 {
 	player->update(timeDelta);
-	eagle->update(timeDelta, player->getLocation() + glm::vec3(0, 2, 0), player->isInBush(), player->isDefenseActive());
+	player->setIsInCave(glm::distance(player->getLocation(), cave->getLocation()) < 5.0f);
+
+	eagle->update(timeDelta, player->getLocation() + glm::vec3(0, 2, 0), player->isInBush() || player->isInCave(), player->isDefenseActive());
 
 	particleSystem->update(timeDelta, player->getViewMat());
 

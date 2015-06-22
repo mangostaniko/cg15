@@ -81,7 +81,7 @@ struct CaveContact : public btCollisionWorld::ContactResultCallback
 		int index1)
 	{
 
-		inCave = true;
+//		inCave = true;
 
 		return 0;
 	}
