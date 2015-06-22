@@ -46,17 +46,6 @@
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\External\bullet\c_make_build\src\BulletCollision\BulletCollision.vcxproj">
-      <Project>{7183b8ff-574a-43b8-9b86-19508d387471}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\External\bullet\c_make_build\src\BulletDynamics\BulletDynamics.vcxproj">
-      <Project>{2dea1c6c-9a59-49ef-8261-beba8613f4eb}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\External\bullet\c_make_build\src\LinearMath\LinearMath.vcxproj">
-      <Project>{600a5675-c1bb-435b-b2be-961228123d85}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="shaders\blur.frag" />
     <None Include="shaders\blur.vert" />
     <None Include="shaders\depth_shader.frag" />
