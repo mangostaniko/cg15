@@ -19,6 +19,9 @@ struct CarrotContact : public btCollisionWorld::ContactResultCallback
 		Player *player = (Player*)playerBody->getCollisionObject()->getUserPointer();
 		Geometry *geometry = (Geometry*)carrotBody->getCollisionObject()->getUserPointer();
 
+		if (player->isEating()) {
+			return 0;
+		}
 		carrotBody->getCollisionObject()->setActivationState(DISABLE_SIMULATION);
 
 		//removeCollisionObject(const_cast<btCollisionObject*>(colObj0Wrap->getCollisionObject()));
