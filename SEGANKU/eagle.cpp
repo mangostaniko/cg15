@@ -52,7 +52,7 @@ void Eagle::update(float timeDelta, const glm::vec3 &targetPos_, bool targetHidd
 		setTransform(attackMat);
 
 		// fly to target
-		float speed = glm::max(glm::sqrt(glm::distance(targetPos, getLocation())), 7.0f);
+		float speed = glm::max(glm::sqrt(glm::distance(targetPos, getLocation()))*2.0f, 8.0f);
 		translate(attackDirection*speed*timeDelta, SceneObject::LEFT);
 
 	}

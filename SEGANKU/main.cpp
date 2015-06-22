@@ -465,7 +465,7 @@ void init(GLFWwindow *window)
 	}
 
 	// procedurally placed shrubs
-	positions = PoissonDiskSampler::generatePoissonSample(50, 0.4f); // positions in range [0, 1]
+	positions = PoissonDiskSampler::generatePoissonSample(40, 0.6f); // positions in range [0, 1]
 	for (unsigned int i = 0; i < positions.size(); ++i) {
 		glm::vec2 p = positions[i];
 		p = (p - glm::vec2(0.5, 0.5)) * glm::max(maxX, maxZ)*1.8f;
@@ -554,7 +554,7 @@ void initPhysicsObjects()
 void update(float timeDelta)
 {
 	player->update(timeDelta);
-	player->setIsInCave(glm::distance(player->getLocation(), cave->getLocation()) < 5.0f);
+	player->setIsInCave(glm::distance(player->getLocation(), cave->getLocation()) < 2.0f);
 
 	eagle->update(timeDelta, player->getLocation() + glm::vec3(0, 2, 0), player->isInBush() || player->isInCave(), player->isDefenseActive());
 
@@ -671,7 +671,7 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 	textRenderer->renderText(carrotText, 25.0f, 30.0f, 0.7f, glm::vec3(1, 0.7f, 0.0f));
 
 	if (player->isEating()) {
-		textRenderer->renderText(player->getFoodReaction(), 100.0f, 350.0f, 0.4f, glm::vec3(0.5f, 0.7f, 0.5f));
+		textRenderer->renderText(player->getFoodReaction(), 300.0f, 300.0f, 0.4f, glm::vec3(0.5f, 0.7f, 0.5f));
 	}
 
 	glEnable(GL_DEPTH_TEST);

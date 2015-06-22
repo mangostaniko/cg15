@@ -25,7 +25,7 @@ class Eagle : public Geometry
 	// GAMEPLAY
 	// all durations given in seconds
 
-	const float EAT_RADIUS = 2.0f;
+	const float EAT_RADIUS = 1.0f;
 	const float TARGET_DEFENSE_REACH_RADIUS = 13.0f;
 	const float ATTACK_WAIT_TIME_MIN = 15.0f; // min time after which eagle will attempt to attack player
 	const float ATTACK_WAIT_TIME_MAX = 25.0f; // max time after which eagle will attempt to attack player
