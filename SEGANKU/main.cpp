@@ -37,6 +37,12 @@ void init(GLFWwindow *window);
 void initWorldBounds(float &miX, float &maX, float &miY, float &maY);
 float terrainGetYCoord(glm::vec2 pos2D, float maxDistanceXY, float offsetY);
 void initSM();
+void initVSM();
+void initPCFSM();
+void shadowFirstPass(glm::mat4 &lightViewPro);
+void debugShadowPass();
+void ssaoFirstPass();
+void finalDrawPass();
 void initPhysicsObjects();
 void update(float timeDelta);
 void setActiveShader(Shader *shader);
@@ -49,19 +55,19 @@ GLFWwindow *window;
 int windowWidth, windowHeight;
 bool running			       = true;
 bool paused				       = false;
-bool foundCarrot		       = false;
 bool debugInfoEnabled          = true;
 bool wireframeEnabled          = false;
 bool ssaoEnabled		       = false;
 bool ssaoBlurEnabled	       = true;
 bool shadowsEnabled		       = true;
+bool vsmShadowsEnabled		   = false;
 bool renderShadowMap	       = false;
 bool frustumCullingEnabled     = false;
 bool useAlpha				   = false;
 
 Texture::FilterType filterType = Texture::LINEAR_MIPMAP_LINEAR;
 
-Shader *textureShader, *depthMapShader, *debugDepthShader;
+Shader *textureShader, *depthMapShader, *vsmDepthMapShader, *debugDepthShader;
 Shader *activeShader;
 TextRenderer *textRenderer;
 ParticleSystem *particleSystem;
@@ -70,8 +76,7 @@ SSAOPostprocessor *ssaoPostprocessor;
 Player *player; glm::mat4 playerInitTransform(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
 Eagle *eagle; glm::mat4 eagleInitTransform(glm::translate(glm::mat4(1.0f), glm::vec3(0, 30, -45)));
 
-Geometry *terrain;
-Geometry *cave;
+Geometry *terrain, *cave;
 
 Camera *camera;
 Light *sun;
@@ -84,29 +89,20 @@ std::vector<std::shared_ptr<Geometry>> shrubs;
 const float timeToStarvation = 120;
 
 // Shadow Map FBO and depth texture
-GLuint depthMapFBO;
-GLuint depthMap;
-
+GLuint depthMapFBO, vsmDepthMapFBO;
+GLuint depthMap, vsmDepthMap;
 
 const int SM_WIDTH = 4096, SM_HEIGHT = 4096;
-
+const GLfloat NEAR_PLANE = 50.f, FAR_PLANE = 400.f;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 // PHYSICS
-static SimpleDebugDrawer debugDrawerPhysics;
-btDefaultCollisionConfiguration *collisionConfiguration;
-btCollisionDispatcher *dispatcher;
-btBroadphaseInterface * overlappingPairCache;
-btSequentialImpulseConstraintSolver *solver;
-btDiscreteDynamicsWorld *dynamicsWorld;
 
 Physics *physics;
 
-
 // ONLY FOR SEBAS DEBUGGING
-
 GLuint quadVAO = 0;
 GLuint quadVBO;
 void RenderQuad()
@@ -193,8 +189,7 @@ int main(int argc, char **argv)
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPos(window, 0, 0);
 
-	//glClearColor(0.68f, 0.78f, 1.0f, 1.0f); // warm sky blue
-	//glClearColor(0.11f, 0.1f, 0.14f, 1.0f); // dark grey
+	// Clear Color and set Viewport
 	glClearColor(0.f, 0.f, 0.f, 1.f);
 	glViewport(0, 0, windowWidth, windowHeight);
 
@@ -212,9 +207,8 @@ int main(int argc, char **argv)
 	glfwSetFramebufferSizeCallback(window, frameBufferResize);
 	glfwSetKeyCallback(window, keyCallback);
 
+	// all initializations happen here
 	init(window);
-
-	// enable Blending for transparency
 
 	//////////////////////////
 	/// MAIN LOOP
@@ -238,14 +232,12 @@ int main(int argc, char **argv)
 		// since a lot of other calls depend on the currently bound shader
 		setActiveShader(textureShader);
 
+		//////////////////////////
+		/// UPDATE
+		//////////////////////////
 		if (!paused) {
 
 			physics->stepSimulation(deltaT);
-
-			//////////////////////////
-			/// UPDATE
-			//////////////////////////
-
 			update(deltaT);
 
 			// pause on starvation or if player eaten by eagle
@@ -254,7 +246,6 @@ int main(int argc, char **argv)
 				player->translate(glm::vec3(0, 0.3, 0), SceneObject::LEFT);
 				paused = true;
 			}
-
 		}
 
 
@@ -263,101 +254,28 @@ int main(int argc, char **argv)
 		//////////////////////////
 
 		//// SHADOW MAP PASS
-		//// depths from light position for shading mapping
-
-		// set viewport and bind framebuffer
-		glViewport(0, 0, SM_WIDTH, SM_HEIGHT);
-		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		glClear(GL_DEPTH_BUFFER_BIT);
-
 		// calculate lights projection and view Matrix
-		GLfloat nearPlane = 50.f, farPlane = 400.f;
-		glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, nearPlane, farPlane);
-		//glm::mat4 lightProjection = glm::perspective(100.f, (GLfloat) SM_WIDTH / (GLfloat) SM_HEIGHT, nearPlane, farPlane);
-		glm::mat4 lightView = glm::lookAt(sun->getLocation(), glm::vec3(0.f), glm::vec3(0, 1, 0));
-		glm::mat4 lightVP = lightProjection * lightView;
-
-		// prepare shader
-		Shader *lastShader = activeShader;
-		setActiveShader(depthMapShader);
-		GLint lightVPLocation = glGetUniformLocation(activeShader->programHandle, "lightVP");
-		glUniformMatrix4fv(lightVPLocation, 1, GL_FALSE, glm::value_ptr(lightVP));
-
-		// render
-
-		drawScene();
-
-		// bind default FB and reset viewport
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, windowWidth, windowHeight);
-
+		glm::mat4 lightVP;
+		shadowFirstPass(lightVP);
+				
+		// Prepare lighting shader and set matrices
 		setActiveShader(textureShader);
-
 		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "viewMat"), 1, GL_FALSE, glm::value_ptr(player->getViewMat()));
 		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightVP));
-
-		GLint shadowMapLocation = glGetUniformLocation(activeShader->programHandle, "shadowMap");
-		glUniform1i(shadowMapLocation, 1);
+		glUniform1i(glGetUniformLocation(activeShader->programHandle, "shadowMap"), 1);
 		glActiveTexture(GL_TEXTURE0 + 1);
 		glBindTexture(GL_TEXTURE_2D, depthMap);
 
-		if (ssaoEnabled) {
 
-			//// SSAO PREPASS
-			//// draw ssao input data (screen colors and view space positions) to framebuffer textures
-
-			ssaoPostprocessor->bindScreenDataFramebuffer();
-			glUniform1i(glGetUniformLocation(activeShader->programHandle, "useShadows"), 0);
-			glUniform1i(glGetUniformLocation(activeShader->programHandle, "useSSAO"), 0);
-			glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			drawScene();
-
-			//// SSAO PASS
-			//// draw ssao output data to framebuffer texture
-
-			ssaoPostprocessor->calulateSSAOValues(player->getProjMat());
-			setActiveShader(textureShader);
-
-			//// SSAO BLUR PASS
-
-			ssaoPostprocessor->blurSSAOResultTexture();
-			setActiveShader(textureShader);
-
-		}
+		//// SSAO PrePass (if enabled)
+		ssaoFirstPass();
 
 		//// FINAL PASS
 		//// draw with shadow mapping and ssao
-
-		glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useShadows"), shadowsEnabled);
-		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useSSAO"), ssaoEnabled);
-
-		GLint ssaoTexLocation = glGetUniformLocation(activeShader->programHandle, "ssaoTexture");
-		if (ssaoBlurEnabled) {
-			ssaoPostprocessor->bindSSAOBlurredResultTexture(ssaoTexLocation, 2);
-		}
-		else {
-			ssaoPostprocessor->bindSSAOResultTexture(ssaoTexLocation, 2);
-		}
-
-		drawScene();
-
-		// draw shadow map for debugging
-		if (renderShadowMap) {
-
-			lastShader = activeShader;
-			setActiveShader(debugDepthShader);
-
-			glUniform1f(glGetUniformLocation(debugDepthShader->programHandle, "near_plane"), nearPlane);
-			glUniform1f(glGetUniformLocation(debugDepthShader->programHandle, "far_plane"), farPlane);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, depthMap);
-			RenderQuad();
-			setActiveShader(lastShader); lastShader = nullptr;
-		}
+		finalDrawPass();
+		
+		// draw shadow map for debugging (if enabled)
+		debugShadowPass();
 
 		particleSystem->draw(player->getViewMat(), player->getProjMat(), glm::vec3(1, 0.55, 0.5));
 
@@ -406,8 +324,6 @@ void init(GLFWwindow *window)
 	glfwGetWindowSize(window, &width, &height);
 
 	paused = false;
-	foundCarrot = false;
-
 
 	// INIT TEXT RENDERER
 	textRenderer = new TextRenderer("../data/fonts/cliff.ttf", width, height);
@@ -496,6 +412,7 @@ void init(GLFWwindow *window)
 	glfwSetTime(0);
 }
 
+
 void initSM()
 {
 	// INIT SHADOW MAPPING (Framebuffer + ShadowMap + Shaders)
@@ -527,6 +444,7 @@ void initSM()
 	debugDepthShader = new Shader("../SEGANKU/shaders/quad_debug.vert", "../SEGANKU/shaders/quad_debug.frag");
 }
 
+
 void initPhysicsObjects()
 {
 	physics = new Physics(player);
@@ -550,6 +468,7 @@ void initPhysicsObjects()
 	physics->setupCaveObjects(cave);
 	
 }
+
 
 void update(float timeDelta)
 {
@@ -632,6 +551,7 @@ void drawScene()
 
 }
 
+
 void drawText(double deltaT, int windowWidth, int windowHeight)
 {
 	glDisable(GL_DEPTH_TEST);
@@ -678,6 +598,90 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 }
 
 
+void shadowFirstPass(glm::mat4 &lightViewPro)
+{
+	// set viewport and bind framebuffer
+	glViewport(0, 0, SM_WIDTH, SM_HEIGHT);
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	// Calculate Light View-Projection Matrix
+	glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, NEAR_PLANE, FAR_PLANE);
+	//glm::mat4 lightProjection = glm::perspective(100.f, (GLfloat) SM_WIDTH / (GLfloat) SM_HEIGHT, nearPlane, farPlane);
+	glm::mat4 lightView = glm::lookAt(sun->getLocation(), glm::vec3(0.f), glm::vec3(0, 1, 0));
+	lightViewPro = lightProjection * lightView;
+
+	// set DepthMapShader as active and hand over lightViewPro
+	setActiveShader(depthMapShader);
+	glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightViewPro));
+
+	// render scene
+	drawScene();
+
+	// bind default FB and reset viewport
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, windowWidth, windowHeight);
+}
+
+
+void ssaoFirstPass()
+{
+	if (ssaoEnabled) {
+		//// SSAO PREPASS
+		//// draw ssao input data (screen colors and view space positions) to framebuffer textures
+		ssaoPostprocessor->bindScreenDataFramebuffer();
+		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useShadows"), 0);
+		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useSSAO"), 0);
+		glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		drawScene();
+
+		//// SSAO PASS
+		//// draw ssao output data to framebuffer texture
+		ssaoPostprocessor->calulateSSAOValues(player->getProjMat());
+		setActiveShader(textureShader);
+
+		//// SSAO BLUR PASS
+		ssaoPostprocessor->blurSSAOResultTexture();
+		setActiveShader(textureShader);
+	}
+}
+
+
+void finalDrawPass()
+{
+	glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glUniform1i(glGetUniformLocation(activeShader->programHandle, "useShadows"), shadowsEnabled);
+	glUniform1i(glGetUniformLocation(activeShader->programHandle, "useSSAO"), ssaoEnabled);
+
+	if (ssaoBlurEnabled) {
+		ssaoPostprocessor->bindSSAOBlurredResultTexture(glGetUniformLocation(activeShader->programHandle, "ssaoTexture"), 2);
+	}
+	else {
+		ssaoPostprocessor->bindSSAOResultTexture(glGetUniformLocation(activeShader->programHandle, "ssaoTexture"), 2);
+	}
+
+	drawScene();
+}
+
+
+void debugShadowPass()
+{
+	if (renderShadowMap) {
+
+		setActiveShader(debugDepthShader);
+
+		glUniform1f(glGetUniformLocation(debugDepthShader->programHandle, "near_plane"), NEAR_PLANE);
+		glUniform1f(glGetUniformLocation(debugDepthShader->programHandle, "far_plane"), FAR_PLANE);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		RenderQuad();
+	}
+}
+
+
 void newGame()
 {
 	delete sun;
@@ -696,7 +700,6 @@ void newGame()
 	eagle->resetEagle();
 
 	paused = false;
-	foundCarrot = false;
 }
 
 
@@ -827,14 +830,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F10) == GLFW_PRESS) {
-		if (debugDrawerPhysics.getDebugMode() != 0) {
-			debugDrawerPhysics.setDebugMode(0);
-			std::cout << "DEBUG DRAW BULLET PHYSICS DISABLED" << std::endl;
-		}
-		else {
-			debugDrawerPhysics.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
 			std::cout << "DEBUG DRAW BULLET PHYSICS NOT IMPLEMENTED" << std::endl;
-		}
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS) {
@@ -888,6 +884,7 @@ float terrainGetYCoord(glm::vec2 pos2D, float maxDistanceXY, float offsetY)
 
 	return newY;
 }
+
 
 void initWorldBounds(float &miX, float &maX, float &miZ, float &maZ)
 {

@@ -46,7 +46,7 @@ class Player : public Geometry
 	// GAMEPLAY SPECS
 	// durations are given in seconds
 	Geometry *currentFood = nullptr;	// pointer to the currently eaten carrot
-	const float MAX_ANIM = 2.5;	// max length of animation
+	const float MAX_ANIM = 1.75;	// max length of animation
 	const int NEEDED_FOOD = 10;	// how much food is needed to get through winter
 	const int DEFENSE_FOOD_COST = 3;	// how many carrots are used in a skunk defense
 	const float MAX_RUN_TIME = 2.0;	// max speed time

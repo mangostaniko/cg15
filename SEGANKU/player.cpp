@@ -51,7 +51,7 @@ void Player::update(float timeDelta)
 		if (animDur < MAX_ANIM) {
 			animDur += timeDelta;
 			currentFood->setLocation(getLocation() + glm::vec3(0, 2, 0));
-			currentFood->rotateY(glm::radians(10.0), SceneObject::RIGHT);
+			currentFood->rotateY(glm::radians(180.0) * timeDelta, SceneObject::RIGHT);
 		}
 		else {
 			animDur = 0;
@@ -104,12 +104,12 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	//	timePassed = 0;
 	//}
 	// because we use bullet for motion, moveSpeed has to be quiet high for realistic feel
-	float moveSpeed = 400.0f;
+	float moveSpeed = 8;
 
 
 	// speeding is only allowed if player is not overweight and he has not run for longer than MAX_RUN_TIME
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) && !overWeight && canRun) {
-		moveSpeed = 800.0f;
+		moveSpeed = 16;
 		speeding = true;
 
 		if (runDur <= MAX_RUN_TIME) {
@@ -138,7 +138,7 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 	// note: we apply rotation before translation since we dont want the distance from the origin
 	// to affect how we rotate
     if (glfwGetKey(window, 'W')) { //  && timePassed == 0
-		playerBody->setLinearVelocity(btVector3(dirWorld.x, -1, dirWorld.z) * timeDelta * moveSpeed);
+		playerBody->setLinearVelocity(btVector3(dirWorld.x, -1, dirWorld.z) * moveSpeed);
 		btTransform trans; 
 		playerBody->getMotionState()->getWorldTransform(trans);//->getWorldTransform(trans);
 
@@ -147,7 +147,7 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 		moving = true;
     }
 	else if (glfwGetKey(window, 'S')) { // && timePassed == 0
-		playerBody->setLinearVelocity(btVector3(-dirWorld.x, -1, -dirWorld.z) * timeDelta * moveSpeed);
+		playerBody->setLinearVelocity(btVector3(-dirWorld.x, -1, -dirWorld.z) * moveSpeed);
 		//btTransform trans = playerBody->getWorldTransform();//->getWorldTransform(trans);
 		btTransform trans;
 		playerBody->getMotionState()->getWorldTransform(trans);//->getWorldTransform(trans);
@@ -157,7 +157,7 @@ void Player::handleInput(GLFWwindow *window, float timeDelta)
 		moving = true;
 	}
 	else {
-		playerBody->setLinearVelocity(btVector3(0, 0, 0) * timeDelta * moveSpeed * 2);
+		playerBody->setLinearVelocity(btVector3(0, 0, 0) * moveSpeed);
 
 		btTransform trans;
 		playerBody->getMotionState()->getWorldTransform(trans);//->getWorldTransform(trans);
