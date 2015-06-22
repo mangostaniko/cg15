@@ -93,7 +93,7 @@ GLuint depthMapFBO, vsmDepthMapFBO;
 GLuint depthMap, vsmDepthMap;
 
 const int SM_WIDTH = 4096, SM_HEIGHT = 4096;
-const GLfloat NEAR_PLANE = 50.f, FAR_PLANE = 400.f;
+const GLfloat NEAR_PLANE = 100.f, FAR_PLANE = 250.f;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -256,7 +256,10 @@ int main(int argc, char **argv)
 		//// SHADOW MAP PASS
 		// calculate lights projection and view Matrix
 		glm::mat4 lightVP;
-		shadowFirstPass(lightVP);
+
+		if (shadowsEnabled) {
+			shadowFirstPass(lightVP);
+		}
 				
 		// Prepare lighting shader and set matrices
 		setActiveShader(textureShader);
@@ -264,9 +267,13 @@ int main(int argc, char **argv)
 		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightVP));
 		glUniform1i(glGetUniformLocation(activeShader->programHandle, "shadowMap"), 1);
 		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
-
-
+		if (vsmShadowsEnabled) {
+			glBindTexture(GL_TEXTURE_2D, vsmDepthMap);
+		}
+		else {
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+		}
+		
 		//// SSAO PrePass (if enabled)
 		ssaoFirstPass();
 
@@ -288,7 +295,6 @@ int main(int argc, char **argv)
 		//////////////////////////
 		/// ERRORS AND EVENTS
 		//////////////////////////
-
 		GLenum glErr = glGetError();
 		if (glErr != GL_NO_ERROR) {
 			// handle errors
@@ -300,7 +306,6 @@ int main(int argc, char **argv)
 		if (running) {
 			running = !glfwGetKey(window, GLFW_KEY_ESCAPE);
 		}
-
 	}
 
 	// release resources
@@ -415,6 +420,18 @@ void init(GLFWwindow *window)
 
 void initSM()
 {
+	// SM Shaders
+	depthMapShader = new Shader("../SEGANKU/shaders/depth_shader.vert", "../SEGANKU/shaders/depth_shader.frag");
+	debugDepthShader = new Shader("../SEGANKU/shaders/quad_debug.vert", "../SEGANKU/shaders/quad_debug.frag");
+	vsmDepthMapShader = new Shader("../SEGANKU/shaders/depth_shader_vsm.vert", "../SEGANKU/shaders/depth_shader_vsm.frag");
+
+	initPCFSM();
+	initVSM();
+}
+
+
+void initPCFSM()
+{
 	// INIT SHADOW MAPPING (Framebuffer + ShadowMap + Shaders)
 	glGenFramebuffers(1, &depthMapFBO);
 	glGenTextures(1, &depthMap);
@@ -438,10 +455,34 @@ void initSM()
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
-	// SM Shaders
-	depthMapShader = new Shader("../SEGANKU/shaders/depth_shader.vert", "../SEGANKU/shaders/depth_shader.frag");
-	debugDepthShader = new Shader("../SEGANKU/shaders/quad_debug.vert", "../SEGANKU/shaders/quad_debug.frag");
+
+void initVSM()
+{
+	// INIT SHADOW MAPPING (Framebuffer + ShadowMap + Shaders)
+	glGenFramebuffers(1, &vsmDepthMapFBO);
+
+	// ShadowMomentsMap
+	glGenTextures(1, &vsmDepthMap);
+	glBindTexture(GL_TEXTURE_2D, vsmDepthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, SM_WIDTH, SM_HEIGHT, 0, GL_RGBA, GL_FLOAT, 0);
+
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// SM Framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, vsmDepthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, vsmDepthMap, 0);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
@@ -600,24 +641,31 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 
 void shadowFirstPass(glm::mat4 &lightViewPro)
 {
-	// set viewport and bind framebuffer
-	glViewport(0, 0, SM_WIDTH, SM_HEIGHT);
-	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-	glClear(GL_DEPTH_BUFFER_BIT);
-
 	// Calculate Light View-Projection Matrix
 	glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, NEAR_PLANE, FAR_PLANE);
 	//glm::mat4 lightProjection = glm::perspective(100.f, (GLfloat) SM_WIDTH / (GLfloat) SM_HEIGHT, nearPlane, farPlane);
 	glm::mat4 lightView = glm::lookAt(sun->getLocation(), glm::vec3(0.f), glm::vec3(0, 1, 0));
 	lightViewPro = lightProjection * lightView;
 
-	// set DepthMapShader as active and hand over lightViewPro
-	setActiveShader(depthMapShader);
-	glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightViewPro));
-
-	// render scene
-	drawScene();
-
+	// set viewport and bind framebuffer
+	glViewport(0, 0, SM_WIDTH, SM_HEIGHT);
+	
+	if (vsmShadowsEnabled) {
+		glBindFramebuffer(GL_FRAMEBUFFER, vsmDepthMapFBO);
+		setActiveShader(vsmDepthMapShader);
+		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightViewPro));
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		drawScene();
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		setActiveShader(depthMapShader);
+		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightViewPro));
+		drawScene();
+	}
+	
 	// bind default FB and reset viewport
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, windowWidth, windowHeight);
@@ -632,6 +680,7 @@ void ssaoFirstPass()
 		ssaoPostprocessor->bindScreenDataFramebuffer();
 		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useShadows"), 0);
 		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useSSAO"), 0);
+		glUniform1i(glGetUniformLocation(activeShader->programHandle, "useVSM"), 0);
 		glClearColor(sun->getColor().x, sun->getColor().y, sun->getColor().z, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		drawScene();
@@ -656,6 +705,8 @@ void finalDrawPass()
 	glUniform1i(glGetUniformLocation(activeShader->programHandle, "useShadows"), shadowsEnabled);
 	glUniform1i(glGetUniformLocation(activeShader->programHandle, "useSSAO"), ssaoEnabled);
 
+	glUniform1i(glGetUniformLocation(activeShader->programHandle, "useVSM"), vsmShadowsEnabled);
+
 	if (ssaoBlurEnabled) {
 		ssaoPostprocessor->bindSSAOBlurredResultTexture(glGetUniformLocation(activeShader->programHandle, "ssaoTexture"), 2);
 	}
@@ -676,7 +727,14 @@ void debugShadowPass()
 		glUniform1f(glGetUniformLocation(debugDepthShader->programHandle, "near_plane"), NEAR_PLANE);
 		glUniform1f(glGetUniformLocation(debugDepthShader->programHandle, "far_plane"), FAR_PLANE);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
+
+		if (vsmShadowsEnabled) {
+			glBindTexture(GL_TEXTURE_2D, vsmDepthMap);
+		}
+		else {
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+		}
+		
 		RenderQuad();
 	}
 }
@@ -812,9 +870,21 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F7) == GLFW_PRESS) {
-		shadowsEnabled = !shadowsEnabled;
-		if (shadowsEnabled) std::cout << "SHADOWS ENABLED" << std::endl;
-		else std::cout << "SHADOWS DISABLED" << std::endl;
+		if (!shadowsEnabled) {
+			shadowsEnabled = !shadowsEnabled;
+			vsmShadowsEnabled = false;
+			std::cout << "PCF SHADOWS ENABLED" << std::endl;
+		}
+		else if (shadowsEnabled) {
+			if (vsmShadowsEnabled) {
+				shadowsEnabled = !shadowsEnabled;
+				std::cout << "SHADOWS DISABLED" << std::endl;
+			}
+			else {
+				vsmShadowsEnabled = true;
+				std::cout << "VSM SHADOWS ENABLED" << std::endl;
+			}
+		}
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_F8) == GLFW_PRESS) {

@@ -128,5 +128,7 @@
     <None Include="shaders\depth_shader.frag" />
     <None Include="shaders\depth_shader.vert" />
     <None Include="shaders\normal_mapping.frag" />
+    <None Include="shaders\depth_shader_vsm.vert" />
+    <None Include="shaders\depth_shader_vsm.frag" />
   </ItemGroup>
 </Project>

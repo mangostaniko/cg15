@@ -29,6 +29,7 @@ uniform Light light;
 uniform sampler2D shadowMap; // texture unit 1
 uniform sampler2D ssaoTexture; // texture unit 2
 uniform bool useShadows;
+uniform bool useVSM;
 uniform bool useSSAO;
 uniform bool useAlpha;
 
@@ -65,6 +66,33 @@ float calcShadow(vec4 lightSpacePos)
 }
 
 
+// Calculate amount of Shadow using Variance Shadow Mapping
+float shadowVSM(vec4 lightSpacePos)
+{
+	vec3 projC = lightSpacePos.xyz / lightSpacePos.w;
+	float dist = projC.z;
+	
+	projC = projC * 0.5 + 0.5;
+	
+	// retrieve depth and depth squared
+	vec2 moments = texture2D(shadowMap,projC.xy).rg;
+		
+	// no shadow -> fully lit
+	if (dist <= moments.x)
+		return 1.0;
+	
+	// The fragment is either in shadow or penumbra. We now use chebyshev's upperBound to check
+	// How likely this pixel is to be lit (p_max)
+	float variance = moments.y - (moments.x * moments.x);
+	variance = max(variance, 0.000002);
+	
+	float d = dist - moments.x;
+	float pMax = variance / (variance + d * d);
+	
+	return pMax;
+}
+
+
 void main()
 {
 	// Normalize normal, light and view vectors
@@ -89,8 +117,15 @@ void main()
 
 	vec3 color;
 	if (useShadows) {
-		float shadow = calcShadow(PLightSpace);
-		color = ambient + (1.0 - shadow) * (diffuse + specular);
+		if (useVSM) {
+			float shadow = shadowVSM(PLightSpace);
+			color = ambient + (shadow) * (diffuse + specular);
+		} 
+		else {
+			float shadow = calcShadow(PLightSpace);
+			color = ambient + (1.0 - shadow) * (diffuse + specular);
+		}
+		
 	} else {
 		color = ambient + diffuse + specular;
 	}
@@ -101,9 +136,7 @@ void main()
 		outColor = vec4(AO*AO * color, 1);
 	}
 	
-
 	outViewSpacePos = PViewSpace;
-
 }
 
 
