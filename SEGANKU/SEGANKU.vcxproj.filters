@@ -130,5 +130,7 @@
     <None Include="shaders\normal_mapping.frag" />
     <None Include="shaders\depth_shader_vsm.vert" />
     <None Include="shaders\depth_shader_vsm.frag" />
+    <None Include="shaders\blur_vsm.vert" />
+    <None Include="shaders\blur_vsm.frag" />
   </ItemGroup>
 </Project>

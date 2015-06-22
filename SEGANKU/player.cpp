@@ -55,7 +55,7 @@ void Player::update(float timeDelta)
 		}
 		else {
 			animDur = 0;
-			currentFood->setLocation(glm::vec3(300, -300, 300));
+			currentFood->translate(glm::vec3(0, -300, 0), SceneObject::RIGHT);
 			currentFood = nullptr;
 		}
 	}
@@ -97,15 +97,9 @@ void Player::draw(Shader *shader, bool useFrustumCulling, Texture::FilterType fi
 
 void Player::handleInput(GLFWwindow *window, float timeDelta)
 {
-
 	bool speeding = false;
-	//timePassed += timeDelta;
-	//if (timePassed > 0.15) {
-	//	timePassed = 0;
-	//}
-	// because we use bullet for motion, moveSpeed has to be quiet high for realistic feel
-	float moveSpeed = 8;
 
+	float moveSpeed = 8;
 
 	// speeding is only allowed if player is not overweight and he has not run for longer than MAX_RUN_TIME
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) && !overWeight && canRun) {
@@ -321,6 +315,7 @@ void Player::eat(Geometry *carrot)
 			overWeight = true;
 		}
 		currentFood = carrot;
+		eatenCarrots.push_back(carrot);
 	}
 }
 
@@ -382,12 +377,23 @@ btRigidBody *Player::getRigidBody()
 
 void Player::resetPlayer()
 {
+	btTransform playerTransform;
+	playerTransform.setIdentity();
+	playerTransform.setOrigin(btVector3(getLocation().x, getLocation().y + 0.5, getLocation().z));
+
+	playerBody->setWorldTransform(playerTransform);
+
 	foodCount = 0;
+	runDur = 0;		
+	breakDur = 0;       
+	digestDur = 0;		
+	defenseDur = 0;
 	fullStomach = false;
 	
 	if (currentFood != nullptr) {
 		currentFood->setLocation(glm::vec3(300, -300, 300));
 		currentFood = nullptr;
+		animDur = 0;
 	}
 }
 

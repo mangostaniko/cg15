@@ -370,3 +370,4 @@ void Physics::cleanUp()
 	delete collisionConfiguration;
 	collisionShapes.clear();
 }
+

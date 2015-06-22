@@ -69,7 +69,7 @@ class Player : public Geometry
 	bool inCave = true;
 	bool defenseActive = false; // true if skunk defense cloud active
 
-
+	std::vector<Geometry*> eatenCarrots;
 
 	static double scrollY; // amount scrolled since last frame
 

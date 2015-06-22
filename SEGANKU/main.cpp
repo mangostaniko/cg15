@@ -39,7 +39,9 @@ float terrainGetYCoord(glm::vec2 pos2D, float maxDistanceXY, float offsetY);
 void initSM();
 void initVSM();
 void initPCFSM();
+void initVSMBlur();
 void shadowFirstPass(glm::mat4 &lightViewPro);
+void vsmBlurPass();
 void debugShadowPass();
 void ssaoFirstPass();
 void finalDrawPass();
@@ -67,7 +69,7 @@ bool useAlpha				   = false;
 
 Texture::FilterType filterType = Texture::LINEAR_MIPMAP_LINEAR;
 
-Shader *textureShader, *depthMapShader, *vsmDepthMapShader, *debugDepthShader;
+Shader *textureShader, *depthMapShader, *vsmDepthMapShader, *debugDepthShader, *blurVSMDepthShader;
 Shader *activeShader;
 TextRenderer *textRenderer;
 ParticleSystem *particleSystem;
@@ -91,6 +93,8 @@ const float timeToStarvation = 120;
 // Shadow Map FBO and depth texture
 GLuint depthMapFBO, vsmDepthMapFBO;
 GLuint depthMap, vsmDepthMap;
+GLuint pingpongFBO[2];
+GLuint pingpongColorMaps[2];
 
 const int SM_WIDTH = 4096, SM_HEIGHT = 4096;
 const GLfloat NEAR_PLANE = 100.f, FAR_PLANE = 250.f;
@@ -424,9 +428,11 @@ void initSM()
 	depthMapShader = new Shader("../SEGANKU/shaders/depth_shader.vert", "../SEGANKU/shaders/depth_shader.frag");
 	debugDepthShader = new Shader("../SEGANKU/shaders/quad_debug.vert", "../SEGANKU/shaders/quad_debug.frag");
 	vsmDepthMapShader = new Shader("../SEGANKU/shaders/depth_shader_vsm.vert", "../SEGANKU/shaders/depth_shader_vsm.frag");
+	blurVSMDepthShader = new Shader("../SEGANKU/shaders/blur_vsm.vert", "../SEGANKU/shaders/blur_vsm.frag");
 
 	initPCFSM();
 	initVSM();
+	initVSMBlur();
 }
 
 
@@ -484,6 +490,28 @@ void initVSM()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
+
+void initVSMBlur()
+{
+	glGenFramebuffers(2, pingpongFBO);
+	glGenTextures(2, pingpongColorMaps);
+
+	for (GLuint i = 0; i < 2; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+		glBindTexture(GL_TEXTURE_2D, pingpongColorMaps[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SM_WIDTH, SM_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorMaps[i], 0);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 
 
 void initPhysicsObjects()
@@ -657,6 +685,8 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		drawScene();
 		glGenerateMipmap(GL_TEXTURE_2D);
+
+		//vsmBlurPass();  --> sets program to ~3 fps
 	}
 	else {
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -669,6 +699,27 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 	// bind default FB and reset viewport
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, windowWidth, windowHeight);
+}
+
+
+void vsmBlurPass()
+{
+	GLboolean horizontal = true, first = true;
+	GLuint amount = 10;
+	setActiveShader(blurVSMDepthShader);
+
+	for (GLuint i = 0; i < amount; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+		glUniform1i(glGetUniformLocation(activeShader->programHandle, "horizontal"), horizontal);
+		glBindTexture(GL_TEXTURE_2D, first ? vsmDepthMap : pingpongColorMaps[!horizontal]); 
+		RenderQuad();
+		horizontal = !horizontal;
+		if (first) {
+			first = false;
+		}
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 

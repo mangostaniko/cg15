@@ -48,6 +48,8 @@
   <ItemGroup>
     <None Include="shaders\blur.frag" />
     <None Include="shaders\blur.vert" />
+    <None Include="shaders\blur_vsm.frag" />
+    <None Include="shaders\blur_vsm.vert" />
     <None Include="shaders\depth_shader.frag" />
     <None Include="shaders\depth_shader.vert" />
     <None Include="shaders\depth_shader_vsm.frag" />
