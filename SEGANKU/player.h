@@ -75,7 +75,7 @@ class Player : public Geometry
 
 	/**
 	 * @brief check if the camera navigation mode has changed and set camera accordingly
-	 * NOTE: currently only works if there are only 2 nav modes
+	 * note: currently only works if there are only 2 nav modes
 	 */
 	void handleNavModeChange();
 

@@ -68,7 +68,7 @@ ParticleSystem *particleSystem;
 SSAOPostprocessor *ssaoPostprocessor;
 
 Player *player; glm::mat4 playerInitTransform(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
-Eagle *eagle; glm::mat4 eagleInitTransform(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3)), glm::vec3(0, 10, -15)));
+Eagle *eagle; glm::mat4 eagleInitTransform(glm::translate(glm::mat4(1.0f), glm::vec3(0, 30, -45)));
 
 Geometry *terrain;
 Geometry *cave;
@@ -488,7 +488,6 @@ void init(GLFWwindow *window)
 
 	// INIT EAGLE
 	eagle = new Eagle(eagleInitTransform, "../data/models/eagle/eagle.dae");
-	eagle->rotateY(glm::radians(270.0), SceneObject::RIGHT);
 
 
 	// INIT PHYSICS OBJECTS (add objects to dynamic World)
@@ -639,8 +638,8 @@ void drawText(double deltaT, int windowWidth, int windowHeight)
 
 	if (debugInfoEnabled) {
 
-		int startY = windowHeight;
-		int deltaY = -20;
+		int startY = 400;
+		int deltaY = 20;
 		float fontSize = 0.35f;
 		textRenderer->renderText("drawn surface count: " + std::to_string(Geometry::drawnSurfaceCount), 25, startY+2*deltaY, fontSize, glm::vec3(1));
 		textRenderer->renderText("delta time: " + std::to_string(int(deltaT*1000 + 0.5)) + " ms", 25, startY+3*deltaY, fontSize, glm::vec3(1));

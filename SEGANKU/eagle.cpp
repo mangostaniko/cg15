@@ -44,7 +44,10 @@ void Eagle::update(float timeDelta, const glm::vec3 &targetPos_, bool targetHidd
 		}
 
 		// fly to target
-//		setTransform(glm::lookAt(getLocation(), targetPos, glm::vec3(0, 1, 0))); // TODO look at target
+		glm::mat3 lookAtMat = glm::mat3(glm::lookAt(getLocation(), targetPos, glm::vec3(0, 1, 0))); // TODO look at target
+		glm::vec3 location = getLocation();
+		setTransform(glm::mat4(lookAtMat));
+		setLocation(location);
 		glm::vec3 attackDirection = glm::normalize(targetPos - getLocation());
 		translate(attackDirection*glm::sqrt(glm::distance(targetPos, getLocation()))*0.05f, SceneObject::LEFT);
 
