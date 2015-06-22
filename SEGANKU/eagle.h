@@ -2,8 +2,10 @@
 #define EAGLE_H
 
 #define GLM_SWIZZLE
+#define GLM_FORCE_RADIANS
 
 #include <btBulletDynamicsCommon.h>
+#include <glm/gtx/vector_angle.hpp>
 #include "geometry.h"
 
 enum EagleState
@@ -63,6 +65,8 @@ public:
 	 * @return whether the target is in EAT_RADIUS of the eagle
 	 */
 	bool isTargetEaten();
+
+	void resetEagle();
 
 private:
 };

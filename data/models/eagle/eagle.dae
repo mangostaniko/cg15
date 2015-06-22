@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.73.0 commit date:2015-01-20, commit time:18:16, hash:bbf09d9</authoring_tool>
     </contributor>
-    <created>2015-06-22T13:07:01</created>
-    <modified>2015-06-22T13:07:01</modified>
+    <created>2015-06-22T14:17:52</created>
+    <modified>2015-06-22T14:17:52</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -112,7 +112,7 @@
   <library_visual_scenes>
     <visual_scene id="Scene" name="Scene">
       <node id="eagle" name="eagle" type="NODE">
-        <matrix sid="transform">1.5 0 0 -0.01836849 0 1.5 0 0.06995115 0 0 1.5 0.07587148 0 0 0 1</matrix>
+        <matrix sid="transform">1.4 0 0 -0.01836849 0 1.4 0 0.06995115 0 0 1.4 0.07587148 0 0 0 1</matrix>
         <instance_geometry url="#eagle-mesh">
           <bind_material>
             <technique_common>

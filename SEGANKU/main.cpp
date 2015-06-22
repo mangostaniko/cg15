@@ -693,7 +693,7 @@ void newGame()
 	player->setTransform(playerInitTransform);
 	player->resetPlayer();
 	eagle->setTransform(eagleInitTransform);
-	eagle->rotateY(glm::radians(270.0), SceneObject::RIGHT);
+	eagle->resetEagle();
 
 	paused = false;
 	foundCarrot = false;
@@ -843,11 +843,12 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 		else std::cout << "DEBUG DRAW SHADOW MAP DISABLED" << std::endl;
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_F12) == GLFW_PRESS) {
-		ssaoBlurEnabled = !ssaoBlurEnabled;
-		if (ssaoBlurEnabled) std::cout << "SSAO BLUR ENABLED" << std::endl;
-		else std::cout << "SSAO BLUR DISABLED" << std::endl;
-	}
+	// BUG: uncommented due to crash on windows on disabling blur when ssao enabled
+//	if (glfwGetKey(window, GLFW_KEY_F12) == GLFW_PRESS) {
+//		ssaoBlurEnabled = !ssaoBlurEnabled;
+//		if (ssaoBlurEnabled) std::cout << "SSAO BLUR ENABLED" << std::endl;
+//		else std::cout << "SSAO BLUR DISABLED" << std::endl;
+//	}
 }
 
 
