@@ -119,7 +119,7 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Camera</b> (const glm::mat4 &amp;matrix_)</td></tr>
 <tr class="separator:ad525b816a15b46ff22e1f826052d0a7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4387555e7b88fc489122a3d5acd785e1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCamera.html#a4387555e7b88fc489122a3d5acd785e1">update</a> (float timeDelta)</td></tr>
-<tr class="memdesc:a4387555e7b88fc489122a3d5acd785e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the state of the <a class="el" href="classSceneObject.html" title="A SceneObject holds a transformation matrix and its inverse and provides functions to manipulate them...">SceneObject</a>  <a href="#a4387555e7b88fc489122a3d5acd785e1">More...</a><br /></td></tr>
+<tr class="memdesc:a4387555e7b88fc489122a3d5acd785e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the state of the <a class="el" href="classCamera.html" title="A Camera is a SceneObject that maintains a view matrix, as well as parameters defining the projection...">Camera</a>  <a href="#a4387555e7b88fc489122a3d5acd785e1">More...</a><br /></td></tr>
 <tr class="separator:a4387555e7b88fc489122a3d5acd785e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a941940439c3704c7e5c75e6fd9fa6e7c"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCamera.html#a941940439c3704c7e5c75e6fd9fa6e7c">getViewMatrix</a> () const </td></tr>
 <tr class="memdesc:a941940439c3704c7e5c75e6fd9fa6e7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the view matrix, i.e. the inverse camera model matrix in which the camera is at the origin and looking in -z direction  <a href="#a941940439c3704c7e5c75e6fd9fa6e7c">More...</a><br /></td></tr>
@@ -152,8 +152,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa534ec9213b77e02ba22dad1b3abf114"><td class="mdescLeft">&#160;</td><td class="mdescRight">set distance from camera to far plane of the viewing frustum  <a href="#aa534ec9213b77e02ba22dad1b3abf114">More...</a><br /></td></tr>
 <tr class="separator:aa534ec9213b77e02ba22dad1b3abf114"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec0442093303b9568a159f8c87f8b7d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCamera.html#aec0442093303b9568a159f8c87f8b7d8">lookAt</a> (const glm::vec3 &amp;target)</td></tr>
-<tr class="memdesc:aec0442093303b9568a159f8c87f8b7d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">rotate camera to look at a given point note: implemented here to learn a bit, but basically just like glm::lookAt TODO: DOESNT WORK YET, also didnt manage to get it to work with glm::lookAt  <a href="#aec0442093303b9568a159f8c87f8b7d8">More...</a><br /></td></tr>
+<tr class="memdesc:aec0442093303b9568a159f8c87f8b7d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">rotate camera to look at a given point  <a href="#aec0442093303b9568a159f8c87f8b7d8">More...</a><br /></td></tr>
 <tr class="separator:aec0442093303b9568a159f8c87f8b7d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04486f15b6ab8349ebefe898bd6178c0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCamera.html#a04486f15b6ab8349ebefe898bd6178c0">checkSphereInFrustum</a> (const glm::vec3 &amp;sphereCenterWorldSpace, const glm::vec3 &amp;sphereFarthestPointWorldSpace, const glm::mat4 &amp;viewMat)</td></tr>
+<tr class="memdesc:a04486f15b6ab8349ebefe898bd6178c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">determine whether a sphere with given center and farthest point in world space lies completely within the view frustum. note that the farthest point is passed instead of the radius to apply matrices to do the checks in clip space.  <a href="#a04486f15b6ab8349ebefe898bd6178c0">More...</a><br /></td></tr>
+<tr class="separator:a04486f15b6ab8349ebefe898bd6178c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classSceneObject"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classSceneObject')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classSceneObject.html">SceneObject</a></td></tr>
 <tr class="memitem:ad362cceccda728875f60632e4da3db97 inherit pub_methods_classSceneObject"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad362cceccda728875f60632e4da3db97"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>SceneObject</b> (const glm::mat4 &amp;modelMatrix_)</td></tr>
@@ -223,6 +226,48 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <a class="el" href="classCamera.html" title="A Camera is a SceneObject that maintains a view matrix, as well as parameters defining the projection...">Camera</a> is a <a class="el" href="classSceneObject.html" title="A SceneObject holds a transformation matrix and its inverse and provides functions to manipulate them...">SceneObject</a> that maintains a view matrix, as well as parameters defining the projection matrix, i.e. the viewing frustum. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a04486f15b6ab8349ebefe898bd6178c0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Camera::checkSphereInFrustum </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>sphereCenterWorldSpace</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>sphereFarthestPointWorldSpace</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>viewMat</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>determine whether a sphere with given center and farthest point in world space lies completely within the view frustum. note that the farthest point is passed instead of the radius to apply matrices to do the checks in clip space. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sphereCenter</td><td>the center of the sphere in world space </td></tr>
+    <tr><td class="paramname">sphereFarthestPoint</td><td>the farthest point from sphere center in world space </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>whether the sphere lies completely within the view frustum </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a3f3bd54e73f433a6503bd6d3630b84bc"></a>
 <div class="memitem">
 <div class="memproto">
@@ -255,7 +300,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>get distance from camera to near plane of the viewing frustum </p>
-<dl class="section return"><dt>Returns</dt><dd>the distance form camera to near plane </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>the distance from camera to near plane </dd></dl>
 
 </div>
 </div>
@@ -291,7 +336,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>get distance from camera to near plane of the viewing frustum </p>
-<dl class="section return"><dt>Returns</dt><dd>the distance form camera to near plane </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>the distance from camera to near plane </dd></dl>
 
 </div>
 </div>
@@ -345,7 +390,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>rotate camera to look at a given point note: implemented here to learn a bit, but basically just like glm::lookAt TODO: DOESNT WORK YET, also didnt manage to get it to work with glm::lookAt </p>
+<p>rotate camera to look at a given point </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">target</td><td>the target point to look at. this should not be the camera location. </td></tr>
@@ -394,7 +439,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>set distance from camera to far plane of the viewing frustum </p>
-<dl class="section return"><dt>Returns</dt><dd>farPlane_ the new distance form camera to far plane </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>farPlane_ the new distance from camera to far plane </dd></dl>
 
 </div>
 </div>
@@ -439,7 +484,7 @@ Additional Inherited Members</h2></td></tr>
 <p>set distance from camera to near plane of the viewing frustum </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">nearPlane_</td><td>the new distance form camera to near plane </td></tr>
+    <tr><td class="paramname">nearPlane_</td><td>the new distance from camera to near plane </td></tr>
   </table>
   </dd>
 </dl>
@@ -468,15 +513,13 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>update the state of the <a class="el" href="classSceneObject.html" title="A SceneObject holds a transformation matrix and its inverse and provides functions to manipulate them...">SceneObject</a> </p>
+<p>update the state of the <a class="el" href="classCamera.html" title="A Camera is a SceneObject that maintains a view matrix, as well as parameters defining the projection...">Camera</a> </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">timeDelta</td><td>the time passed since the last frame in seconds </td></tr>
   </table>
   </dd>
 </dl>
-
-<p>Implements <a class="el" href="classSceneObject.html#a96072f52cf4eca80d310c5ca53a33daa">SceneObject</a>.</p>
 
 </div>
 </div>
@@ -487,7 +530,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 3 2015 20:47:43 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 22 2015 22:18:11 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

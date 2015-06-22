@@ -3,5 +3,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node1 [label="Shader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classShader.html",tooltip="Shader class. This loads and compiles glsl shader files and creates a linked shader program..."];
+  Node1 [label="Glyph",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGlyph.html",tooltip="holds information defining the glyph (visual representation) of a character. "];
 }

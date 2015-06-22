@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['player',['Player',['../classPlayer.html',1,'']]]
+  ['geometry',['Geometry',['../classGeometry.html',1,'']]],
+  ['glyph',['Glyph',['../structGlyph.html',1,'']]]
 ];

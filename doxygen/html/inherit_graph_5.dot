@@ -1,0 +1,19 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="SceneObject",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSceneObject.html",tooltip="A SceneObject holds a transformation matrix and its inverse and provides functions to manipulate them..."];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="Camera",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCamera.html",tooltip="A Camera is a SceneObject that maintains a view matrix, as well as parameters defining the projection..."];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="Geometry",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGeometry.html",tooltip="A Geometry is a SceneObject that holds Surfaces which contain mesh data and textures. "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="Eagle",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classEagle.html"];
+  Node3 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="Player",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPlayer.html",tooltip="The Player class. This stores the player Geometry and a Camera, as well as a GLFWwindow to handle inp..."];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="Light",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classLight.html",tooltip="The Light class. This stores the light Position and Color, in update method position and color change..."];
+  Node1 -> Node7 [dir="back",color="firebrick4",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="ParticleSystem",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classParticleSystem.html"];
+}

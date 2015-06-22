@@ -3,5 +3,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node1 [label="Texture",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classTexture.html",tooltip="Texture class. This loads an opengl texture from an image file and stores a handle to it..."];
+  Node1 [label="Physics",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPhysics.html"];
 }

@@ -102,16 +102,32 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aedb4283bd492aa6267114f3e022c6fea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aedb4283bd492aa6267114f3e022c6fea"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Surface</b> (const std::vector&lt; <a class="el" href="structVertex.html">Vertex</a> &gt; &amp;vertices_, const std::vector&lt; GLuint &gt; &amp;indices_, const std::shared_ptr&lt; <a class="el" href="classTexture.html">Texture</a> &gt; &amp;texDiffuse_, const std::shared_ptr&lt; <a class="el" href="classTexture.html">Texture</a> &gt; &amp;texSpecular_, const std::shared_ptr&lt; <a class="el" href="classTexture.html">Texture</a> &gt; &amp;texNormal_)</td></tr>
 <tr class="separator:aedb4283bd492aa6267114f3e022c6fea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a736b8fe9ff0c78c0b31331ec68bcb401"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSurface.html#a736b8fe9ff0c78c0b31331ec68bcb401">draw</a> (<a class="el" href="classShader.html">Shader</a> *shader)</td></tr>
-<tr class="memdesc:a736b8fe9ff0c78c0b31331ec68bcb401"><td class="mdescLeft">&#160;</td><td class="mdescRight">draw triangles from vertex data from buffers bound as specified by the vba. note: the transformation matrices must be set already in shader program!  <a href="#a736b8fe9ff0c78c0b31331ec68bcb401">More...</a><br /></td></tr>
-<tr class="separator:a736b8fe9ff0c78c0b31331ec68bcb401"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1eb38cc8f086a6cfdb93fb89ef381a6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac1eb38cc8f086a6cfdb93fb89ef381a6"></a>
+std::vector&lt; <a class="el" href="structVertex.html">Vertex</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getVertices</b> ()</td></tr>
+<tr class="separator:ac1eb38cc8f086a6cfdb93fb89ef381a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7746e211c7dec4d46780aec4a4031a80"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7746e211c7dec4d46780aec4a4031a80"></a>
+std::vector&lt; GLuint &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getIndices</b> ()</td></tr>
+<tr class="separator:a7746e211c7dec4d46780aec4a4031a80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad449d7fdfa621b0e177158cf9bc0c719"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSurface.html#ad449d7fdfa621b0e177158cf9bc0c719">draw</a> (<a class="el" href="classShader.html">Shader</a> *shader, Texture::FilterType filterType)</td></tr>
+<tr class="memdesc:ad449d7fdfa621b0e177158cf9bc0c719"><td class="mdescLeft">&#160;</td><td class="mdescRight">draw triangles from vertex data from buffers bound as specified by the vba. note: the transformation matrices must be set already in shader program!  <a href="#ad449d7fdfa621b0e177158cf9bc0c719">More...</a><br /></td></tr>
+<tr class="separator:ad449d7fdfa621b0e177158cf9bc0c719"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3373847f7304794b8c40e7599300815e"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSurface.html#a3373847f7304794b8c40e7599300815e">getBoundingSphereCenter</a> ()</td></tr>
+<tr class="memdesc:a3373847f7304794b8c40e7599300815e"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the center of the bounding sphere for this surface to be used in view frustum culling  <a href="#a3373847f7304794b8c40e7599300815e">More...</a><br /></td></tr>
+<tr class="separator:a3373847f7304794b8c40e7599300815e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd93414a69323834346e5ed1797ca965"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSurface.html#acd93414a69323834346e5ed1797ca965">getBoundingSphereFarthestPoint</a> ()</td></tr>
+<tr class="memdesc:acd93414a69323834346e5ed1797ca965"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the farthest point on the bounding sphere whose length defines the bounding sphere radius. used for view frustum culling  <a href="#acd93414a69323834346e5ed1797ca965">More...</a><br /></td></tr>
+<tr class="separator:acd93414a69323834346e5ed1797ca965"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a194087202684a4b3a71c24f02faeb404"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a194087202684a4b3a71c24f02faeb404"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSurface.html#a194087202684a4b3a71c24f02faeb404">init</a> ()</td></tr>
-<tr class="memdesc:a194087202684a4b3a71c24f02faeb404"><td class="mdescLeft">&#160;</td><td class="mdescRight">initialize vba, copy vertex data to vram buffers and associate with shader attributes <br /></td></tr>
-<tr class="separator:a194087202684a4b3a71c24f02faeb404"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf6185f1ae887914e0e152820c9934ff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adf6185f1ae887914e0e152820c9934ff"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSurface.html#adf6185f1ae887914e0e152820c9934ff">initBuffers</a> ()</td></tr>
+<tr class="memdesc:adf6185f1ae887914e0e152820c9934ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">initialize vba, copy vertex data to vram buffers and associate with shader attributes <br /></td></tr>
+<tr class="separator:adf6185f1ae887914e0e152820c9934ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8464f49e2514d2f5af684f087aecb5f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad8464f49e2514d2f5af684f087aecb5f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSurface.html#ad8464f49e2514d2f5af684f087aecb5f">calculateBoundingSphere</a> ()</td></tr>
+<tr class="memdesc:ad8464f49e2514d2f5af684f087aecb5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">calculate parameters defining a bounding sphere for this surface to be used in view frustum culling <br /></td></tr>
+<tr class="separator:ad8464f49e2514d2f5af684f087aecb5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -121,6 +137,12 @@ std::vector&lt; <a class="el" href="structVertex.html">Vertex</a> &gt;&#160;</td
 <tr class="memitem:afb365ecf5e29130c21ed9ae83cfd73dc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afb365ecf5e29130c21ed9ae83cfd73dc"></a>
 std::vector&lt; GLuint &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>indices</b></td></tr>
 <tr class="separator:afb365ecf5e29130c21ed9ae83cfd73dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfe6593e643d9e3823e8c71b68b54816"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abfe6593e643d9e3823e8c71b68b54816"></a>
+glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>boundingSphereCenter</b></td></tr>
+<tr class="separator:abfe6593e643d9e3823e8c71b68b54816"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a033580ac3060fa7c456cbd7d8419a38d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a033580ac3060fa7c456cbd7d8419a38d"></a>
+glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>boundingSphereFarthestPoint</b></td></tr>
+<tr class="separator:a033580ac3060fa7c456cbd7d8419a38d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa85bd643b7e92352399ebc3d0b1b1f0b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa85bd643b7e92352399ebc3d0b1b1f0b"></a>
 std::shared_ptr&lt; <a class="el" href="classTexture.html">Texture</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>texDiffuse</b></td></tr>
 <tr class="separator:aa85bd643b7e92352399ebc3d0b1b1f0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,7 +165,7 @@ GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>indexBuffer</b></td
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <a class="el" href="classSurface.html" title="A Surface holds mesh data (vertex data and indices) and textures. This communicates with Vertex Buffe...">Surface</a> holds mesh data (vertex data and indices) and textures. This communicates with <a class="el" href="structVertex.html" title="Vertex struct for internal representation. ">Vertex</a> Buffer Objects to store vertex data directly on GPU memory and with compiled shader programs for drawing. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a736b8fe9ff0c78c0b31331ec68bcb401"></a>
+<a class="anchor" id="ad449d7fdfa621b0e177158cf9bc0c719"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -151,8 +173,18 @@ GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>indexBuffer</b></td
           <td class="memname">void Surface::draw </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classShader.html">Shader</a> *&#160;</td>
-          <td class="paramname"><em>shader</em></td><td>)</td>
+          <td class="paramname"><em>shader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">Texture::FilterType&#160;</td>
+          <td class="paramname"><em>filterType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -167,6 +199,42 @@ GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>indexBuffer</b></td
 
 </div>
 </div>
+<a class="anchor" id="a3373847f7304794b8c40e7599300815e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 Surface::getBoundingSphereCenter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get the center of the bounding sphere for this surface to be used in view frustum culling </p>
+<dl class="section return"><dt>Returns</dt><dd>the bounding sphere center </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="acd93414a69323834346e5ed1797ca965"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 Surface::getBoundingSphereFarthestPoint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get the farthest point on the bounding sphere whose length defines the bounding sphere radius. used for view frustum culling </p>
+<dl class="section return"><dt>Returns</dt><dd>the farthest point on the bounding sphere </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>SEGANKU/<a class="el" href="surface_8h_source.html">surface.h</a></li>
 <li>SEGANKU/surface.cpp</li>
@@ -174,7 +242,7 @@ GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>indexBuffer</b></td
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 3 2015 20:47:43 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 22 2015 22:18:11 for Seganku by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>
