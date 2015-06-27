@@ -93,8 +93,8 @@ const float timeToStarvation = 120;
 // Shadow Map FBO and depth texture
 GLuint depthMapFBO, vsmDepthMapFBO;
 GLuint depthMap, vsmDepthMap;
-GLuint pingpongFBO[2];
-GLuint pingpongColorMaps[2];
+GLuint pingpongFBO;
+GLuint pingpongColorMap;
 
 const int SM_WIDTH = 4096, SM_HEIGHT = 4096;
 const GLfloat NEAR_PLANE = 100.f, FAR_PLANE = 250.f;
@@ -495,20 +495,18 @@ void initVSM()
 
 void initVSMBlur()
 {
-	glGenFramebuffers(2, pingpongFBO);
-	glGenTextures(2, pingpongColorMaps);
+	glGenFramebuffers(1, &pingpongFBO);
+	glGenTextures(1, &pingpongColorMap);
 
-	for (GLuint i = 0; i < 2; i++)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
-		glBindTexture(GL_TEXTURE_2D, pingpongColorMaps[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SM_WIDTH, SM_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorMaps[i], 0);
-	}
+	glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO);
+	glBindTexture(GL_TEXTURE_2D, pingpongColorMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SM_WIDTH, SM_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorMap, 0);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -687,7 +685,7 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 		drawScene();
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		//vsmBlurPass(); // --> sets program to ~3 fps
+		vsmBlurPass(); // --> sets program to ~3 fps
 	}
 	else {
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -705,21 +703,24 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 
 void vsmBlurPass()
 {
-	GLboolean horizontal = true, first = true;
-	GLuint amount = 10;
+	GLboolean horizontal = true;
+
+	glViewport(0, 0, SM_WIDTH, SM_HEIGHT);
 	setActiveShader(blurVSMDepthShader);
 
-	for (GLuint i = 0; i < amount; i++)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
-		glUniform1i(glGetUniformLocation(activeShader->programHandle, "horizontal"), horizontal);
-		glBindTexture(GL_TEXTURE_2D, first ? vsmDepthMap : pingpongColorMaps[!horizontal]); 
-		RenderQuad();
-		horizontal = !horizontal;
-		if (first) {
-			first = false;
-		}
-	}
+	glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO);
+	glUniform1i(glGetUniformLocation(activeShader->programHandle, "horizontal"), horizontal);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, vsmDepthMap); 
+	RenderQuad();
+	horizontal = !horizontal;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, vsmDepthMapFBO);
+	glUniform1i(glGetUniformLocation(activeShader->programHandle, "horizontal"), horizontal);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, pingpongColorMap);
+	RenderQuad();
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
