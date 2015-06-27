@@ -63,6 +63,7 @@ bool ssaoEnabled		       = false;
 bool ssaoBlurEnabled	       = true;
 bool shadowsEnabled		       = true;
 bool vsmShadowsEnabled		   = false;
+bool vsmBlurEnabled            = false;
 bool renderShadowMap	       = false;
 bool frustumCullingEnabled     = false;
 bool useAlpha				   = false;
@@ -684,8 +685,11 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		drawScene();
 		glGenerateMipmap(GL_TEXTURE_2D);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		vsmBlurPass(); // --> sets program to ~3 fps
+		if (vsmBlurEnabled) {
+			vsmBlurPass(); // --> sets program to ~3 fps
+		}
 	}
 	else {
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -693,10 +697,10 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightViewPro));
 		drawScene();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	
 	// bind default FB and reset viewport
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, windowWidth, windowHeight);
 }
 
@@ -931,8 +935,16 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 		}
 		else if (shadowsEnabled) {
 			if (vsmShadowsEnabled) {
-				shadowsEnabled = !shadowsEnabled;
-				std::cout << "SHADOWS DISABLED" << std::endl;
+				if (vsmBlurEnabled) {
+					shadowsEnabled = !shadowsEnabled;
+					vsmBlurEnabled = !vsmBlurEnabled;
+					std::cout << "SHADOWS DISABLED" << std::endl;
+				}
+				else {
+					vsmBlurEnabled = true;
+					std::cout << "VSM BLURRED SHADOWS ENABLED" << std::endl;
+				}
+
 			}
 			else {
 				vsmShadowsEnabled = true;
