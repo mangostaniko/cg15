@@ -269,12 +269,15 @@ int main(int argc, char **argv)
 		setActiveShader(textureShader);
 		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "viewMat"), 1, GL_FALSE, glm::value_ptr(player->getViewMat()));
 		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightVP));
-		glUniform1i(glGetUniformLocation(activeShader->programHandle, "shadowMap"), 1);
-		glActiveTexture(GL_TEXTURE0 + 1);
+		
 		if (vsmShadowsEnabled) {
+			glUniform1i(glGetUniformLocation(activeShader->programHandle, "shadowMap"), 4);
+			glActiveTexture(GL_TEXTURE0 + 4);
 			glBindTexture(GL_TEXTURE_2D, vsmDepthMap);
 		}
 		else {
+			glUniform1i(glGetUniformLocation(activeShader->programHandle, "shadowMap"), 1);
+			glActiveTexture(GL_TEXTURE0 + 1);
 			glBindTexture(GL_TEXTURE_2D, depthMap);
 		}
 		
@@ -336,7 +339,6 @@ void init(GLFWwindow *window)
 
 	// INIT TEXT RENDERER
 	textRenderer = new TextRenderer("../data/fonts/cliff.ttf", width, height);
-
 
 	// INIT PARTICLE SYSTEM
 	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png", 30, 100.f, 15.f, -0.05f);
@@ -474,7 +476,6 @@ void initVSM()
 	glBindTexture(GL_TEXTURE_2D, vsmDepthMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, SM_WIDTH, SM_HEIGHT, 0, GL_RGBA, GL_FLOAT, 0);
 
-	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -511,7 +512,6 @@ void initVSMBlur()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-
 
 
 void initPhysicsObjects()
@@ -593,28 +593,29 @@ void drawScene()
 
 	Geometry::drawnSurfaceCount = 0;
 
-	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
-	player->draw(activeShader, frustumCullingEnabled, filterType, player->getViewMat());
-
-	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
-	eagle->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
+	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 64.f);
+	terrain->draw(activeShader, camera, false, filterType, player->getViewMat());
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 2.f);
 	for (std::shared_ptr<Geometry> carr : carrots) {
 		carr->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
 	}
 
-	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 64.f);
-	terrain->draw(activeShader, camera, false, filterType, player->getViewMat());
+	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 16.f);
+	player->draw(activeShader, frustumCullingEnabled, filterType, player->getViewMat());
+
+	for (std::shared_ptr<Geometry> shrub : shrubs) {
+		shrub->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
+	}
 
 	cave->draw(activeShader, camera, false, filterType, player->getViewMat());
 
 	for (std::shared_ptr<Geometry> tree : trees) {
 		tree->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
 	}
-	for (std::shared_ptr<Geometry> shrub : shrubs) {
-		shrub->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
-	}
+
+	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
+	eagle->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
 	
 	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); // disable wireframe
 
@@ -686,12 +687,12 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 		drawScene();
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		//vsmBlurPass();  --> sets program to ~3 fps
+		//vsmBlurPass(); // --> sets program to ~3 fps
 	}
 	else {
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		glClear(GL_DEPTH_BUFFER_BIT);
 		setActiveShader(depthMapShader);
+		glClear(GL_DEPTH_BUFFER_BIT);
 		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightViewPro));
 		drawScene();
 	}
@@ -755,7 +756,6 @@ void finalDrawPass()
 
 	glUniform1i(glGetUniformLocation(activeShader->programHandle, "useShadows"), shadowsEnabled);
 	glUniform1i(glGetUniformLocation(activeShader->programHandle, "useSSAO"), ssaoEnabled);
-
 	glUniform1i(glGetUniformLocation(activeShader->programHandle, "useVSM"), vsmShadowsEnabled);
 
 	if (ssaoBlurEnabled) {
@@ -817,6 +817,8 @@ void cleanup()
 	delete textureShader; textureShader = nullptr;
 	delete depthMapShader; depthMapShader = nullptr;
 	delete debugDepthShader; debugDepthShader = nullptr;
+	delete vsmDepthMapShader; vsmDepthMapShader = nullptr;
+	delete blurVSMDepthShader; blurVSMDepthShader = nullptr;
 	activeShader = nullptr;
 
 	delete textRenderer; textRenderer = nullptr;
