@@ -83,8 +83,8 @@ Geometry *terrain, *cave;
 
 Camera *camera;
 Light *sun;
-const glm::vec3 LIGHT_START(glm::vec3(-120, 200, 0));
-const glm::vec3 LIGHT_END(glm::vec3(40, 200, 0));
+const glm::vec3 LIGHT_START(glm::vec3(-100, 150, 0));
+const glm::vec3 LIGHT_END(glm::vec3(20, 150, 0));
 
 std::vector<std::shared_ptr<Geometry>> carrots;
 std::vector<std::shared_ptr<Geometry>> trees;
@@ -98,7 +98,7 @@ GLuint pingpongFBO;
 GLuint pingpongColorMap;
 
 const int SM_WIDTH = 4096, SM_HEIGHT = 4096;
-const GLfloat NEAR_PLANE = 100.f, FAR_PLANE = 250.f;
+const GLfloat NEAR_PLANE = 100.f, FAR_PLANE = 290.f;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
