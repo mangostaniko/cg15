@@ -59,11 +59,10 @@ bool running			       = true;
 bool paused				       = false;
 bool debugInfoEnabled          = true;
 bool wireframeEnabled          = false;
-bool ssaoEnabled		       = false;
+bool ssaoEnabled		       = true;
 bool ssaoBlurEnabled	       = true;
 bool shadowsEnabled		       = true;
 bool vsmShadowsEnabled		   = false;
-bool vsmBlurEnabled            = false;
 bool renderShadowMap	       = false;
 bool frustumCullingEnabled     = false;
 bool useAlpha				   = false;
@@ -89,7 +88,7 @@ const glm::vec3 LIGHT_END(glm::vec3(20, 150, 0));
 std::vector<std::shared_ptr<Geometry>> carrots;
 std::vector<std::shared_ptr<Geometry>> trees;
 std::vector<std::shared_ptr<Geometry>> shrubs;
-const float timeToStarvation = 120;
+const float timeToStarvation = 30;
 
 // Shadow Map FBO and depth texture
 GLuint depthMapFBO, vsmDepthMapFBO;
@@ -97,8 +96,8 @@ GLuint depthMap, vsmDepthMap;
 GLuint pingpongFBO;
 GLuint pingpongColorMap;
 
-const int SM_WIDTH = 4096, SM_HEIGHT = 4096;
-const GLfloat NEAR_PLANE = 100.f, FAR_PLANE = 290.f;
+const int SM_WIDTH = 2048, SM_HEIGHT = 2048;
+const GLfloat NEAR_PLANE = 75.f, FAR_PLANE = 250.f;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -145,8 +144,8 @@ int main(int argc, char **argv)
 
 	btCollisionShape *shape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
 
-	windowWidth = 800;
-	windowHeight = 600;
+	windowWidth = 1024;
+	windowHeight = 768;
 	int refresh_rate = 60;
 	bool fullscreen = 0;
 
@@ -255,7 +254,7 @@ int main(int argc, char **argv)
 
 
 		//////////////////////////
-		/// DRAW 
+		/// DRAW
 		//////////////////////////
 
 		//// SHADOW MAP PASS
@@ -265,15 +264,15 @@ int main(int argc, char **argv)
 		if (shadowsEnabled) {
 			shadowFirstPass(lightVP);
 		}
-				
+
 		// Prepare lighting shader and set matrices
 		setActiveShader(textureShader);
 		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "viewMat"), 1, GL_FALSE, glm::value_ptr(player->getViewMat()));
 		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightVP));
-		
+
 		if (vsmShadowsEnabled) {
-			glUniform1i(glGetUniformLocation(activeShader->programHandle, "shadowMap"), 4);
-			glActiveTexture(GL_TEXTURE0 + 4);
+			glUniform1i(glGetUniformLocation(activeShader->programHandle, "shadowMap"), 1);
+			glActiveTexture(GL_TEXTURE0 + 1);
 			glBindTexture(GL_TEXTURE_2D, vsmDepthMap);
 		}
 		else {
@@ -281,14 +280,14 @@ int main(int argc, char **argv)
 			glActiveTexture(GL_TEXTURE0 + 1);
 			glBindTexture(GL_TEXTURE_2D, depthMap);
 		}
-		
+
 		//// SSAO PrePass (if enabled)
 		ssaoFirstPass();
 
 		//// FINAL PASS
 		//// draw with shadow mapping and ssao
 		finalDrawPass();
-		
+
 		// draw shadow map for debugging (if enabled)
 		debugShadowPass();
 
@@ -297,7 +296,7 @@ int main(int argc, char **argv)
 		drawText(deltaT, windowWidth, windowHeight);
 
 		// end the current frame (swaps the front and back buffers)
-		glfwSwapBuffers(window);		
+		glfwSwapBuffers(window);
 
 
 		//////////////////////////
@@ -345,7 +344,7 @@ void init(GLFWwindow *window)
 	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png", 30, 100.f, 15.f, -0.05f);
 
 	// INIT SSAO POST PROCESSOR
-	ssaoPostprocessor = new SSAOPostprocessor(width, height, 64);
+	ssaoPostprocessor = new SSAOPostprocessor(width, height, 128);
 
 	// INIT SHADERS
 	textureShader = new Shader("../SEGANKU/shaders/textured_blinnphong.vert", "../SEGANKU/shaders/textured_blinnphong.frag");
@@ -388,7 +387,7 @@ void init(GLFWwindow *window)
 		p = (p - glm::vec2(0.5, 0.5)) * glm::max(maxX, maxZ)*1.8f;
 		if (p.x > minX && p.x < maxX && p.y > minZ && p.y < maxZ && glm::distance(p, cavePos2D) > 7) {
 			y = terrainGetYCoord(p, 1.5f, -1.0f);
-			trees.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.75 + rand() / 2)), 0.0f, glm::vec3(0, 1, 0)), glm::vec3(p.x, y, p.y)), "../data/models/world/tree.dae")); //rand() * 2 * glm::pi<float>()
+			trees.push_back(std::make_shared<Geometry>(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.75 + rand() / 2)), rand() * 2 * glm::pi<float>(), glm::vec3(0, 1, 0)), glm::vec3(p.x, y, p.y)), "../data/models/world/tree.dae")); //rand() * 2 * glm::pi<float>()
 		}
 	}
 
@@ -407,7 +406,7 @@ void init(GLFWwindow *window)
 			}
 		}
 	}
-	
+
 
 	// INIT PLAYER + CAMERA
 	camera = new Camera(glm::mat4(1.0f), glm::radians(80.0f), width/(float)height, 0.2f, 200.0f); // mat, fov, aspect, znear, zfar
@@ -504,7 +503,7 @@ void initVSMBlur()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SM_WIDTH, SM_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorMap, 0);
 	glDrawBuffer(GL_COLOR_ATTACHMENT0);
@@ -534,7 +533,7 @@ void initPhysicsObjects()
 
 	physics->addTerrainShapeToPhysics(terrain);
 	physics->setupCaveObjects(cave);
-	
+
 }
 
 
@@ -615,7 +614,7 @@ void drawScene()
 
 	glUniform1f(glGetUniformLocation(activeShader->programHandle, "material.shininess"), 32.f);
 	eagle->draw(activeShader, camera, frustumCullingEnabled, filterType, player->getViewMat());
-	
+
 	if (wireframeEnabled) glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); // disable wireframe
 
 }
@@ -677,7 +676,7 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 
 	// set viewport and bind framebuffer
 	glViewport(0, 0, SM_WIDTH, SM_HEIGHT);
-	
+
 	if (vsmShadowsEnabled) {
 		glBindFramebuffer(GL_FRAMEBUFFER, vsmDepthMapFBO);
 		setActiveShader(vsmDepthMapShader);
@@ -687,9 +686,7 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		if (vsmBlurEnabled) {
-			vsmBlurPass(); // --> sets program to ~3 fps
-		}
+		vsmBlurPass();
 	}
 	else {
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -699,7 +696,7 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 		drawScene();
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
-	
+
 	// bind default FB and reset viewport
 	glViewport(0, 0, windowWidth, windowHeight);
 }
@@ -715,7 +712,7 @@ void vsmBlurPass()
 	glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO);
 	glUniform1i(glGetUniformLocation(activeShader->programHandle, "horizontal"), horizontal);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, vsmDepthMap); 
+	glBindTexture(GL_TEXTURE_2D, vsmDepthMap);
 	RenderQuad();
 	horizontal = !horizontal;
 
@@ -790,7 +787,7 @@ void debugShadowPass()
 		else {
 			glBindTexture(GL_TEXTURE_2D, depthMap);
 		}
-		
+
 		RenderQuad();
 	}
 }
@@ -935,16 +932,8 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 		}
 		else if (shadowsEnabled) {
 			if (vsmShadowsEnabled) {
-				if (vsmBlurEnabled) {
 					shadowsEnabled = !shadowsEnabled;
-					vsmBlurEnabled = !vsmBlurEnabled;
 					std::cout << "SHADOWS DISABLED" << std::endl;
-				}
-				else {
-					vsmBlurEnabled = true;
-					std::cout << "VSM BLURRED SHADOWS ENABLED" << std::endl;
-				}
-
 			}
 			else {
 				vsmShadowsEnabled = true;
@@ -1004,7 +993,7 @@ float terrainGetYCoord(glm::vec2 pos2D, float maxDistanceXY, float offsetY)
 	unsigned int i = 0;
 	while (i < verts.size()) {
 		glm::vec3 vPos = verts.at(i).position; // *glm::mat3(terrain->getMatrix());
-		
+
 		lowerX = vPos.x - maxDistanceXY; upperX = vPos.x + maxDistanceXY;
 		lowerZ = vPos.z - maxDistanceXY; upperZ = vPos.z + maxDistanceXY;
 
@@ -1035,7 +1024,7 @@ void initWorldBounds(float &miX, float &maX, float &miZ, float &maZ)
 
 		if (pos.x > maX) {
 			maX = pos.x;
-		} 
+		}
 		else if (pos.x < miX) {
 			miX = pos.x;
 		}
