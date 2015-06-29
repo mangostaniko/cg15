@@ -95,7 +95,7 @@ GLuint depthMap, vsmDepthMap;
 GLuint pingpongFBO;
 GLuint pingpongColorMap;
 
-const int SM_WIDTH = 4096, SM_HEIGHT = 4096;
+const int SM_WIDTH = 2048, SM_HEIGHT = 2048;
 const GLfloat NEAR_PLANE = 75.f, FAR_PLANE = 250.f;
 
 void frameBufferResize(GLFWwindow *window, int width, int height);
@@ -268,16 +268,16 @@ int main(int argc, char **argv)
 		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "viewMat"), 1, GL_FALSE, glm::value_ptr(player->getViewMat()));
 		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightVP));
 
-		if (vsmShadowsEnabled) {
+		//if (vsmShadowsEnabled) {
 			glUniform1i(glGetUniformLocation(activeShader->programHandle, "shadowMap"), 1);
 			glActiveTexture(GL_TEXTURE0 + 1);
 			glBindTexture(GL_TEXTURE_2D, vsmDepthMap);
-		}
+		/*}
 		else {
 			glUniform1i(glGetUniformLocation(activeShader->programHandle, "shadowMap"), 1);
 			glActiveTexture(GL_TEXTURE0 + 1);
 			glBindTexture(GL_TEXTURE_2D, depthMap);
-		}
+		}*/
 
 		//// SSAO PrePass (if enabled)
 		ssaoFirstPass();
@@ -342,7 +342,7 @@ void init(GLFWwindow *window)
 	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png", 30, 100.f, 15.f, -0.05f);
 
 	// INIT SSAO POST PROCESSOR
-	ssaoPostprocessor = new SSAOPostprocessor(width, height, 64);
+	ssaoPostprocessor = new SSAOPostprocessor(width, height, 32);
 
 	// INIT SHADERS
 	textureShader = new Shader("../SEGANKU/shaders/textured_blinnphong.vert", "../SEGANKU/shaders/textured_blinnphong.frag");
@@ -430,8 +430,8 @@ void initSM()
 	vsmDepthMapShader = new Shader("../SEGANKU/shaders/depth_shader_vsm.vert", "../SEGANKU/shaders/depth_shader_vsm.frag");
 	blurVSMDepthShader = new Shader("../SEGANKU/shaders/blur_vsm.vert", "../SEGANKU/shaders/blur_vsm.frag");
 
-	initPCFSM();
 	initVSM();
+	//initPCFSM();
 	initVSMBlur();
 }
 
@@ -675,7 +675,7 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 	// set viewport and bind framebuffer
 	glViewport(0, 0, SM_WIDTH, SM_HEIGHT);
 
-	if (vsmShadowsEnabled) {
+	//if (vsmShadowsEnabled) {
 		glBindFramebuffer(GL_FRAMEBUFFER, vsmDepthMapFBO);
 		setActiveShader(vsmDepthMapShader);
 		glUniformMatrix4fv(glGetUniformLocation(activeShader->programHandle, "lightVP"), 1, GL_FALSE, glm::value_ptr(lightViewPro));
@@ -684,8 +684,10 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		vsmBlurPass();
-	}
+		if (vsmShadowsEnabled) {
+			vsmBlurPass();
+		}
+	/*}
 	else {
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		setActiveShader(depthMapShader);
@@ -694,7 +696,7 @@ void shadowFirstPass(glm::mat4 &lightViewPro)
 		drawScene();
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
-
+	*/
 	// bind default FB and reset viewport
 	glViewport(0, 0, windowWidth, windowHeight);
 }
@@ -745,6 +747,7 @@ void ssaoFirstPass()
 		//// SSAO BLUR PASS
 		if (ssaoBlurEnabled) {
 			ssaoPostprocessor->blurSSAOResultTexture();
+			//ssaoPostprocessor->blurSSAOResultTexture();
 			setActiveShader(textureShader);
 		}
 	}
@@ -960,11 +963,11 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	}
 
 	// BUG: crashes on windows on disabling blur when ssao enabled
-	if (glfwGetKey(window, GLFW_KEY_F12) == GLFW_PRESS) {
+	/*if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS) {
 		ssaoBlurEnabled = !ssaoBlurEnabled;
 		if (ssaoBlurEnabled) std::cout << "SSAO BLUR ENABLED" << std::endl;
 		else std::cout << "SSAO BLUR DISABLED" << std::endl;
-	}
+	}*/
 }
 
 

@@ -36,10 +36,10 @@ uniform bool useAlpha;
 float calcShadow(vec4 lightSpacePos)
 {
 	vec3 projC = lightSpacePos.xyz / lightSpacePos.w;
+	float currentZ = projC.z;
 	projC = projC * 0.5 + 0.5;
 
 	float closestZ = texture(shadowMap, projC.xy).r;
-	float currentZ = projC.z;
 
 	// we are outside the far plane, don't waste computation time
 	if (projC.z > 1.0) {
