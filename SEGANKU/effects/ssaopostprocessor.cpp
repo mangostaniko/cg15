@@ -52,7 +52,7 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samp
     ////////////////////////////////////
 
 	ssaoShader = new Shader("../SEGANKU/shaders/ssao.vert", "../SEGANKU/shaders/ssao.frag");
-	blurShader = new Shader("../SEGANKU/shaders/blur_vsm.vert", "../SEGANKU/shaders/blur_vsm.frag");
+	blurShader = new Shader("../SEGANKU/shaders/blur.vert", "../SEGANKU/shaders/blur.frag");
 
 	// create array of random vectors for depth sampling in ssao shader
 	std::vector<glm::vec3> randomVectors;
@@ -223,19 +223,19 @@ void SSAOPostprocessor::blurSSAOResultTexture()
 
 	// filter horizontally
 	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurPingpong);
-	glUniform1i(glGetUniformLocation(blurShader->programHandle, "image"), 4);
+	glUniform1i(glGetUniformLocation(blurShader->programHandle, "ssaoTexture"), 4);
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_2D, ssaoTexture);
-	glUniform1i(glGetUniformLocation(blurShader->programHandle, "horizontal"), true);
+	glUniform1i(glGetUniformLocation(blurShader->programHandle, "filterHorizontally"), true);
 
 	drawQuad();
 
 	// filter vertically
 	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAO);
-	glUniform1i(glGetUniformLocation(blurShader->programHandle, "image"), 4);
+	glUniform1i(glGetUniformLocation(blurShader->programHandle, "ssaoTexture"), 4);
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_2D, ssaoBlurredTexturePingpong);
-	glUniform1i(glGetUniformLocation(blurShader->programHandle, "horizontal"), false);
+	glUniform1i(glGetUniformLocation(blurShader->programHandle, "filterHorizontally"), false);
 
 	drawQuad();
 
