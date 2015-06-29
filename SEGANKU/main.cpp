@@ -348,7 +348,7 @@ void init(GLFWwindow *window)
 	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png", 30, 100.f, 15.f, -0.05f);
 
 	// INIT SSAO POST PROCESSOR
-	ssaoPostprocessor = new SSAOPostprocessor(width, height, 32);
+	ssaoPostprocessor = new SSAOPostprocessor(width, height, 64);
 
 	// INIT SHADERS
 	textureShader = new Shader("../SEGANKU/shaders/textured_blinnphong.vert", "../SEGANKU/shaders/textured_blinnphong.frag");
@@ -454,8 +454,6 @@ void initPCFSM()
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -749,8 +747,10 @@ void ssaoFirstPass()
 		setActiveShader(textureShader);
 
 		//// SSAO BLUR PASS
-		ssaoPostprocessor->blurSSAOResultTexture();
-		setActiveShader(textureShader);
+		if (ssaoBlurEnabled) {
+			ssaoPostprocessor->blurSSAOResultTexture();
+			setActiveShader(textureShader);
+		}
 	}
 }
 
@@ -764,12 +764,7 @@ void finalDrawPass()
 	glUniform1i(glGetUniformLocation(activeShader->programHandle, "useSSAO"), ssaoEnabled);
 	glUniform1i(glGetUniformLocation(activeShader->programHandle, "useVSM"), vsmShadowsEnabled);
 
-	if (ssaoBlurEnabled) {
-		ssaoPostprocessor->bindSSAOBlurredResultTexture(glGetUniformLocation(activeShader->programHandle, "ssaoTexture"), 2);
-	}
-	else {
-		ssaoPostprocessor->bindSSAOResultTexture(glGetUniformLocation(activeShader->programHandle, "ssaoTexture"), 2);
-	}
+	ssaoPostprocessor->bindSSAOResultTexture(glGetUniformLocation(activeShader->programHandle, "ssaoTexture"), 2);
 
 	drawScene();
 }
