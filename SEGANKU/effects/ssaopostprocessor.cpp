@@ -52,7 +52,7 @@ SSAOPostprocessor::SSAOPostprocessor(int windowWidth, int windowHeight, int samp
     ////////////////////////////////////
 
 	ssaoShader = new Shader("../SEGANKU/shaders/ssao.vert", "../SEGANKU/shaders/ssao.frag");
-	blurShader = new Shader("../SEGANKU/shaders/blur.vert", "../SEGANKU/shaders/blur.frag");
+	blurShader = new Shader("../SEGANKU/shaders/blur_vsm.vert", "../SEGANKU/shaders/blur_vsm.frag");
 
 	// create array of random vectors for depth sampling in ssao shader
 	std::vector<glm::vec3> randomVectors;
@@ -168,29 +168,18 @@ void SSAOPostprocessor::setupFramebuffers(int windowWidth, int windowHeight)
 		std::cerr << "ERROR in SSAOPostprocessor: SSAO Framebuffer not complete" << std::endl;
 	}
 
-	// fbo for horizontally blurred ssao
-	glGenTextures(1, &ssaoBlurredHTexture);
-	glBindTexture(GL_TEXTURE_2D, ssaoBlurredHTexture);
+	// fbo for blurred ssao
+	glGenFramebuffers(1, &fboSSAOBlurPingpong);
+	glGenTextures(1, &ssaoBlurredTexturePingpong);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurPingpong);
+	glBindTexture(GL_TEXTURE_2D, ssaoBlurredTexturePingpong);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, windowWidth, windowHeight, 0, GL_RED, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, windowWidth, windowHeight, 0, GL_RED, GL_FLOAT, NULL);
-	glGenFramebuffers(1, &fboSSAOBlurredH);
-	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurredH);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlurredHTexture, 0);
-
-	// fbo for vertically blurred ssao
-	glGenTextures(1, &ssaoBlurredVTexture);
-	glBindTexture(GL_TEXTURE_2D, ssaoBlurredVTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, windowWidth, windowHeight, 0, GL_RED, GL_FLOAT, NULL);
-	glGenFramebuffers(1, &fboSSAOBlurredV);
-	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurredV);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlurredVTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlurredTexturePingpong, 0);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
 
 	// bind back to default framebuffer (as created by glfw)
@@ -233,27 +222,22 @@ void SSAOPostprocessor::blurSSAOResultTexture()
 	blurShader->useShader();
 
 	// filter horizontally
-	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAO);
-	glUniform1i(glGetUniformLocation(blurShader->programHandle, "ssaoTexture"), 4);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurPingpong);
+	glUniform1i(glGetUniformLocation(blurShader->programHandle, "image"), 4);
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_2D, ssaoTexture);
-	glUniform1i(glGetUniformLocation(blurShader->programHandle, "filterHorizontally"), true);
+	glUniform1i(glGetUniformLocation(blurShader->programHandle, "horizontal"), true);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurredH);
-	glClear(GL_COLOR_BUFFER_BIT);
 	drawQuad();
 
 	// filter vertically
-	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurredH);
-	glUniform1i(glGetUniformLocation(blurShader->programHandle, "ssaoTexture"), 4);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAO);
+	glUniform1i(glGetUniformLocation(blurShader->programHandle, "image"), 4);
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_2D, ssaoBlurredHTexture);
-	glUniform1i(glGetUniformLocation(blurShader->programHandle, "filterHorizontally"), false);
+	glBindTexture(GL_TEXTURE_2D, ssaoBlurredTexturePingpong);
+	glUniform1i(glGetUniformLocation(blurShader->programHandle, "horizontal"), false);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurredV);
-	glClear(GL_COLOR_BUFFER_BIT);
 	drawQuad();
-
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -264,15 +248,6 @@ void SSAOPostprocessor::bindSSAOResultTexture(GLint ssaoTexShaderLocation, GLuin
 	glUniform1i(ssaoTexShaderLocation, textureUnit);
 	glActiveTexture(GL_TEXTURE0 + textureUnit);
 	glBindTexture(GL_TEXTURE_2D, ssaoTexture);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void SSAOPostprocessor::bindSSAOBlurredResultTexture(GLint ssaoTexShaderLocation, GLuint textureUnit)
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, fboSSAOBlurredV);
-	glUniform1i(ssaoTexShaderLocation, textureUnit);
-	glActiveTexture(GL_TEXTURE0 + textureUnit);
-	glBindTexture(GL_TEXTURE_2D, ssaoBlurredVTexture);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

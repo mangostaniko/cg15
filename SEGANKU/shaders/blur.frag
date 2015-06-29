@@ -4,7 +4,7 @@ in vec2 texCoord;
 layout(location = 0) out vec4 outColor;
 
 uniform sampler2D ssaoTexture; // the ssao factor for each fragment
-uniform bool filterHorizontally; // else filter horizontally
+uniform bool filterHorizontally; // else filter vertically
 
 float offsets[9] = float[](-4, -3, -2, -1, 0, 1, 2, 3, 4);
 float kernel[9] = float[](0.05f, 0.1f, 0.1f, 0.15f, 0.2f, 0.15f, 0.1f, 0.1f, 0.05f);

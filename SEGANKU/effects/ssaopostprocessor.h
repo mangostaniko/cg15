@@ -25,7 +25,7 @@ class SSAOPostprocessor
 
 	GLuint fboScreenData, screenColorTexture, viewPosTexture, screenDepthBuffer;
 	GLuint fboSSAO, ssaoTexture;
-	GLuint fboSSAOBlurredH, ssaoBlurredHTexture, fboSSAOBlurredV, ssaoBlurredVTexture;
+	GLuint fboSSAOBlurPingpong, ssaoBlurredTexturePingpong;
 
 	GLuint screenQuadVAO, screenQuadVBO;
 
@@ -74,7 +74,6 @@ public:
 
 	void blurSSAOResultTexture();
 
-	void bindSSAOBlurredResultTexture(GLint ssaoTexShaderLocation, GLuint textureUnit);
 private:
 };
 
