@@ -146,7 +146,7 @@ int main(int argc, char **argv)
 	windowWidth = 1280;
 	windowHeight = 768;
 	int refresh_rate = 60;
-	bool fullscreen = 0;
+	bool fullscreen = 1;
 
 	if (argc == 1) {
 		// no parameters specified, continue with default values
