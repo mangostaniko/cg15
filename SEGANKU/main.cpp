@@ -87,7 +87,7 @@ const glm::vec3 LIGHT_END(glm::vec3(20, 150, 0));
 std::vector<std::shared_ptr<Geometry>> carrots;
 std::vector<std::shared_ptr<Geometry>> trees;
 std::vector<std::shared_ptr<Geometry>> shrubs;
-const float timeToStarvation = 120;
+const float timeToStarvation = 60;
 
 // Shadow Map FBO and depth texture
 GLuint depthMapFBO, vsmDepthMapFBO;
@@ -143,10 +143,10 @@ int main(int argc, char **argv)
 
 	btCollisionShape *shape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
 
-	windowWidth = 1024;
+	windowWidth = 1280;
 	windowHeight = 768;
 	int refresh_rate = 60;
-	bool fullscreen = 0;
+	bool fullscreen = 1;
 
 	if (argc == 1) {
 		// no parameters specified, continue with default values
@@ -342,7 +342,7 @@ void init(GLFWwindow *window)
 	particleSystem = new ParticleSystem(glm::mat4(1.0f), "../data/models/skunk/smoke.png", 30, 100.f, 15.f, -0.05f);
 
 	// INIT SSAO POST PROCESSOR
-	ssaoPostprocessor = new SSAOPostprocessor(width, height, 32);
+	ssaoPostprocessor = new SSAOPostprocessor(width, height, 48);
 
 	// INIT SHADERS
 	textureShader = new Shader("../SEGANKU/shaders/textured_blinnphong.vert", "../SEGANKU/shaders/textured_blinnphong.frag");
