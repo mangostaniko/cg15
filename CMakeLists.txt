@@ -102,6 +102,8 @@ set(SRC_SHADERS
 
 		SEGANKU/shaders/depth_shader.vert
 		SEGANKU/shaders/depth_shader.frag
+		SEGANKU/shaders/depth_shader_vsm.vert
+		SEGANKU/shaders/depth_shader_vsm.frag
 		SEGANKU/shaders/quad_debug.vert
 		SEGANKU/shaders/quad_debug.frag
 
@@ -109,6 +111,8 @@ set(SRC_SHADERS
 		SEGANKU/shaders/ssao.frag
 		SEGANKU/shaders/blur.vert
 		SEGANKU/shaders/blur.frag
+		SEGANKU/shaders/blur_vsm.vert
+		SEGANKU/shaders/blur_vsm.frag
 
 		)
 		
