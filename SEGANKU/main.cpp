@@ -32,7 +32,6 @@
 #include "simpledebugdrawer.h"
 #include "physics.h"
 
-
 void init(GLFWwindow *window);
 void initWorldBounds(float &miX, float &maX, float &miY, float &maY);
 float terrainGetYCoord(glm::vec2 pos2D, float maxDistanceXY, float offsetY);
@@ -52,6 +51,13 @@ void drawScene();
 void drawText(double deltaT, int windowWidth, int windowHeight);
 void cleanup();
 void newGame();
+
+#ifdef _WIN32
+static void APIENTRY DebugCallbackAMD(GLuint id, GLenum category, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam);
+static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam);
+std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, const char* msg);
+void registerDebugCallbacks();
+#endif
 
 GLFWwindow *window;
 int windowWidth, windowHeight;
@@ -172,7 +178,7 @@ int main(int argc, char **argv)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #if _DEBUG
-    glfwOpenWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 	registerDebugCallbacks();
 #endif
 
@@ -1044,17 +1050,18 @@ void initWorldBounds(float &miX, float &maX, float &miZ, float &maZ)
 
 #ifdef _WIN32
 
+#ifdef _DEBUG
 //////////////////////////
 /// DEBUG CONTEXT (WINDOWS)
 /// NOTE: add breakpoint in DebugCallback() function to find glerror origin from callstack
 //////////////////////////
 
-void APIENTRY DebugCallbackAMD(GLuint id, GLenum category, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam) {
+static void APIENTRY DebugCallbackAMD(GLuint id, GLenum category, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam) {
     std::string error = FormatDebugOutput(category, category, id, severity, message);
     std::cout << error << std::endl; // ADD BREAKPOINT IN THIS LINE TO FIND GLERROR ORIGIN FROM CALLSTACK
 }
 
-void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam) {
+static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam) {
     std::string error = FormatDebugOutput(source, type, id, severity, message);
     std::cout << error << std::endl; // ADD BREAKPOINT IN THIS LINE TO FIND GLERROR ORIGIN FROM CALLSTACK
 }
@@ -1175,7 +1182,7 @@ void registerDebugCallbacks()
 
     // Register your callback function.
     if (_glDebugMessageCallback != NULL) {
-        _glDebugMessageCallback(DebugCallback, NULL);
+		_glDebugMessageCallback(DebugCallbackAMD, NULL);
     }
     else if (_glDebugMessageCallbackARB != NULL) {
         _glDebugMessageCallbackARB(DebugCallback, NULL);
@@ -1191,5 +1198,5 @@ void registerDebugCallbacks()
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     }
 }
-
+#endif
 #endif
