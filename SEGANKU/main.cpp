@@ -779,12 +779,7 @@ void debugShadowPass()
 		glUniform1f(glGetUniformLocation(debugDepthShader->programHandle, "far_plane"), FAR_PLANE);
 		glActiveTexture(GL_TEXTURE0);
 
-		if (vsmShadowsEnabled) {
-			glBindTexture(GL_TEXTURE_2D, vsmDepthMap);
-		}
-		else {
-			glBindTexture(GL_TEXTURE_2D, depthMap);
-		}
+		glBindTexture(GL_TEXTURE_2D, vsmDepthMap);
 
 		RenderQuad();
 	}
