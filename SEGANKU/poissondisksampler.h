@@ -22,6 +22,15 @@
 // by Sergey Kosarevsky, 2014-2015
 // based on http://devmag.org.za/2009/05/03/poisson-disk-sampling/
 
+/* PoissonDiskSampler
+ * sample area is mapped to a grid, each grid cell can contain at most one random floating point position,
+ * which must however lie at a minimum distance to positions in neighbouring grid cells,
+ * such that instead of pure random sampling where positions could all be in one place,
+ * we get random samples distributed over the whole area via the grid (as in jittered grid sampling),
+ * but also, positions of neighbouring grid cells are never too close together (that is the essential property of the algorithm).
+ * starting form an initial position in a grid cell, random neighbours at a certain euclidean distance
+ * are attempted to be found in other grid cells, until the desired number of samples is acquired.
+ */
 class PoissonDiskSampler
 {
 	PoissonDiskSampler();

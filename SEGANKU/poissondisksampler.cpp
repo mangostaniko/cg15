@@ -47,8 +47,8 @@ bool PoissonDiskSampler::isInNeighbourhood(const glm::vec2 &position, const std:
 
 std::vector<glm::vec2> PoissonDiskSampler::generatePoissonSample(unsigned int sampleSize, float minDist, int maxNeighboursToTry)
 {
-	std::vector<glm::vec2> samplePositions;
-	std::vector<glm::vec2> processPositions;
+	std::vector<glm::vec2> samplePositions; // resulting positions
+	std::vector<glm::vec2> processPositions; // positions from which to generate fitting neighbours in other cells
 
 	// define grid
 	float gridUnitLength = minDist/sqrt(2);
@@ -59,7 +59,7 @@ std::vector<glm::vec2> PoissonDiskSampler::generatePoissonSample(unsigned int sa
 	glm::vec2 initialPosition = glm::vec2(randomFloat(), randomFloat());
 	samplePositions.push_back(initialPosition);
 	processPositions.push_back(initialPosition);
-	grid[int(initialPosition.x / gridUnitLength)][int(initialPosition.y / gridUnitLength)] = initialPosition;
+	grid[int(initialPosition.x / gridUnitLength)][int(initialPosition.y / gridUnitLength)] = initialPosition; // one random float position in each grid cell
 
 	// generate new points for each point in the queue
 	while (!processPositions.empty() && samplePositions.size() < sampleSize) {
