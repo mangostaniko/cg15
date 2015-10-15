@@ -13,4 +13,4 @@ Note that this game was developed cross platform on Linux (CMake) and Windows (M
 
 ## Further Information
 
-Please refer to seganku_submission2.pdf
+For a detailed description of gameplay, controls, visible effects and implementation choices, please refer to seganku_submission2.pdf
