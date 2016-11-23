@@ -1,6 +1,8 @@
 project(seganku)
 cmake_minimum_required(VERSION 2.8)
 
+# NOTE: WINDOWS BUILD HERE IS NOT WORKING, FOR WINDOWS USE VISUAL STUDIO
+
 # add CMakeLists.txt source dir and cmake module dir to the cmake module path
 # cmake modules are cmake files used e.g. to find library files
 set(CMAKE_MODULE_PATH 
